@@ -1,0 +1,21 @@
+infra/terraform/main.tf
+  s_ce628d00eb996c::t_19e52a50ccf897 105-115,120,122,128-132,135-136
+plan/TASKS.md
+  s_ce628d00eb996c::t_94f7ad623c9bc5 14-18,20,85-93,99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0d6bb16631703a8f18945cfda78afee9af7052fc",
+  "prompts": {},
+  "sessions": {
+    "s_ce628d00eb996c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2b78d24a-61b6-4d9e-9c04-ed2d3899aef4",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
