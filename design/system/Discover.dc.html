@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Source+Serif+4:ital@1&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #FAFAF8; font-family: 'Public Sans', system-ui, sans-serif; }
+    a { color: #33513E; text-decoration: underline; }
+    .serif { font-family: 'Source Serif 4', serif; }
+    .row { display:flex; align-items:center; padding:22px 0; border-top:1px solid rgba(32,30,27,0.12); gap:22px; }
+    .play { border-radius:50%; border:1px solid #201E1B; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  </style>
+</helmet>
+
+<div style="width:1440px; min-height:1180px; background:#FAFAF8; color:#201E1B;">
+
+  <div style="padding:22px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(32,30,27,0.12);">
+    <div style="font-size:13px; letter-spacing:0.18em; font-weight:500;">ARBORISIS</div>
+    <div style="display:flex; align-items:center; gap:32px;">
+      <span style="font-size:12px; color:#8D8A85;">Explorer</span>
+      <span style="font-size:12px; color:#201E1B; font-weight:500;">Découvrir</span>
+      <span style="font-size:12px; color:#8D8A85;">Ajouter</span>
+      <span style="font-size:12px; color:#8D8A85;">Recherche</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:18px;">
+      <div class="serif" style="font-style:italic; font-size:13px; color:#8D8A85;">Listen to the places around us.</div>
+      <div style="width:26px; height:26px; border-radius:50%; border:1px solid #201E1B; display:flex; align-items:center; justify-content:center;"><span style="font-size:10px;">B</span></div>
+    </div>
+  </div>
+
+  <div style="max-width:1040px; margin:0 auto; padding:48px 40px 100px 40px;">
+
+    <div style="margin-bottom:36px;">
+      <div style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#8D8A85; margin-bottom:10px;">Découvrir</div>
+      <div style="font-size:13px; color:#5C5A55; max-width:520px; line-height:1.6;">Une sélection de paysages sonores publiés récemment par la communauté, sans classement ni popularité.</div>
+    </div>
+
+    <!-- featured entry -->
+    <div style="border-top:1px solid rgba(32,30,27,0.3); padding:28px 0; display:flex; align-items:center; gap:28px;">
+      <div class="play" style="width:52px; height:52px;"><svg width="14" height="17" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#201E1B"/></svg></div>
+      <div style="flex:1;">
+        <div class="serif" style="font-style:italic; font-size:26px; margin-bottom:6px;">Forest after rainfall</div>
+        <div style="font-size:12.5px; color:#5C5A55;">Sonian Forest, Belgium — Bastien</div>
+      </div>
+      <svg width="220" height="30" viewBox="0 0 220 30"><g fill="#201E1B" opacity="0.8"><rect x="0" y="12" width="1.5" height="6"/><rect x="6" y="8" width="1.5" height="14"/><rect x="12" y="4" width="1.5" height="22"/><rect x="18" y="10" width="1.5" height="10"/><rect x="24" y="6" width="1.5" height="18"/><rect x="30" y="11" width="1.5" height="8"/><rect x="36" y="3" width="1.5" height="24"/><rect x="42" y="9" width="1.5" height="12"/><rect x="48" y="7" width="1.5" height="16"/><rect x="54" y="12" width="1.5" height="6"/><rect x="60" y="5" width="1.5" height="20"/><rect x="66" y="10" width="1.5" height="10"/><rect x="72" y="8" width="1.5" height="14"/><rect x="78" y="4" width="1.5" height="22"/><rect x="84" y="11" width="1.5" height="8"/><rect x="90" y="6" width="1.5" height="18"/><rect x="96" y="9" width="1.5" height="12"/><rect x="102" y="13" width="1.5" height="4"/><rect x="108" y="7" width="1.5" height="16"/><rect x="114" y="10" width="1.5" height="10"/><rect x="120" y="5" width="1.5" height="20"/><rect x="126" y="9" width="1.5" height="12"/><rect x="132" y="12" width="1.5" height="6"/><rect x="138" y="6" width="1.5" height="18"/><rect x="144" y="11" width="1.5" height="8"/><rect x="150" y="4" width="1.5" height="22"/><rect x="156" y="9" width="1.5" height="12"/><rect x="162" y="7" width="1.5" height="16"/><rect x="168" y="12" width="1.5" height="6"/><rect x="174" y="5" width="1.5" height="20"/><rect x="180" y="10" width="1.5" height="10"/><rect x="186" y="8" width="1.5" height="14"/><rect x="192" y="13" width="1.5" height="4"/><rect x="198" y="9" width="1.5" height="12"/><rect x="204" y="11" width="1.5" height="8"/><rect x="210" y="7" width="1.5" height="16"/></g></svg>
+      <div style="text-align:right; min-width:110px;">
+        <div style="font-size:11.5px; color:#8D8A85;">forest · rain · birds</div>
+        <div style="font-size:11px; color:#B8B5AF; margin-top:4px;">6:42 — Aug 16</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="play" style="width:36px; height:36px;"><svg width="9" height="11" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#201E1B"/></svg></div>
+      <div style="width:220px;">
+        <div class="serif" style="font-style:italic; font-size:16px;">Tidal creek at dawn</div>
+        <div style="font-size:11.5px; color:#5C5A55; margin-top:2px;">Wadden Sea, Netherlands</div>
+      </div>
+      <svg width="170" height="20" viewBox="0 0 170 20" style="flex-shrink:0;"><g fill="#201E1B" opacity="0.7"><rect x="0" y="8" width="1.2" height="4"/><rect x="6" y="5" width="1.2" height="10"/><rect x="12" y="2" width="1.2" height="16"/><rect x="18" y="7" width="1.2" height="6"/><rect x="24" y="4" width="1.2" height="12"/><rect x="30" y="8" width="1.2" height="4"/><rect x="36" y="1" width="1.2" height="18"/><rect x="42" y="6" width="1.2" height="8"/><rect x="48" y="5" width="1.2" height="10"/><rect x="54" y="8" width="1.2" height="4"/><rect x="60" y="3" width="1.2" height="14"/><rect x="66" y="7" width="1.2" height="6"/><rect x="72" y="5" width="1.2" height="10"/><rect x="78" y="2" width="1.2" height="16"/><rect x="84" y="8" width="1.2" height="4"/><rect x="90" y="4" width="1.2" height="12"/><rect x="96" y="7" width="1.2" height="6"/><rect x="102" y="9" width="1.2" height="2"/><rect x="108" y="5" width="1.2" height="10"/><rect x="114" y="6" width="1.2" height="8"/><rect x="120" y="3" width="1.2" height="14"/><rect x="126" y="7" width="1.2" height="6"/><rect x="132" y="8" width="1.2" height="4"/><rect x="138" y="4" width="1.2" height="12"/><rect x="144" y="6" width="1.2" height="8"/><rect x="150" y="8" width="1.2" height="4"/><rect x="156" y="3" width="1.2" height="14"/><rect x="162" y="7" width="1.2" height="6"/></g></svg>
+      <div style="margin-left:auto; text-align:right; min-width:130px;">
+        <div style="font-size:11.5px; color:#8D8A85;">rain · birds</div>
+        <div style="font-size:11px; color:#B8B5AF; margin-top:4px;">4:15 — Aug 14</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="play" style="width:36px; height:36px;"><svg width="9" height="11" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#201E1B"/></svg></div>
+      <div style="width:220px;">
+        <div class="serif" style="font-style:italic; font-size:16px;">Cicadas and wind</div>
+        <div style="font-size:11.5px; color:#5C5A55; margin-top:2px;">Basilicata, Italy</div>
+      </div>
+      <svg width="170" height="20" viewBox="0 0 170 20" style="flex-shrink:0;"><g fill="#201E1B" opacity="0.7"><rect x="0" y="4" width="1.2" height="8"/><rect x="6" y="6" width="1.2" height="4"/><rect x="12" y="1" width="1.2" height="14"/><rect x="18" y="5" width="1.2" height="6"/><rect x="24" y="3" width="1.2" height="10"/><rect x="30" y="6" width="1.2" height="4"/><rect x="36" y="2" width="1.2" height="12"/><rect x="42" y="5" width="1.2" height="6"/><rect x="48" y="6" width="1.2" height="4"/><rect x="54" y="3" width="1.2" height="10"/><rect x="60" y="1" width="1.2" height="14"/><rect x="66" y="4" width="1.2" height="8"/><rect x="72" y="6" width="1.2" height="4"/><rect x="78" y="2" width="1.2" height="12"/><rect x="84" y="5" width="1.2" height="6"/><rect x="90" y="6" width="1.2" height="4"/><rect x="96" y="3" width="1.2" height="10"/><rect x="102" y="1" width="1.2" height="14"/><rect x="108" y="4" width="1.2" height="8"/><rect x="114" y="6" width="1.2" height="4"/><rect x="120" y="2" width="1.2" height="12"/><rect x="126" y="5" width="1.2" height="6"/></g></svg>
+      <div style="margin-left:auto; text-align:right; min-width:130px;">
+        <div style="font-size:11.5px; color:#8D8A85;">summer · insects</div>
+        <div style="font-size:11px; color:#B8B5AF; margin-top:4px;">8:03 — Aug 12</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="play" style="width:36px; height:36px;"><svg width="9" height="11" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#201E1B"/></svg></div>
+      <div style="width:220px;">
+        <div class="serif" style="font-style:italic; font-size:16px;">Glacier meltwater</div>
+        <div style="font-size:11.5px; color:#5C5A55; margin-top:2px;">Vatnajökull, Iceland</div>
+      </div>
+      <svg width="170" height="20" viewBox="0 0 170 20" style="flex-shrink:0;"><g fill="#201E1B" opacity="0.7"><rect x="0" y="2" width="1.2" height="12"/><rect x="6" y="5" width="1.2" height="6"/><rect x="12" y="6" width="1.2" height="4"/><rect x="18" y="1" width="1.2" height="14"/><rect x="24" y="4" width="1.2" height="8"/><rect x="30" y="6" width="1.2" height="4"/><rect x="36" y="3" width="1.2" height="10"/><rect x="42" y="2" width="1.2" height="12"/><rect x="48" y="6" width="1.2" height="4"/><rect x="54" y="4" width="1.2" height="8"/><rect x="60" y="1" width="1.2" height="14"/><rect x="66" y="5" width="1.2" height="6"/><rect x="72" y="6" width="1.2" height="4"/><rect x="78" y="3" width="1.2" height="10"/><rect x="84" y="2" width="1.2" height="12"/><rect x="90" y="6" width="1.2" height="4"/><rect x="96" y="4" width="1.2" height="8"/><rect x="102" y="1" width="1.2" height="14"/><rect x="108" y="5" width="1.2" height="6"/></g></svg>
+      <div style="margin-left:auto; text-align:right; min-width:130px;">
+        <div style="font-size:11.5px; color:#8D8A85;">ice · water</div>
+        <div style="font-size:11px; color:#B8B5AF; margin-top:4px;">5:58 — Aug 9</div>
+      </div>
+    </div>
+
+    <div class="row" style="border-bottom:1px solid rgba(32,30,27,0.12);">
+      <div class="play" style="width:36px; height:36px;"><svg width="9" height="11" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#201E1B"/></svg></div>
+      <div style="width:220px;">
+        <div class="serif" style="font-style:italic; font-size:16px;">Harbour at low tide</div>
+        <div style="font-size:11.5px; color:#5C5A55; margin-top:2px;">Brest, France</div>
+      </div>
+      <svg width="170" height="20" viewBox="0 0 170 20" style="flex-shrink:0;"><g fill="#201E1B" opacity="0.7"><rect x="0" y="9" width="1.2" height="2"/><rect x="6" y="6" width="1.2" height="8"/><rect x="12" y="3" width="1.2" height="14"/><rect x="18" y="8" width="1.2" height="4"/><rect x="24" y="5" width="1.2" height="10"/><rect x="30" y="9" width="1.2" height="2"/><rect x="36" y="2" width="1.2" height="16"/><rect x="42" y="7" width="1.2" height="6"/><rect x="48" y="6" width="1.2" height="8"/><rect x="54" y="9" width="1.2" height="2"/><rect x="60" y="4" width="1.2" height="12"/><rect x="66" y="8" width="1.2" height="4"/><rect x="72" y="6" width="1.2" height="8"/><rect x="78" y="3" width="1.2" height="14"/><rect x="84" y="9" width="1.2" height="2"/><rect x="90" y="5" width="1.2" height="10"/></g></svg>
+      <div style="margin-left:auto; text-align:right; min-width:130px;">
+        <div style="font-size:11.5px; color:#8D8A85;">harbour · gulls</div>
+        <div style="font-size:11px; color:#B8B5AF; margin-top:4px;">3:27 — Aug 7</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

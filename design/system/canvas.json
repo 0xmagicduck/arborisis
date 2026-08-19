@@ -1,0 +1,28 @@
+{
+  "pages": [
+    { "id": "system", "name": "Système — Quiet Cartography" },
+    { "id": "directions", "name": "Explorations initiales" }
+  ],
+  "artboards": [
+    { "file": "DesignSystem.dc.html", "x": 0, "y": 0, "w": 1600, "h": 1900, "page": "system", "title": "Design system" },
+    { "file": "Explorer.dc.html", "x": 1680, "y": 0, "w": 1440, "h": 980, "page": "system", "title": "1 — Explorer" },
+    { "file": "Discover.dc.html", "x": 3200, "y": 0, "w": 1440, "h": 1180, "page": "system", "title": "2 — Découvrir" },
+    { "file": "RecordingDetail.dc.html", "x": 4720, "y": 0, "w": 1440, "h": 1000, "page": "system", "title": "3 — Recording detail" },
+    { "file": "Upload1.dc.html", "x": 6240, "y": 0, "w": 1280, "h": 860, "page": "system", "title": "4a — Upload · Sound" },
+    { "file": "Upload2.dc.html", "x": 7600, "y": 0, "w": 1280, "h": 860, "page": "system", "title": "4b — Upload · Place & details" },
+    { "file": "Upload3.dc.html", "x": 8960, "y": 0, "w": 1280, "h": 860, "page": "system", "title": "4c — Upload · Publish" },
+    { "file": "Profile.dc.html", "x": 10320, "y": 0, "w": 1440, "h": 1000, "page": "system", "title": "5 — Profile" },
+    { "file": "Search.dc.html", "x": 11840, "y": 0, "w": 1440, "h": 960, "page": "system", "title": "6 — Search" },
+    { "file": "MobileExplorer.dc.html", "x": 0, "y": 2020, "w": 390, "h": 844, "page": "system", "title": "Mobile — Explorer" },
+    { "file": "MobileDiscover.dc.html", "x": 470, "y": 2020, "w": 390, "h": 844, "page": "system", "title": "Mobile — Découvrir" },
+    { "file": "MobileRecordingDetail.dc.html", "x": 940, "y": 2020, "w": 390, "h": 844, "page": "system", "title": "Mobile — Recording detail" },
+    { "file": "MobileUpload.dc.html", "x": 1410, "y": 2020, "w": 390, "h": 844, "page": "system", "title": "Mobile — Ajouter" },
+    { "file": "MobileProfile.dc.html", "x": 1880, "y": 2020, "w": 390, "h": 844, "page": "system", "title": "Mobile — Profil" },
+
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 760, "h": 1200, "page": "directions", "title": "Brief" },
+    { "file": "DirectionA.dc.html", "x": 840, "y": 0, "w": 1440, "h": 980, "page": "directions", "title": "A — Naturalist Archive" },
+    { "file": "DirectionB.dc.html", "x": 2360, "y": 0, "w": 1440, "h": 980, "page": "directions", "title": "B — Field Journal" },
+    { "file": "DirectionC.dc.html", "x": 3880, "y": 0, "w": 1440, "h": 980, "page": "directions", "title": "C — Quiet Cartography (retenue)" }
+  ],
+  "launch": { "view": "canvas", "page": "system" }
+}

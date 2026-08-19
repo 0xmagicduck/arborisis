@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400;1,8..60,500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #FAFAF8; font-family: 'Public Sans', system-ui, sans-serif; }
+    a { color: #33513E; text-decoration: underline; }
+    .serif { font-family: 'Source Serif 4', serif; }
+    .label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #8D8A85; }
+  </style>
+</helmet>
+
+<div style="width:1600px; min-height:1900px; background:#FAFAF8; color:#201E1B; padding:56px 64px;">
+
+  <div style="border-bottom:1px solid rgba(32,30,27,0.14); padding-bottom:24px; margin-bottom:40px;">
+    <div class="label" style="margin-bottom:8px;">Système de design</div>
+    <h1 class="serif" style="font-style:italic; font-weight:400; font-size:32px; margin:0 0 8px 0;">Quiet Cartography</h1>
+    <div style="font-size:14px; color:#5C5A55; max-width:640px; line-height:1.6;">Direction retenue pour Arborisis. Chrome réduit au trait, une carte qui domine, une seule couleur d'accent. La typographie et l'espace portent la hiérarchie — jamais la couleur ou l'ombre.</div>
+  </div>
+
+  <!-- COLOR -->
+  <div style="display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:20px; margin-bottom:52px;">
+    <div style="grid-column: span 6;" class="label">Couleur</div>
+    <div>
+      <div style="height:88px; background:#FAFAF8; border:1px solid rgba(32,30,27,0.25);"></div>
+      <div style="font-size:12px; font-weight:500; margin-top:8px;">Paper</div>
+      <div style="font-size:11px; color:#8D8A85;">#FAFAF8</div>
+    </div>
+    <div>
+      <div style="height:88px; background:#201E1B;"></div>
+      <div style="font-size:12px; font-weight:500; margin-top:8px;">Ink</div>
+      <div style="font-size:11px; color:#8D8A85;">#201E1B</div>
+    </div>
+    <div>
+      <div style="height:88px; background:#8D8A85;"></div>
+      <div style="font-size:12px; font-weight:500; margin-top:8px;">Stone</div>
+      <div style="font-size:11px; color:#8D8A85;">#8D8A85 — texte secondaire</div>
+    </div>
+    <div>
+      <div style="height:88px; background:#33513E;"></div>
+      <div style="font-size:12px; font-weight:500; margin-top:8px;">Forest (accent unique)</div>
+      <div style="font-size:11px; color:#8D8A85;">#33513E — sélection, lecture</div>
+    </div>
+    <div>
+      <div style="height:88px; background:#8C6A4E;"></div>
+      <div style="font-size:12px; font-weight:500; margin-top:8px;">Earth (optionnel)</div>
+      <div style="font-size:11px; color:#8D8A85;">#8C6A4E — métadonnées techniques, rare</div>
+    </div>
+    <div>
+      <div style="height:88px; background:#FAFAF8; border:1px solid rgba(32,30,27,0.12); display:flex; align-items:center; justify-content:center;"><div style="font-size:10px; color:#8D8A85; text-align:center;">Ligne de séparation<br>rgba(32,30,27,.12)</div></div>
+      <div style="font-size:12px; font-weight:500; margin-top:8px;">Hairline</div>
+      <div style="font-size:11px; color:#8D8A85;">12% / 30% ink</div>
+    </div>
+  </div>
+
+  <!-- TEXT TINTS -->
+  <div style="margin-bottom:52px;">
+    <div class="label" style="margin-bottom:14px;">Teintes de texte — dérivées de l'encre</div>
+    <div style="display:flex; gap:32px; align-items:flex-end;">
+      <div><div style="font-size:15px; color:#131210;">Titre appuyé</div><div style="font-size:10.5px; color:#8D8A85; margin-top:4px;">#131210</div></div>
+      <div><div style="font-size:15px; color:#201E1B;">Texte principal</div><div style="font-size:10.5px; color:#8D8A85; margin-top:4px;">#201E1B — ink</div></div>
+      <div><div style="font-size:15px; color:#3A3733;">Citation / description</div><div style="font-size:10.5px; color:#8D8A85; margin-top:4px;">#3A3733</div></div>
+      <div><div style="font-size:15px; color:#5C5A55;">Texte secondaire</div><div style="font-size:10.5px; color:#8D8A85; margin-top:4px;">#5C5A55</div></div>
+      <div><div style="font-size:15px; color:#8D8A85;">Micro-label / stone</div><div style="font-size:10.5px; color:#8D8A85; margin-top:4px;">#8D8A85</div></div>
+      <div><div style="font-size:15px; color:#B8B5AF;">Tertiaire — durée, discret</div><div style="font-size:10.5px; color:#8D8A85; margin-top:4px;">#B8B5AF</div></div>
+    </div>
+  </div>
+
+  <!-- TYPE -->
+  <div style="margin-bottom:52px;">
+    <div class="label" style="margin-bottom:18px;">Typographie</div>
+    <div style="display:flex; gap:64px;">
+      <div style="flex:1;">
+        <div style="font-size:11px; color:#8D8A85; margin-bottom:6px;">Source Serif 4 · italic — titres, uniquement</div>
+        <div class="serif" style="font-style:italic; font-size:34px; margin-bottom:6px;">Forest after rainfall</div>
+        <div class="serif" style="font-style:italic; font-size:20px; color:#5C5A55;">Tidal creek at dawn</div>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:11px; color:#8D8A85; margin-bottom:6px;">Public Sans — interface, corps de texte</div>
+        <div style="font-size:15px; font-weight:500; margin-bottom:6px;">Recording title / nav actif</div>
+        <div style="font-size:13px; color:#5C5A55; margin-bottom:6px;">Corps de texte, descriptions, méta-données</div>
+        <div class="label">Micro-label · uppercase · tracked</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPACING -->
+  <div style="margin-bottom:52px;">
+    <div class="label" style="margin-bottom:18px;">Espacement — base 8px</div>
+    <div style="display:flex; align-items:flex-end; gap:18px;">
+      <div><div style="width:8px; height:8px; background:#201E1B;"></div><div style="font-size:10px; color:#8D8A85; margin-top:6px;">8</div></div>
+      <div><div style="width:16px; height:16px; background:#201E1B;"></div><div style="font-size:10px; color:#8D8A85; margin-top:6px;">16</div></div>
+      <div><div style="width:24px; height:24px; background:#201E1B;"></div><div style="font-size:10px; color:#8D8A85; margin-top:6px;">24</div></div>
+      <div><div style="width:40px; height:40px; background:#201E1B;"></div><div style="font-size:10px; color:#8D8A85; margin-top:6px;">40</div></div>
+      <div><div style="width:64px; height:64px; background:#201E1B;"></div><div style="font-size:10px; color:#8D8A85; margin-top:6px;">64</div></div>
+      <div style="font-size:12px; color:#5C5A55; margin-left:24px; max-width:340px; line-height:1.6;">Rayons de coins limités aux cercles (avatar, bouton lecture). Aucun radius sur cartes ou panneaux — des angles droits, des filets fins.</div>
+    </div>
+  </div>
+
+  <!-- COMPONENTS -->
+  <div style="margin-bottom:20px;">
+    <div class="label" style="margin-bottom:20px;">Composants</div>
+    <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:40px 48px;">
+
+      <div>
+        <div style="font-size:12px; font-weight:500; margin-bottom:12px;">Boutons</div>
+        <div style="display:flex; gap:12px; align-items:center; margin-bottom:10px;">
+          <div style="background:#201E1B; color:#FAFAF8; font-size:12px; font-weight:500; padding:10px 20px; letter-spacing:0.02em;">Publish</div>
+          <div style="border:1px solid #201E1B; color:#201E1B; font-size:12px; font-weight:500; padding:9px 20px;">Cancel</div>
+        </div>
+        <div style="font-size:11px; color:#8D8A85;">Aucun radius, aucune ombre. Une seule action pleine par écran.</div>
+      </div>
+
+      <div>
+        <div style="font-size:12px; font-weight:500; margin-bottom:12px;">Champ de saisie</div>
+        <div style="border-bottom:1px solid rgba(32,30,27,0.35); padding-bottom:8px; font-size:13px; color:#5C5A55; margin-bottom:10px;">Search recordings, places, tags…</div>
+        <div style="font-size:11px; color:#8D8A85;">Trait bas uniquement — jamais de champ encadré/rempli.</div>
+      </div>
+
+      <div>
+        <div style="font-size:12px; font-weight:500; margin-bottom:12px;">Tag / mot-clé</div>
+        <div style="font-size:12.5px; color:#5C5A55; margin-bottom:10px;">forest · rain · birds</div>
+        <div style="font-size:11px; color:#8D8A85;">Texte simple séparé par un point médian. Jamais de pilule colorée.</div>
+      </div>
+
+      <div>
+        <div style="font-size:12px; font-weight:500; margin-bottom:12px;">Lecture — deux tailles</div>
+        <div style="display:flex; gap:16px; align-items:center; margin-bottom:10px;">
+          <div style="width:44px; height:44px; border-radius:50%; border:1px solid #33513E; display:flex; align-items:center; justify-content:center;"><svg width="12" height="14" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#33513E"/></svg></div>
+          <div style="width:28px; height:28px; border-radius:50%; border:1px solid #201E1B; display:flex; align-items:center; justify-content:center;"><svg width="8" height="9" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#201E1B"/></svg></div>
+        </div>
+        <div style="font-size:11px; color:#8D8A85;">Cercle-contour, jamais rempli sauf sur mobile (cible tactile).</div>
+      </div>
+
+      <div>
+        <div style="font-size:12px; font-weight:500; margin-bottom:12px;">Marqueurs de carte</div>
+        <svg width="140" height="44" viewBox="0 0 140 44" style="margin-bottom:10px;">
+          <circle cx="20" cy="22" r="2.6" fill="#201E1B" />
+          <circle cx="70" cy="22" r="10" fill="none" stroke="#33513E" stroke-width="1" /><circle cx="70" cy="22" r="3.2" fill="#33513E" />
+          <circle cx="118" cy="22" r="12" fill="#FAFAF8" stroke="#201E1B" stroke-width="1" /><text x="118" y="26" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="10.5" fill="#201E1B">12</text>
+        </svg>
+        <div style="font-size:11px; color:#8D8A85;">Point discret · sélection accentuée · cluster numéroté.</div>
+      </div>
+
+      <div>
+        <div style="font-size:12px; font-weight:500; margin-bottom:12px;">Panneau / carte</div>
+        <div style="border:1px solid rgba(32,30,27,0.35); padding:12px 14px; font-size:12px; color:#5C5A55; margin-bottom:10px;">1px border · fond identique à la page</div>
+        <div style="font-size:11px; color:#8D8A85;">Aucun radius, aucune ombre — le panneau se distingue par le trait seul.</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

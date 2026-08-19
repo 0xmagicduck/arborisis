@@ -1,0 +1,28 @@
+# Caddyfile — Phase 0 : valider domaine → DNS → VM → TLS avant tout dev applicatif.
+# Voir plan/04-infra-infomaniak.md §4.3 et §4.4.
+#
+# {$ARBORISIS_DOMAIN} doit être défini dans l'environnement du conteneur Caddy
+# (ex: arborisis.com). HTTPS automatique via Let's Encrypt — aucune config manuelle.
+
+{$ARBORISIS_DOMAIN} {
+	root * /srv/hello-world
+	file_server
+	encode gzip
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# Une fois l'application prête (Phase 3), remplacer le bloc ci-dessus par un
+# reverse_proxy vers le service `web` (Next.js) et `api` (Fastify) :
+#
+# {$ARBORISIS_DOMAIN} {
+#     handle /api/* {
+#         reverse_proxy api:3000
+#     }
+#     handle {
+#         reverse_proxy web:3000
+#     }
+# }

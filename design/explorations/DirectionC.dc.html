@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Source+Serif+4:ital@1&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #FAFAF8; font-family: 'Public Sans', system-ui, sans-serif; }
+    a { color: #33513E; text-decoration: underline; }
+    a:hover { color: #1C2E23; }
+    .serif { font-family: 'Source Serif 4', serif; }
+  </style>
+</helmet>
+
+<div style="width:1440px; height:980px; background:#FAFAF8; color:#201E1B; position:relative; overflow:hidden;">
+
+  <div style="position:absolute; top:16px; right:24px; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#C7C4BE;">Direction C — Quiet Cartography</div>
+
+  <!-- header -->
+  <div style="padding:22px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(32,30,27,0.12);">
+    <div style="font-size:13px; letter-spacing:0.18em; font-weight:500;">ARBORISIS</div>
+    <div style="display:flex; align-items:center; gap:32px;">
+      <span style="font-size:12px; color:#201E1B; font-weight:500;">Explorer</span>
+      <span style="font-size:12px; color:#8D8A85;">Découvrir</span>
+      <span style="font-size:12px; color:#8D8A85;">Ajouter</span>
+      <span style="font-size:12px; color:#8D8A85;">Recherche</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:18px;">
+      <div class="serif" style="font-style:italic; font-size:13px; color:#8D8A85;">Listen to the places around us.</div>
+      <div style="width:26px; height:26px; border-radius:50%; border:1px solid #201E1B; display:flex; align-items:center; justify-content:center;">
+        <span style="font-size:10px;">B</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- map: near edge to edge -->
+  <div style="position:relative; height:740px; width:100%;">
+    <svg viewBox="0 0 1440 740" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+      <rect x="0" y="0" width="1440" height="740" fill="#FAFAF8" />
+      <path d="M-10,150 C140,60 300,25 440,85 C550,130 540,215 635,255 C745,300 730,200 865,190 C1000,180 1050,265 1015,340 C975,420 1065,460 1180,445 C1275,432 1345,478 1440,458 L1440,740 L-10,740 Z" fill="none" stroke="#201E1B" stroke-width="1" opacity="0.85" />
+      <path d="M-10,225 C145,140 295,110 435,165 C548,205 540,275 632,310 C740,350 728,265 862,255 C995,246 1042,320 1010,388 C972,458 1060,492 1173,478 C1266,467 1332,498 1440,480" fill="none" stroke="#201E1B" stroke-width="0.75" opacity="0.28" />
+      <path d="M-10,300 C150,225 298,198 438,248 C550,285 543,345 636,375 C742,410 730,335 865,326 C996,318 1040,382 1008,442 C972,505 1058,535 1170,522 C1262,512 1328,540 1440,524" fill="none" stroke="#201E1B" stroke-width="0.75" opacity="0.16" />
+      <path d="M-10,375 C155,308 300,285 442,330 C552,363 546,415 640,440 C744,468 732,404 868,396 C998,388 1040,442 1010,494 C976,548 1058,572 1168,562 C1258,553 1324,578 1440,564" fill="none" stroke="#201E1B" stroke-width="0.75" opacity="0.1" />
+
+      <!-- markers -->
+      <circle cx="264" cy="112" r="2.6" fill="#201E1B" />
+      <circle cx="500" cy="298" r="2.6" fill="#201E1B" />
+      <circle cx="768" cy="588" r="2.6" fill="#201E1B" />
+      <circle cx="1030" cy="222" r="2.6" fill="#201E1B" />
+      <!-- selected marker -->
+      <circle cx="660" cy="392" r="10" fill="none" stroke="#33513E" stroke-width="1" />
+      <circle cx="660" cy="392" r="3.2" fill="#33513E" />
+      <!-- cluster -->
+      <circle cx="900" cy="415" r="12" fill="#FAFAF8" stroke="#201E1B" stroke-width="1" opacity="0.85"/>
+      <text x="900" y="419" text-anchor="middle" font-family="'Public Sans', sans-serif" font-size="10.5" fill="#201E1B">12</text>
+    </svg>
+
+    <!-- selected recording panel -->
+    <div style="position:absolute; left:40px; bottom:36px; width:320px; background:#FAFAF8; border:1px solid rgba(32,30,27,0.35); padding:22px 24px;">
+      <div class="serif" style="font-style:italic; font-size:22px; color:#131210; margin-bottom:6px;">Forest after rainfall</div>
+      <div style="font-size:12px; color:#5C5A55; margin-bottom:1px;">Sonian Forest, Belgium</div>
+      <div style="font-size:12px; color:#8D8A85; margin-bottom:18px;">Recorded by Bastien</div>
+
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:32px; height:32px; border-radius:50%; border:1px solid #33513E; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="9" height="11" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#33513E"/></svg>
+        </div>
+        <svg width="170" height="20" viewBox="0 0 180 20">
+          <g fill="#201E1B" opacity="0.75">
+            <rect x="0" y="8" width="1.2" height="4"/><rect x="6" y="5" width="1.2" height="10"/><rect x="12" y="2" width="1.2" height="16"/><rect x="18" y="7" width="1.2" height="6"/><rect x="24" y="4" width="1.2" height="12"/><rect x="30" y="8" width="1.2" height="4"/><rect x="36" y="1" width="1.2" height="18"/><rect x="42" y="6" width="1.2" height="8"/><rect x="48" y="5" width="1.2" height="10"/><rect x="54" y="8" width="1.2" height="4"/><rect x="60" y="3" width="1.2" height="14"/><rect x="66" y="7" width="1.2" height="6"/><rect x="72" y="5" width="1.2" height="10"/><rect x="78" y="2" width="1.2" height="16"/><rect x="84" y="8" width="1.2" height="4"/><rect x="90" y="4" width="1.2" height="12"/><rect x="96" y="7" width="1.2" height="6"/><rect x="102" y="9" width="1.2" height="2"/><rect x="108" y="5" width="1.2" height="10"/><rect x="114" y="6" width="1.2" height="8"/><rect x="120" y="3" width="1.2" height="14"/><rect x="126" y="7" width="1.2" height="6"/><rect x="132" y="8" width="1.2" height="4"/><rect x="138" y="4" width="1.2" height="12"/><rect x="144" y="6" width="1.2" height="8"/><rect x="150" y="8" width="1.2" height="4"/><rect x="156" y="3" width="1.2" height="14"/><rect x="162" y="7" width="1.2" height="6"/><rect x="168" y="5" width="1.2" height="10"/>
+          </g>
+        </svg>
+        <span style="font-size:11px; color:#8D8A85; margin-left:auto;">6:42</span>
+      </div>
+    </div>
+
+    <!-- zoom controls -->
+    <div style="position:absolute; right:20px; bottom:20px; display:flex; flex-direction:column; border:1px solid rgba(32,30,27,0.3);">
+      <div style="width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid rgba(32,30,27,0.3); font-size:12px; color:#5C5A55;">+</div>
+      <div style="width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:12px; color:#5C5A55;">–</div>
+    </div>
+  </div>
+
+  <!-- editorial selection: single line list -->
+  <div style="position:absolute; bottom:0; left:0; right:0; height:96px; border-top:1px solid rgba(32,30,27,0.12); background:#FAFAF8; display:flex; align-items:center; padding:0 40px; gap:0;">
+    <span style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#8D8A85; margin-right:36px;">Selected</span>
+    <div style="display:flex; align-items:center; gap:0; flex:1;">
+      <div style="display:flex; align-items:baseline; gap:10px; padding-right:32px; border-right:1px solid rgba(32,30,27,0.14);">
+        <span style="font-size:13.5px; color:#201E1B;">Tidal creek at dawn</span>
+        <span style="font-size:11.5px; color:#8D8A85;">Wadden Sea, NL</span>
+        <span style="font-size:11px; color:#B8B5AF;">4:15</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:10px; padding:0 32px; border-right:1px solid rgba(32,30,27,0.14);">
+        <span style="font-size:13.5px; color:#201E1B;">Cicadas and wind</span>
+        <span style="font-size:11.5px; color:#8D8A85;">Basilicata, IT</span>
+        <span style="font-size:11px; color:#B8B5AF;">8:03</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:10px; padding:0 32px; border-right:1px solid rgba(32,30,27,0.14);">
+        <span style="font-size:13.5px; color:#201E1B;">Glacier meltwater</span>
+        <span style="font-size:11.5px; color:#8D8A85;">Vatnajökull, IS</span>
+        <span style="font-size:11px; color:#B8B5AF;">5:58</span>
+      </div>
+      <div style="display:flex; align-items:baseline; gap:10px; padding-left:32px;">
+        <span style="font-size:13.5px; color:#201E1B;">Harbour at low tide</span>
+        <span style="font-size:11.5px; color:#8D8A85;">Brest, France</span>
+        <span style="font-size:11px; color:#B8B5AF;">3:27</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

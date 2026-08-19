@@ -1,0 +1,32 @@
+#cloud-config
+# Installation minimale au premier boot — voir plan/04-infra-infomaniak.md §4.3.
+# Rien de plus manuel : Docker + Docker Compose, puis c'est docker-compose.yml
+# (infra/docker-compose.yml) qui prend le relai via le déploiement CI (09-open-source-devops.md).
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - ca-certificates
+  - curl
+  - ufw
+
+runcmd:
+  # Docker Engine (dépôt officiel)
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+  - >
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc]
+    https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
+    > /etc/apt/sources.list.d/docker.list
+  - apt-get update
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  - systemctl enable --now docker
+  # Firewall minimal — cohérent avec le security group Terraform (80/443 + 22)
+  - ufw allow OpenSSH
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+
+final_message: "Arborisis host ready after $UPTIME seconds — Docker installed."

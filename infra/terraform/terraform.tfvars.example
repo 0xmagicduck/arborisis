@@ -1,0 +1,6 @@
+# Copier en terraform.tfvars (gitignored) et compléter avant `terraform apply`.
+
+ssh_public_key   = "ssh-ed25519 AAAA... commentaire-cle-arborisis"
+ssh_allowed_cidr = "203.0.113.42/32" # remplacer par ton IP publique actuelle, ou une plage restreinte
+
+# os_cloud        = "PCP-RYAEXPT-dc3-a"  # ou dc4-a — décision en attente, voir plan/TASKS.md

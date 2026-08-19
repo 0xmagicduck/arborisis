@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&family=Source+Serif+4:ital@1&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #FAFAF8; font-family: 'Public Sans', system-ui, sans-serif; }
+    .serif { font-family: 'Source Serif 4', serif; }
+  </style>
+</helmet>
+
+<div style="width:390px; height:844px; background:#FAFAF8; color:#201E1B; position:relative; overflow:hidden;">
+
+  <!-- top bar -->
+  <div style="position:absolute; top:0; left:0; right:0; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; z-index:2;">
+    <div style="font-size:12px; letter-spacing:0.16em; font-weight:500; background:#FAFAF8; padding:6px 10px; border:1px solid rgba(32,30,27,0.2);">ARBORISIS</div>
+    <div style="width:30px; height:30px; border-radius:50%; border:1px solid #201E1B; background:#FAFAF8; display:flex; align-items:center; justify-content:center;"><span style="font-size:11px;">B</span></div>
+  </div>
+
+  <!-- full-bleed map -->
+  <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" style="width:100%; height:100%; display:block; position:absolute; inset:0;">
+    <rect x="0" y="0" width="390" height="844" fill="#FAFAF8" />
+    <path d="M-20,220 C60,120 160,80 260,150 C330,200 310,300 380,340 L410,380 L410,844 L-20,844 Z" fill="none" stroke="#201E1B" stroke-width="1" opacity="0.8" />
+    <path d="M-20,300 C65,210 165,175 265,235 C332,278 315,370 385,405" fill="none" stroke="#201E1B" stroke-width="0.75" opacity="0.28" />
+    <path d="M-20,390 C70,310 168,280 268,330 C334,368 320,445 390,478" fill="none" stroke="#201E1B" stroke-width="0.75" opacity="0.15" />
+    <circle cx="120" cy="330" r="2.4" fill="#201E1B" />
+    <circle cx="280" cy="470" r="2.4" fill="#201E1B" />
+    <circle cx="95" cy="520" r="2.4" fill="#201E1B" />
+    <circle cx="205" cy="405" r="9" fill="none" stroke="#33513E" stroke-width="1" />
+    <circle cx="205" cy="405" r="3" fill="#33513E" />
+    <circle cx="300" cy="270" r="11" fill="#FAFAF8" stroke="#201E1B" stroke-width="1" opacity="0.85"/>
+    <text x="300" y="274" text-anchor="middle" font-family="Public Sans, sans-serif" font-size="9.5" fill="#201E1B">8</text>
+  </svg>
+
+  <!-- zoom controls -->
+  <div style="position:absolute; right:16px; bottom:280px; display:flex; flex-direction:column; border:1px solid rgba(32,30,27,0.3); background:#FAFAF8;">
+    <div style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid rgba(32,30,27,0.3); font-size:15px;">+</div>
+    <div style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:15px;">–</div>
+  </div>
+
+  <!-- bottom sheet -->
+  <div style="position:absolute; left:0; right:0; bottom:0; background:#FAFAF8; border-top:1px solid rgba(32,30,27,0.3); border-radius:14px 14px 0 0; padding:12px 22px 28px 22px; box-shadow:0 -6px 18px rgba(32,30,27,0.06);">
+    <div style="width:34px; height:3px; background:rgba(32,30,27,0.25); border-radius:2px; margin:0 auto 20px auto;"></div>
+
+    <div class="serif" style="font-style:italic; font-size:19px; margin-bottom:4px;">Forest after rainfall</div>
+    <div style="font-size:12px; color:#5C5A55; margin-bottom:1px;">Sonian Forest, Belgium</div>
+    <div style="font-size:11.5px; color:#8D8A85; margin-bottom:18px;">Recorded by Bastien</div>
+
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div style="width:44px; height:44px; border-radius:50%; background:#33513E; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <svg width="12" height="14" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#FAFAF8"/></svg>
+      </div>
+      <svg width="100%" height="26" viewBox="0 0 180 26" style="flex:1;">
+        <g fill="#201E1B" opacity="0.75">
+          <rect x="0" y="10" width="1.6" height="6"/><rect x="6" y="6" width="1.6" height="14"/><rect x="12" y="3" width="1.6" height="20"/><rect x="18" y="9" width="1.6" height="8"/><rect x="24" y="5" width="1.6" height="16"/><rect x="30" y="10" width="1.6" height="6"/><rect x="36" y="2" width="1.6" height="22"/><rect x="42" y="8" width="1.6" height="10"/><rect x="48" y="6" width="1.6" height="14"/><rect x="54" y="10" width="1.6" height="6"/><rect x="60" y="4" width="1.6" height="18"/><rect x="66" y="9" width="1.6" height="8"/><rect x="72" y="7" width="1.6" height="12"/><rect x="78" y="3" width="1.6" height="20"/><rect x="84" y="10" width="1.6" height="6"/><rect x="90" y="5" width="1.6" height="16"/><rect x="96" y="8" width="1.6" height="10"/><rect x="102" y="11" width="1.6" height="4"/><rect x="108" y="6" width="1.6" height="14"/><rect x="114" y="9" width="1.6" height="8"/><rect x="120" y="4" width="1.6" height="18"/><rect x="126" y="8" width="1.6" height="10"/><rect x="132" y="10" width="1.6" height="6"/><rect x="138" y="5" width="1.6" height="16"/><rect x="144" y="9" width="1.6" height="8"/><rect x="150" y="3" width="1.6" height="20"/><rect x="156" y="8" width="1.6" height="10"/><rect x="162" y="6" width="1.6" height="14"/>
+        </g>
+      </svg>
+      <span style="font-size:11.5px; color:#8D8A85; flex-shrink:0;">6:42</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

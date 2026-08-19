@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #F6F2E9; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+    a { color: #2E4436; text-decoration: underline; }
+    a:hover { color: #1B2A21; }
+  </style>
+</helmet>
+<div style="width:760px; min-height:1200px; background:#F6F2E9; color:#241F1A; padding:64px 56px; display:flex; flex-direction:column; gap:36px;">
+
+  <div style="display:flex; flex-direction:column; gap:10px; border-bottom:1px solid rgba(36,31,26,0.16); padding-bottom:28px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#6B6459;">Note de cadrage — produit &amp; design</div>
+    <h1 style="font-family:'Newsreader', serif; font-weight:500; font-size:34px; line-height:1.25; margin:0; color:#1B1712;">Arborisis — repenser l'archive sonore</h1>
+    <div style="font-family:'Newsreader', serif; font-style:italic; font-size:16px; color:#4A443C; margin-top:4px;">Une archive sonore naturaliste, géographique, communautaire et contemporaine.</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#2E4436;">01 — Le problème</div>
+    <p style="margin:0; font-size:15px; line-height:1.65; color:#241F1A;">L'ancienne version tentait de tout montrer à la fois — navigation profonde, gamification, statistiques, options — et noyait l'intention première du produit : écouter le monde. La refonte part d'un seul besoin essentiel, celui d'un visiteur qui doit comprendre en un regard qu'il peut explorer une carte, écouter des lieux, et publier les siens.</p>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#2E4436;">02 — Principes UX</div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="display:flex; gap:14px; align-items:baseline;"><span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#8B8680; min-width:20px;">01</span><span style="font-size:14.5px; line-height:1.55;"><strong style="font-weight:600;">La carte est le produit.</strong> Tout le reste est secondaire à l'exploration géographique.</span></div>
+      <div style="display:flex; gap:14px; align-items:baseline;"><span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#8B8680; min-width:20px;">02</span><span style="font-size:14.5px; line-height:1.55;"><strong style="font-weight:600;">Un seul niveau de navigation.</strong> Cinq destinations, jamais de sous-menus.</span></div>
+      <div style="display:flex; gap:14px; align-items:baseline;"><span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#8B8680; min-width:20px;">03</span><span style="font-size:14.5px; line-height:1.55;"><strong style="font-weight:600;">Le silence visuel a de la valeur.</strong> Chaque écran respire ; rien n'est affiché « au cas où ».</span></div>
+      <div style="display:flex; gap:14px; align-items:baseline;"><span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#8B8680; min-width:20px;">04</span><span style="font-size:14.5px; line-height:1.55;"><strong style="font-weight:600;">Aucune métrique sociale.</strong> Pas de scores, de badges, de followers pour ce MVP.</span></div>
+      <div style="display:flex; gap:14px; align-items:baseline;"><span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#8B8680; min-width:20px;">05</span><span style="font-size:14.5px; line-height:1.55;"><strong style="font-weight:600;">Le son prime sur l'image.</strong> La photographie illustre, elle ne vend jamais.</span></div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#2E4436;">03 — Trois directions, un même écran</div>
+    <p style="margin:0 0 4px 0; font-size:13.5px; line-height:1.6; color:#4A443C;">Chaque direction montre le même écran « Explorer » : header, carte, fiche d'un enregistrement sélectionné, sélection éditoriale. Seul le langage visuel change.</p>
+
+    <div style="display:flex; flex-direction:column; gap:4px; border:1px solid rgba(36,31,26,0.18); padding:16px 18px;">
+      <div style="font-family:'Newsreader', serif; font-style:italic; font-size:16px; color:#1B1712;">A — Naturalist Archive</div>
+      <div style="font-size:13px; line-height:1.55; color:#4A443C;">Éditoriale et typographique. Registre de musée / archive : catalogue numéroté, mono + serif, cartographie gravée, aucune couleur superflue.</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px; border:1px solid rgba(36,31,26,0.18); padding:16px 18px;">
+      <div style="font-family:'Newsreader', serif; font-style:italic; font-size:16px; color:#1B1712;">B — Field Journal</div>
+      <div style="font-size:13px; line-height:1.55; color:#4A443C;">Tactile et documentaire. Registre de carnet de terrain : grain de papier, illustration au trait épinglée, tampon de lieu, accent terre.</div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:4px; border:1px solid rgba(36,31,26,0.18); padding:16px 18px;">
+      <div style="font-family:'Newsreader', serif; font-style:italic; font-size:16px; color:#1B1712;">C — Quiet Cartography</div>
+      <div style="font-size:13px; line-height:1.55; color:#4A443C;">Minimale et cartographique. La carte occupe presque tout l'écran, chrome réduit au trait, une seule couleur d'accent.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px; padding-top:20px; border-top:1px solid rgba(36,31,26,0.16); font-size:12.5px; line-height:1.6; color:#6B6459;">
+    Les trois artboards à droite sont des maquettes réelles, à l'échelle desktop, du même écran. Le système de design complet (Découvrir, fiche d'enregistrement, Ajouter, Profil, Recherche, mobile) sera construit une fois une direction choisie.
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

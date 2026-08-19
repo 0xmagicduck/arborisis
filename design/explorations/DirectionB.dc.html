@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400;1,8..60,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #F3ECDF; font-family: 'Archivo', system-ui, sans-serif; }
+    a { color: #2B4530; text-decoration: underline; }
+    a:hover { color: #17251A; }
+    .mono { font-family: 'IBM Plex Mono', monospace; }
+    .serif { font-family: 'Source Serif 4', serif; }
+  </style>
+</helmet>
+
+<div style="width:1440px; height:980px; background:#F3ECDF; color:#2A2019; position:relative; overflow:hidden;">
+
+  <div class="mono" style="position:absolute; top:16px; right:24px; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#B3A78F;">Direction B — Field Journal</div>
+
+  <!-- header -->
+  <div style="padding:28px 48px 0 48px; display:flex; flex-direction:column; gap:16px;">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div style="font-family:'Archivo', sans-serif; font-size:16px; letter-spacing:0.06em; font-weight:700;">ARBORISIS</div>
+      <div style="display:flex; align-items:center; gap:34px;">
+        <span style="display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; letter-spacing:0.02em;"><span style="width:5px; height:5px; border-radius:50%; background:#9C5A34; display:inline-block;"></span>Explorer</span>
+        <span style="font-size:12.5px; color:#6B5C48; font-weight:500;">Découvrir</span>
+        <span style="font-size:12.5px; color:#6B5C48; font-weight:500;">Ajouter</span>
+        <span style="font-size:12.5px; color:#6B5C48; font-weight:500;">Recherche</span>
+      </div>
+      <div style="width:30px; height:30px; border-radius:50%; background:#2B4530; display:flex; align-items:center; justify-content:center;">
+        <span style="font-size:11px; color:#F3ECDF; font-weight:600;">B</span>
+      </div>
+    </div>
+    <div style="display:flex; align-items:baseline; justify-content:space-between; border-bottom:1px solid rgba(42,32,25,0.15); padding-bottom:18px;">
+      <div class="serif" style="font-style:italic; font-size:20px; color:#2B4530;">Listen to the places around us.</div>
+      <div style="font-size:11px; color:#8A7A61; font-weight:500;">Field notes — August 2026</div>
+    </div>
+  </div>
+
+  <!-- map -->
+  <div style="margin:22px 48px 0 48px; position:relative; height:520px; border:1px solid rgba(42,32,25,0.35);">
+    <svg viewBox="0 0 1200 730" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+      <defs>
+        <pattern id="dotgrid" width="18" height="18" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="1" fill="#2A2019" opacity="0.10" />
+        </pattern>
+      </defs>
+      <rect x="0" y="0" width="1200" height="730" fill="#F3ECDF" />
+      <rect x="0" y="0" width="1200" height="730" fill="url(#dotgrid)" />
+      <path d="M-10,150 C110,70 240,40 360,90 C460,130 450,200 530,235 C620,275 610,190 725,180 C840,170 880,245 850,310 C815,380 890,415 985,400 C1065,385 1125,425 1210,405 L1210,730 L-10,730 Z" fill="#E7DBC1" stroke="#6E4A2C" stroke-width="1.4" />
+      <path d="M-10,210 C120,140 245,115 365,160 C460,195 452,255 535,285 C625,320 612,245 730,238 C845,230 885,295 855,350 C820,405 892,435 985,420 C1063,408 1122,440 1210,425" fill="none" stroke="#9C5A34" stroke-width="0.9" opacity="0.55" />
+      <path d="M-10,270 C125,205 248,182 368,222 C462,255 455,305 538,330 C628,360 615,295 733,288 C848,280 888,335 858,382 C825,425 895,450 985,438 C1062,428 1120,452 1210,440" fill="none" stroke="#9C5A34" stroke-width="0.9" opacity="0.4" />
+      <ellipse cx="1080" cy="95" rx="24" ry="12" fill="#E7DBC1" stroke="#6E4A2C" stroke-width="1.2" />
+      <ellipse cx="1138" cy="132" rx="14" ry="8" fill="#E7DBC1" stroke="#6E4A2C" stroke-width="1.2" />
+
+      <!-- pin-flag markers -->
+      <g stroke="#2B4530" stroke-width="1.4">
+        <line x1="216" y1="110" x2="216" y2="92" /><path d="M216,92 L232,98 L216,104 Z" fill="#2B4530" stroke="none"/>
+      </g>
+      <g stroke="#2B4530" stroke-width="1.4">
+        <line x1="408" y1="292" x2="408" y2="274" /><path d="M408,274 L424,280 L408,286 Z" fill="#2B4530" stroke="none"/>
+      </g>
+      <g stroke="#2B4530" stroke-width="1.4">
+        <line x1="624" y1="569" x2="624" y2="551" /><path d="M624,551 L640,557 L624,563 Z" fill="#2B4530" stroke="none"/>
+      </g>
+      <g stroke="#2B4530" stroke-width="1.4">
+        <line x1="840" y1="219" x2="840" y2="201" /><path d="M840,201 L856,207 L840,213 Z" fill="#2B4530" stroke="none"/>
+      </g>
+      <!-- selected marker: stamped ring -->
+      <circle cx="540" cy="380" r="9" fill="none" stroke="#9C5A34" stroke-width="2" transform="rotate(-4 540 380)" />
+      <line x1="540" y1="380" x2="540" y2="360" stroke="#2B4530" stroke-width="1.6" /><path d="M540,360 L558,367 L540,374 Z" fill="#2B4530"/>
+      <!-- cluster stamp -->
+      <g transform="rotate(-6 744 401)">
+        <circle cx="744" cy="401" r="15" fill="none" stroke="#9C5A34" stroke-width="1.6" />
+        <text x="744" y="406" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#9C5A34">12</text>
+      </g>
+    </svg>
+
+    <!-- pinned postcard -->
+    <div style="position:absolute; top:22px; right:26px; width:158px; transform:rotate(3deg);">
+      <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(-4deg); width:56px; height:18px; background:rgba(156,90,52,0.55);"></div>
+      <div style="background:#FBF7EE; border:1px solid rgba(42,32,25,0.3); padding:8px 8px 10px 8px; box-shadow:0 6px 14px rgba(42,32,25,0.16);">
+        <svg viewBox="0 0 140 88" width="100%" height="70">
+          <rect x="0" y="0" width="140" height="88" fill="#FBF7EE"/>
+          <path d="M0,64 L22,40 L40,56 L60,28 L82,52 L100,34 L140,60 L140,88 L0,88 Z" fill="none" stroke="#2B4530" stroke-width="1.3"/>
+          <line x1="0" y1="66" x2="140" y2="66" stroke="#9C5A34" stroke-width="1" opacity="0.6"/>
+          <circle cx="112" cy="18" r="9" fill="none" stroke="#9C5A34" stroke-width="1"/>
+        </svg>
+        <div class="mono" style="font-size:8.5px; color:#6B5C48; margin-top:4px; text-align:center;">Sonian Forest, Aug 16</div>
+      </div>
+    </div>
+
+    <!-- selected recording panel -->
+    <div style="position:absolute; left:24px; bottom:24px; width:350px; background:#FBF7EE; border:1.5px dashed rgba(42,32,25,0.45); padding:20px 22px;">
+      <div style="position:absolute; top:-6px; left:-6px; width:11px; height:11px; border-radius:50%; background:#9C5A34;"></div>
+      <div class="mono" style="font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; color:#8A7A61; margin-bottom:6px;">Now playing</div>
+      <div class="serif" style="font-style:italic; font-size:21px; color:#1E170F; margin-bottom:5px;">Forest after rainfall</div>
+      <div style="font-size:12px; color:#5A4C3B; margin-bottom:2px; font-weight:500;">Sonian Forest, Belgium</div>
+      <div style="font-size:12px; color:#8A7A61; margin-bottom:16px;">Recorded by Bastien</div>
+
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:36px; height:36px; border-radius:50%; background:#2B4530; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="11" height="13" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#F3ECDF"/></svg>
+        </div>
+        <svg width="170" height="30" viewBox="0 0 180 30">
+          <g fill="#6E4A2C">
+            <rect x="0" y="12" width="1.6" height="6" rx="0.8"/><rect x="5" y="8" width="1.6" height="14" rx="0.8"/><rect x="10" y="4" width="1.6" height="22" rx="0.8"/><rect x="15" y="10" width="1.6" height="10" rx="0.8"/><rect x="20" y="6" width="1.6" height="18" rx="0.8"/><rect x="25" y="11" width="1.6" height="8" rx="0.8"/><rect x="30" y="3" width="1.6" height="24" rx="0.8"/><rect x="35" y="9" width="1.6" height="12" rx="0.8"/><rect x="40" y="7" width="1.6" height="16" rx="0.8"/><rect x="45" y="12" width="1.6" height="6" rx="0.8"/><rect x="50" y="5" width="1.6" height="20" rx="0.8"/><rect x="55" y="10" width="1.6" height="10" rx="0.8"/><rect x="60" y="8" width="1.6" height="14" rx="0.8"/><rect x="65" y="4" width="1.6" height="22" rx="0.8"/><rect x="70" y="11" width="1.6" height="8" rx="0.8"/><rect x="75" y="6" width="1.6" height="18" rx="0.8"/><rect x="80" y="9" width="1.6" height="12" rx="0.8"/><rect x="85" y="13" width="1.6" height="4" rx="0.8"/><rect x="90" y="7" width="1.6" height="16" rx="0.8"/><rect x="95" y="10" width="1.6" height="10" rx="0.8"/><rect x="100" y="5" width="1.6" height="20" rx="0.8"/><rect x="105" y="9" width="1.6" height="12" rx="0.8"/><rect x="110" y="12" width="1.6" height="6" rx="0.8"/><rect x="115" y="6" width="1.6" height="18" rx="0.8"/><rect x="120" y="11" width="1.6" height="8" rx="0.8"/><rect x="125" y="4" width="1.6" height="22" rx="0.8"/><rect x="130" y="9" width="1.6" height="12" rx="0.8"/><rect x="135" y="7" width="1.6" height="16" rx="0.8"/><rect x="140" y="12" width="1.6" height="6" rx="0.8"/><rect x="145" y="5" width="1.6" height="20" rx="0.8"/><rect x="150" y="10" width="1.6" height="10" rx="0.8"/><rect x="155" y="8" width="1.6" height="14" rx="0.8"/><rect x="160" y="13" width="1.6" height="4" rx="0.8"/><rect x="165" y="9" width="1.6" height="12" rx="0.8"/><rect x="170" y="11" width="1.6" height="8" rx="0.8"/>
+          </g>
+        </svg>
+        <span class="mono" style="font-size:11px; color:#8A7A61; margin-left:auto;">6:42</span>
+      </div>
+    </div>
+
+    <div style="position:absolute; right:16px; bottom:16px; display:flex; flex-direction:column; border:1px solid rgba(42,32,25,0.4); background:#FBF7EE;">
+      <div style="width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid rgba(42,32,25,0.4); font-size:14px;">+</div>
+      <div style="width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:14px;">–</div>
+    </div>
+  </div>
+
+  <!-- editorial selection -->
+  <div style="margin:26px 48px 0 48px;">
+    <div style="font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:#8A7A61; font-weight:600; margin-bottom:14px;">From the field notebook</div>
+    <div style="display:flex; gap:28px;">
+
+      <div style="flex:1; display:flex; flex-direction:column; gap:10px; padding-top:14px; border-top:2px solid rgba(42,32,25,0.5);">
+        <svg viewBox="0 0 140 70" width="100%" height="64"><rect width="140" height="70" fill="#EAE0CB"/><path d="M0,50 L20,30 L38,44 L58,22 L80,42 L98,28 L140,48 L140,70 L0,70 Z" fill="none" stroke="#2B4530" stroke-width="1.2"/></svg>
+        <div class="serif" style="font-style:italic; font-size:15.5px; color:#1E170F;">Tidal creek at dawn</div>
+        <div style="font-size:11.5px; color:#5A4C3B; font-weight:500;">Wadden Sea, Netherlands</div>
+        <div style="font-size:10.5px; color:#8A7A61;">4:15 · rain · birds</div>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; gap:10px; padding-top:14px; border-top:2px solid rgba(42,32,25,0.5);">
+        <svg viewBox="0 0 140 70" width="100%" height="64"><rect width="140" height="70" fill="#EAE0CB"/><path d="M0,55 L30,25 L50,40 L75,15 L100,38 L120,26 L140,44 L140,70 L0,70 Z" fill="none" stroke="#2B4530" stroke-width="1.2"/></svg>
+        <div class="serif" style="font-style:italic; font-size:15.5px; color:#1E170F;">Cicadas and wind</div>
+        <div style="font-size:11.5px; color:#5A4C3B; font-weight:500;">Basilicata, Italy</div>
+        <div style="font-size:10.5px; color:#8A7A61;">8:03 · summer · insects</div>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; gap:10px; padding-top:14px; border-top:2px solid rgba(42,32,25,0.5);">
+        <svg viewBox="0 0 140 70" width="100%" height="64"><rect width="140" height="70" fill="#EAE0CB"/><path d="M0,48 L15,20 L34,38 L52,10 L70,36 L92,18 L110,32 L140,20 L140,70 L0,70 Z" fill="none" stroke="#2B4530" stroke-width="1.2"/></svg>
+        <div class="serif" style="font-style:italic; font-size:15.5px; color:#1E170F;">Glacier meltwater</div>
+        <div style="font-size:11.5px; color:#5A4C3B; font-weight:500;">Vatnajökull, Iceland</div>
+        <div style="font-size:10.5px; color:#8A7A61;">5:58 · ice · water</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

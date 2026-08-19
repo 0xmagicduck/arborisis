@@ -1,0 +1,23 @@
+# Phase 0 : seul Caddy tourne, pour valider domaine → DNS → VM → TLS.
+# Les services web/api/worker/postgres/redis/meilisearch seront ajoutés en
+# Phase 1-2 (voir plan/03-stack-technique.md §3.2 et plan/TASKS.md), une fois
+# le monorepo scaffoldé.
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      ARBORISIS_DOMAIN: ${ARBORISIS_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./hello-world:/srv/hello-world:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

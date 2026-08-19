@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #F6F2E9; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+    a { color: #2E4436; text-decoration: underline; }
+    a:hover { color: #1B2A21; }
+    .mono { font-family: 'IBM Plex Mono', monospace; }
+    .serif { font-family: 'Newsreader', serif; }
+  </style>
+</helmet>
+
+<div style="width:1440px; height:980px; background:#F6F2E9; color:#241F1A; position:relative; overflow:hidden;">
+
+  <!-- label -->
+  <div class="mono" style="position:absolute; top:16px; right:24px; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#B0A99C;">Direction A — Naturalist Archive</div>
+
+  <!-- header -->
+  <div style="padding:28px 48px 0 48px; display:flex; flex-direction:column; gap:16px;">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div class="mono" style="font-size:14px; letter-spacing:0.22em; font-weight:500;">ARBORISIS</div>
+      <div style="display:flex; align-items:center; gap:36px;">
+        <span class="mono" style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding-bottom:6px; border-bottom:1.5px solid #241F1A;">Explorer</span>
+        <span class="mono" style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#6B6459;">Découvrir</span>
+        <span class="mono" style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#6B6459;">Ajouter</span>
+        <span class="mono" style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#6B6459;">Recherche</span>
+      </div>
+      <div style="width:30px; height:30px; border-radius:50%; border:1px solid #241F1A; display:flex; align-items:center; justify-content:center;">
+        <span class="mono" style="font-size:11px;">B</span>
+      </div>
+    </div>
+    <div style="display:flex; align-items:baseline; justify-content:space-between; border-bottom:1px solid rgba(36,31,26,0.15); padding-bottom:18px;">
+      <div class="serif" style="font-style:italic; font-size:19px; color:#2E4436;">Listen to the places around us.</div>
+      <div class="mono" style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#8B8680;">Fig. 01 — Distribution map</div>
+    </div>
+  </div>
+
+  <!-- map -->
+  <div style="margin:22px 48px 0 48px; position:relative; height:520px; border:1px solid #241F1A;">
+    <svg viewBox="0 0 1200 730" preserveAspectRatio="none" style="width:100%; height:100%; display:block;">
+      <rect x="0" y="0" width="1200" height="730" fill="#F6F2E9" />
+      <path d="M-10,150 C110,70 240,40 360,90 C460,130 450,200 530,235 C620,275 610,190 725,180 C840,170 880,245 850,310 C815,380 890,415 985,400 C1065,385 1125,425 1210,405 L1210,730 L-10,730 Z" fill="#EDE6D5" stroke="#241F1A" stroke-width="1.2" />
+      <path d="M-10,210 C120,140 245,115 365,160 C460,195 452,255 535,285 C625,320 612,245 730,238 C845,230 885,295 855,350 C820,405 892,435 985,420 C1063,408 1122,440 1210,425" fill="none" stroke="#8B8680" stroke-width="0.75" opacity="0.7" />
+      <path d="M-10,270 C125,205 248,182 368,222 C462,255 455,305 538,330 C628,360 615,295 733,288 C848,280 888,335 858,382 C825,425 895,450 985,438 C1062,428 1120,452 1210,440" fill="none" stroke="#8B8680" stroke-width="0.75" opacity="0.5" />
+      <path d="M-10,330 C128,272 250,250 372,285 C465,312 458,352 540,372 C630,398 618,340 735,335 C850,328 890,372 860,412 C828,448 896,465 985,455 C1060,447 1118,462 1210,452" fill="none" stroke="#8B8680" stroke-width="0.75" opacity="0.35" />
+      <ellipse cx="1080" cy="95" rx="24" ry="12" fill="#EDE6D5" stroke="#241F1A" stroke-width="1" />
+      <ellipse cx="1138" cy="132" rx="14" ry="8" fill="#EDE6D5" stroke="#241F1A" stroke-width="1" />
+      <!-- markers -->
+      <circle cx="216" cy="110" r="4" fill="none" stroke="#241F1A" stroke-width="1.2" />
+      <circle cx="408" cy="292" r="4" fill="none" stroke="#241F1A" stroke-width="1.2" />
+      <circle cx="540" cy="380" r="5.5" fill="#2E4436" stroke="#2E4436" stroke-width="1" />
+      <circle cx="624" cy="569" r="4" fill="none" stroke="#241F1A" stroke-width="1.2" />
+      <circle cx="840" cy="219" r="4" fill="none" stroke="#241F1A" stroke-width="1.2" />
+      <circle cx="744" cy="401" r="13" fill="#F6F2E9" stroke="#241F1A" stroke-width="1.2" />
+      <text x="744" y="405" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#241F1A">12</text>
+    </svg>
+
+    <!-- selected recording panel -->
+    <div style="position:absolute; left:24px; bottom:24px; width:340px; background:#F6F2E9; border:1px solid #241F1A; padding:20px 22px;">
+      <div class="mono" style="font-size:9.5px; letter-spacing:0.12em; text-transform:uppercase; color:#8B8680; margin-bottom:6px;">No. 014 — Selected</div>
+      <div class="serif" style="font-style:italic; font-size:20px; color:#1B1712; margin-bottom:4px;">Forest after rainfall</div>
+      <div class="mono" style="font-size:10.5px; letter-spacing:0.04em; color:#4A443C; margin-bottom:2px;">Sonian Forest, Belgium</div>
+      <div class="mono" style="font-size:10.5px; letter-spacing:0.04em; color:#8B8680; margin-bottom:16px;">Recorded by Bastien</div>
+
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:34px; height:34px; border:1px solid #241F1A; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="10" height="12" viewBox="0 0 10 12"><path d="M0,0 L10,6 L0,12 Z" fill="#241F1A"/></svg>
+        </div>
+        <svg width="180" height="30" viewBox="0 0 180 30">
+          <g fill="#241F1A">
+            <rect x="0" y="12" width="1.5" height="6"/><rect x="5" y="8" width="1.5" height="14"/><rect x="10" y="4" width="1.5" height="22"/><rect x="15" y="10" width="1.5" height="10"/><rect x="20" y="6" width="1.5" height="18"/><rect x="25" y="11" width="1.5" height="8"/><rect x="30" y="3" width="1.5" height="24"/><rect x="35" y="9" width="1.5" height="12"/><rect x="40" y="7" width="1.5" height="16"/><rect x="45" y="12" width="1.5" height="6"/><rect x="50" y="5" width="1.5" height="20"/><rect x="55" y="10" width="1.5" height="10"/><rect x="60" y="8" width="1.5" height="14"/><rect x="65" y="4" width="1.5" height="22"/><rect x="70" y="11" width="1.5" height="8"/><rect x="75" y="6" width="1.5" height="18"/><rect x="80" y="9" width="1.5" height="12"/><rect x="85" y="13" width="1.5" height="4"/><rect x="90" y="7" width="1.5" height="16"/><rect x="95" y="10" width="1.5" height="10"/><rect x="100" y="5" width="1.5" height="20"/><rect x="105" y="9" width="1.5" height="12"/><rect x="110" y="12" width="1.5" height="6"/><rect x="115" y="6" width="1.5" height="18"/><rect x="120" y="11" width="1.5" height="8"/><rect x="125" y="4" width="1.5" height="22"/><rect x="130" y="9" width="1.5" height="12"/><rect x="135" y="7" width="1.5" height="16"/><rect x="140" y="12" width="1.5" height="6"/><rect x="145" y="5" width="1.5" height="20"/><rect x="150" y="10" width="1.5" height="10"/><rect x="155" y="8" width="1.5" height="14"/><rect x="160" y="13" width="1.5" height="4"/><rect x="165" y="9" width="1.5" height="12"/><rect x="170" y="11" width="1.5" height="8"/><rect x="175" y="7" width="1.5" height="16"/>
+          </g>
+        </svg>
+        <span class="mono" style="font-size:10.5px; color:#8B8680; margin-left:auto;">6:42</span>
+      </div>
+    </div>
+
+    <!-- map controls -->
+    <div style="position:absolute; right:16px; bottom:16px; display:flex; flex-direction:column; border:1px solid #241F1A;">
+      <div class="mono" style="width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid #241F1A; font-size:13px;">+</div>
+      <div class="mono" style="width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:13px;">–</div>
+    </div>
+  </div>
+
+  <!-- editorial selection -->
+  <div style="margin:26px 48px 0 48px; display:flex; flex-direction:column;">
+    <div class="mono" style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#8B8680; margin-bottom:10px;">Selected from the archive</div>
+
+    <div style="display:flex; flex-direction:column;">
+      <div style="display:flex; align-items:center; gap:20px; padding:12px 0; border-top:1px solid rgba(36,31,26,0.16);">
+        <span class="mono" style="font-size:10.5px; color:#8B8680; width:52px;">No. 013</span>
+        <span class="serif" style="font-style:italic; font-size:15px; width:220px;">Tidal creek at dawn</span>
+        <span class="mono" style="font-size:10.5px; color:#4A443C; width:190px;">Wadden Sea, Netherlands</span>
+        <svg width="90" height="16" viewBox="0 0 90 16" style="opacity:0.8;"><g fill="#241F1A"><rect x="0" y="6" width="1.2" height="4"/><rect x="4" y="3" width="1.2" height="10"/><rect x="8" y="5" width="1.2" height="6"/><rect x="12" y="1" width="1.2" height="14"/><rect x="16" y="6" width="1.2" height="4"/><rect x="20" y="4" width="1.2" height="8"/><rect x="24" y="2" width="1.2" height="12"/><rect x="28" y="6" width="1.2" height="4"/><rect x="32" y="4" width="1.2" height="8"/><rect x="36" y="1" width="1.2" height="14"/><rect x="40" y="5" width="1.2" height="6"/><rect x="44" y="6" width="1.2" height="4"/><rect x="48" y="3" width="1.2" height="10"/><rect x="52" y="2" width="1.2" height="12"/><rect x="56" y="6" width="1.2" height="4"/><rect x="60" y="4" width="1.2" height="8"/><rect x="64" y="1" width="1.2" height="14"/><rect x="68" y="5" width="1.2" height="6"/><rect x="72" y="6" width="1.2" height="4"/><rect x="76" y="3" width="1.2" height="10"/><rect x="80" y="2" width="1.2" height="12"/><rect x="84" y="6" width="1.2" height="4"/></g></svg>
+        <span class="mono" style="font-size:10px; color:#8B8680; margin-left:auto;">4:15</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:20px; padding:12px 0; border-top:1px solid rgba(36,31,26,0.16);">
+        <span class="mono" style="font-size:10.5px; color:#8B8680; width:52px;">No. 011</span>
+        <span class="serif" style="font-style:italic; font-size:15px; width:220px;">Cicadas and wind</span>
+        <span class="mono" style="font-size:10.5px; color:#4A443C; width:190px;">Basilicata, Italy</span>
+        <svg width="90" height="16" viewBox="0 0 90 16" style="opacity:0.8;"><g fill="#241F1A"><rect x="0" y="4" width="1.2" height="8"/><rect x="4" y="6" width="1.2" height="4"/><rect x="8" y="1" width="1.2" height="14"/><rect x="12" y="5" width="1.2" height="6"/><rect x="16" y="3" width="1.2" height="10"/><rect x="20" y="6" width="1.2" height="4"/><rect x="24" y="2" width="1.2" height="12"/><rect x="28" y="5" width="1.2" height="6"/><rect x="32" y="6" width="1.2" height="4"/><rect x="36" y="3" width="1.2" height="10"/><rect x="40" y="1" width="1.2" height="14"/><rect x="44" y="4" width="1.2" height="8"/><rect x="48" y="6" width="1.2" height="4"/><rect x="52" y="2" width="1.2" height="12"/><rect x="56" y="5" width="1.2" height="6"/><rect x="60" y="6" width="1.2" height="4"/><rect x="64" y="3" width="1.2" height="10"/><rect x="68" y="1" width="1.2" height="14"/><rect x="72" y="4" width="1.2" height="8"/><rect x="76" y="6" width="1.2" height="4"/><rect x="80" y="2" width="1.2" height="12"/><rect x="84" y="5" width="1.2" height="6"/></g></svg>
+        <span class="mono" style="font-size:10px; color:#8B8680; margin-left:auto;">8:03</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:20px; padding:12px 0; border-top:1px solid rgba(36,31,26,0.16); border-bottom:1px solid rgba(36,31,26,0.16);">
+        <span class="mono" style="font-size:10.5px; color:#8B8680; width:52px;">No. 009</span>
+        <span class="serif" style="font-style:italic; font-size:15px; width:220px;">Glacier meltwater</span>
+        <span class="mono" style="font-size:10.5px; color:#4A443C; width:190px;">Vatnajökull, Iceland</span>
+        <svg width="90" height="16" viewBox="0 0 90 16" style="opacity:0.8;"><g fill="#241F1A"><rect x="0" y="2" width="1.2" height="12"/><rect x="4" y="5" width="1.2" height="6"/><rect x="8" y="6" width="1.2" height="4"/><rect x="12" y="1" width="1.2" height="14"/><rect x="16" y="4" width="1.2" height="8"/><rect x="20" y="6" width="1.2" height="4"/><rect x="24" y="3" width="1.2" height="10"/><rect x="28" y="2" width="1.2" height="12"/><rect x="32" y="6" width="1.2" height="4"/><rect x="36" y="4" width="1.2" height="8"/><rect x="40" y="1" width="1.2" height="14"/><rect x="44" y="5" width="1.2" height="6"/><rect x="48" y="6" width="1.2" height="4"/><rect x="52" y="3" width="1.2" height="10"/><rect x="56" y="2" width="1.2" height="12"/><rect x="60" y="6" width="1.2" height="4"/><rect x="64" y="4" width="1.2" height="8"/><rect x="68" y="1" width="1.2" height="14"/><rect x="72" y="5" width="1.2" height="6"/><rect x="76" y="6" width="1.2" height="4"/><rect x="80" y="3" width="1.2" height="10"/><rect x="84" y="2" width="1.2" height="12"/></g></svg>
+        <span class="mono" style="font-size:10px; color:#8B8680; margin-left:auto;">5:58</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
