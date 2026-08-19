@@ -1,0 +1,112 @@
+.gitignore
+  h_5f6fb4778954a1 1-32
+CODE_OF_CONDUCT.md
+  h_5f6fb4778954a1 1-39
+CONTRIBUTING.md
+  h_5f6fb4778954a1 1-47
+LICENSE
+  h_5f6fb4778954a1 1-661
+README.md
+  h_5f6fb4778954a1 1-26
+SECURITY.md
+  h_5f6fb4778954a1 1-30
+design/README.md
+  h_5f6fb4778954a1 1-25
+design/explorations/DirectionA.dc.html
+  h_5f6fb4778954a1 1-133
+design/explorations/DirectionB.dc.html
+  h_5f6fb4778954a1 1-165
+design/explorations/DirectionC.dc.html
+  h_5f6fb4778954a1 1-127
+design/explorations/Main.dc.html
+  h_5f6fb4778954a1 1-75
+design/handoff/DEV-HANDOFF.md
+  h_5f6fb4778954a1 1-455
+design/system/DesignSystem.dc.html
+  h_5f6fb4778954a1 1-172
+design/system/Discover.dc.html
+  h_5f6fb4778954a1 1-122
+design/system/Explorer.dc.html
+  h_5f6fb4778954a1 1-118
+design/system/MobileDiscover.dc.html
+  h_5f6fb4778954a1 1-93
+design/system/MobileExplorer.dc.html
+  h_5f6fb4778954a1 1-79
+design/system/MobileProfile.dc.html
+  h_5f6fb4778954a1 1-104
+design/system/MobileRecordingDetail.dc.html
+  h_5f6fb4778954a1 1-72
+design/system/MobileUpload.dc.html
+  h_5f6fb4778954a1 1-72
+design/system/Profile.dc.html
+  h_5f6fb4778954a1 1-103
+design/system/RecordingDetail.dc.html
+  h_5f6fb4778954a1 1-103
+design/system/Search.dc.html
+  h_5f6fb4778954a1 1-78
+design/system/Upload1.dc.html
+  h_5f6fb4778954a1 1-80
+design/system/Upload2.dc.html
+  h_5f6fb4778954a1 1-98
+design/system/Upload3.dc.html
+  h_5f6fb4778954a1 1-92
+design/system/canvas.json
+  h_5f6fb4778954a1 1-28
+infra/caddy/Caddyfile
+  h_5f6fb4778954a1 1-28
+infra/docker-compose.yml
+  h_5f6fb4778954a1 1-23
+infra/hello-world/index.html
+  h_5f6fb4778954a1 1-29
+infra/terraform/README.md
+  h_5f6fb4778954a1 1-45
+infra/terraform/cloud-init.yaml
+  h_5f6fb4778954a1 1-32
+infra/terraform/main.tf
+  h_5f6fb4778954a1 1-120
+infra/terraform/outputs.tf
+  h_5f6fb4778954a1 1-16
+infra/terraform/terraform.tfvars.example
+  h_5f6fb4778954a1 1-6
+infra/terraform/variables.tf
+  h_5f6fb4778954a1 1-51
+infra/terraform/versions.tf
+  h_5f6fb4778954a1 1-22
+plan/01-vision-et-principes.md
+  h_5f6fb4778954a1 1-31
+plan/02-architecture-generale.md
+  h_5f6fb4778954a1 1-80
+plan/03-stack-technique.md
+  h_5f6fb4778954a1 1-47
+plan/04-infra-infomaniak.md
+  h_5f6fb4778954a1 1-57
+plan/05-stockage-audio-internet-archive.md
+  h_5f6fb4778954a1 1-96
+plan/06-authentification-sans-mot-de-passe.md
+  h_5f6fb4778954a1 1-78
+plan/07-carte-open-source.md
+  h_5f6fb4778954a1 1-60
+plan/08-donnees-et-recherche.md
+  h_5f6fb4778954a1 1-59
+plan/09-open-source-devops.md
+  h_5f6fb4778954a1 1-54
+plan/10-securite-confidentialite-conformite.md
+  h_5f6fb4778954a1 1-51
+plan/11-roadmap.md
+  h_5f6fb4778954a1 1-55
+plan/README.md
+  h_5f6fb4778954a1 1-47
+plan/TASKS.md
+  h_5f6fb4778954a1 1-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "837089700dcb232eb4db78865d44314acc217598",
+  "prompts": {},
+  "humans": {
+    "h_5f6fb4778954a1": {
+      "author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
