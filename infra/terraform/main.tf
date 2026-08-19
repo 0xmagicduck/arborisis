@@ -102,19 +102,36 @@ resource "openstack_compute_instance_v2" "app" {
   depends_on = [openstack_networking_router_interface_v2.app]
 }
 
+# Lookup du port réel de l'instance via data source plutôt que l'attribut
+# calculé `openstack_compute_instance_v2.app.network[0].port` : ce dernier
+# s'est révélé instable après le premier boot sur ce provider et a fait
+# perdre l'association de l'IP flottante juste après le déploiement initial
+# (constaté et corrigé manuellement le 2026-08-19). Le data source relit
+# l'état réel côté Neutron à chaque plan/apply, donc l'association se
+# rétablit d'elle-même si jamais elle se perd à nouveau.
+data "openstack_networking_port_v2" "app" {
+  device_id = openstack_compute_instance_v2.app.id
+}
+
 resource "openstack_networking_floatingip_v2" "app" {
   pool = data.openstack_networking_network_v2.external.name
 }
 
-resource "openstack_compute_floatingip_associate_v2" "app" {
+resource "openstack_networking_floatingip_associate_v2" "app" {
   floating_ip = openstack_networking_floatingip_v2.app.address
-  instance_id = openstack_compute_instance_v2.app.id
+  port_id     = data.openstack_networking_port_v2.app.id
 }
 
 # --- Object Storage ------------------------------------------------------------
 # Swift natif (compatible API S3 via les credentials EC2 Infomaniak — à générer
 # séparément avec `openstack ec2 credentials create` le moment venu).
+# container_read = "" (privé) : Infomaniak active par défaut une ACL de lecture
+# publique sur les nouveaux containers, gardée explicite ici pour éviter toute
+# dérive silencieuse. Les usages qui ont besoin de lecture publique (tuiles
+# PMTiles, proxy audio — voir plan/07 et plan/05) auront leur propre container
+# dédié en Phase 2/4, pas celui-ci qui sert aussi de stockage de backups.
 
 resource "openstack_objectstorage_container_v1" "app" {
-  name = var.object_storage_container_name
+  name           = var.object_storage_container_name
+  container_read = ""
 }
