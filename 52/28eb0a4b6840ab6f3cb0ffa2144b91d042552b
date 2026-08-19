@@ -1,0 +1,19 @@
+.github/workflows/ci.yml
+  s_1d70001f2e8b0a::t_161f0f685d313b 50-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5228eb0a4b6840ab6f3cb0ffa2144b91d042552b",
+  "prompts": {},
+  "sessions": {
+    "s_1d70001f2e8b0a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dee1f282-320a-4c99-a8cf-e2af87c1ec6d",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
