@@ -1,0 +1,51 @@
+/*
+ * Design tokens "Quiet Cartography" — portage direct de
+ * design/handoff/DEV-HANDOFF.md §1. Ne pas ajouter de couleur, de radius ou
+ * d'ombre ici sans validation design (système volontairement fermé).
+ */
+
+:root {
+  /* --- Couleur : surfaces --- */
+  --color-paper: #fafaf8; /* fond de page, unique fond de toute l'app */
+
+  /* --- Couleur : encre (hiérarchie de texte) --- */
+  --color-ink-strong: #131210; /* titres appuyés */
+  --color-ink: #201e1b; /* texte principal, icônes, bordures actives */
+  --color-ink-quote: #3a3733; /* citations / descriptions en italique */
+  --color-ink-secondary: #5c5a55; /* texte secondaire (lieu, méta) */
+  --color-stone: #8d8a85; /* micro-labels, texte tertiaire, nav inactive */
+  --color-ink-faint: #b8b5af; /* durées, texte le plus discret */
+
+  /* --- Couleur : accent (un seul, parcimonieux) --- */
+  --color-accent: #33513e; /* forêt — sélection carte, bouton lecture, radio actif */
+
+  /* --- Couleur : optionnel, rare --- */
+  --color-earth: #8c6a4e; /* réservé, non utilisé dans le MVP actuel */
+
+  /* --- Lignes : dérivées de l'encre par opacité --- */
+  --line-hairline: rgba(32, 30, 27, 0.12);
+  --line-medium: rgba(32, 30, 27, 0.18);
+  --line-strong: rgba(32, 30, 27, 0.3);
+  --line-strongest: rgba(32, 30, 27, 0.35);
+
+  /* --- Typographie --- */
+  --font-sans: "Public Sans", system-ui, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, serif;
+
+  /* --- Espacement (base 8px) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+  --space-9: 64px;
+
+  /* --- Radius & ombre : seules exceptions autorisées du système --- */
+  --radius-none: 0;
+  --radius-circle: 50%; /* avatars, boutons de lecture — seul usage sur desktop */
+  --radius-sheet: 14px; /* coins hauts de la bottom sheet mobile UNIQUEMENT */
+  --shadow-sheet: 0 -6px 18px rgba(32, 30, 27, 0.06); /* SEULE ombre autorisée */
+}

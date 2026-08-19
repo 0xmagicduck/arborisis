@@ -1,0 +1,12 @@
+{
+  "name": "@arborisis/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Variables CSS du design system 'Quiet Cartography' — portage direct de design/handoff/DEV-HANDOFF.md §1.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    "./css": "./src/tokens.css"
+  },
+  "files": ["src"]
+}

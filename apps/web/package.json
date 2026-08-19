@@ -1,0 +1,30 @@
+{
+  "name": "@arborisis/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Frontend Next.js — voir plan/03-stack-technique.md et design/handoff/DEV-HANDOFF.md.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@arborisis/design-tokens": "workspace:*",
+    "@arborisis/shared-types": "workspace:*",
+    "@simplewebauthn/browser": "^11.0.0",
+    "next": "^15.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint-config-next": "^15.0.3",
+    "typescript": "^5.6.3"
+  }
+}

@@ -9,7 +9,7 @@ Cartographie et archivage sonore ouvert — un commun numérique pour les enregi
 
 ## Statut
 
-🚧 Phase 0 (bootstrap infra) — voir [plan/TASKS.md](plan/TASKS.md) pour le détail des tâches en cours.
+🚧 Phase 1 (socle technique) — voir [plan/TASKS.md](plan/TASKS.md) pour le détail des tâches en cours. L'intégration Internet Archive est **reportée** après le lancement (seuil de 50 items déjà publiés exigé par IA, hors de portée avant d'avoir des utilisateurs réels) — voir [plan/05-stockage-audio-internet-archive.md §5.10](plan/05-stockage-audio-internet-archive.md#510-mode-intérimaire--repli-sur-object-storage-infomaniak-pas-dinternet-archive-au-démarrage).
 
 ## Licence
 

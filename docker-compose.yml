@@ -1,0 +1,54 @@
+# Dépendances de développement local uniquement (PostgreSQL/PostGIS, Redis,
+# Meilisearch) — voir plan/09-open-source-devops.md §9.5 ("comment lancer le
+# projet en local ... sans dépendre d'un vrai compte Internet Archive en dev").
+#
+# `infra/docker-compose.yml` est un fichier différent : c'est celui qui tourne
+# en production sur la VM Infomaniak (Caddy, voir plan/04-infra-infomaniak.md).
+#
+# apps/web, apps/api, apps/worker tournent en dehors de Docker en dev
+# (`pnpm dev` à la racine, via Turborepo) — pas encore conteneurisés ici, voir
+# plan/TASKS.md Phase 1.
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arborisis
+      POSTGRES_PASSWORD: arborisis
+      POSTGRES_DB: arborisis
+    ports:
+      - "5432:5432"
+    volumes:
+      - arborisis_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arborisis"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.10
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: dev-only-master-key
+      MEILI_NO_ANALYTICS: "true"
+    ports:
+      - "7700:7700"
+    volumes:
+      - arborisis_meili_data:/meili_data
+
+volumes:
+  arborisis_postgres_data:
+  arborisis_meili_data:
