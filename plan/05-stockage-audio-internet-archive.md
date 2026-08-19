@@ -92,15 +92,18 @@ recordings
 ├── license: 'CC0' | 'CC-BY' | 'CC-BY-SA' | 'CC-BY-NC'
 ├── ia_identifier: string | null      -- null tant que le mode intérimaire (§5.10) est actif
 ├── ia_item_url: string | null        -- "Original archived externally" ; lien masqué en UI si null
-├── original_url: string              -- Object Storage, préfixe originals/ (copie pérenne en mode intérimaire)
-├── streaming_url: string             -- proxy Object Storage
+├── original_key: string | null       -- CLÉ Object Storage (pas une URL), préfixe originals/
+├── proxy_key: string | null          -- CLÉ Object Storage, préfixe proxy/
 └── waveform_peaks: number[]
 ```
 
+**`original_key`/`proxy_key` stockent des clés, pas des URLs.** Le container Object Storage est privé (Terraform, `container_read = ""`) : l'API recalcule une URL de lecture pré-signée (`presignGetUrl`, TTL 1h) à chaque réponse plutôt que de persister une URL qui expirerait ou fuiterait en cas de container un jour public. Le contrat API public (`originalUrl`/`streamingUrl` dans `@arborisis/shared-types`) reste inchangé — seule la représentation interne en base a changé de nom (implémenté Phase 2, voir migration `0001_rename_recording_storage_keys.sql`).
+
 ## 5.9 À trancher
 
-- Format de la copie de lecture rapide (Opus vs MP3 128kbps) — Opus est plus efficace mais MP3 a une compatibilité navigateur légèrement plus universelle sur les très vieux appareils ; recommandation : Opus avec fallback MP3 si besoin réel constaté.
+- Format de la copie de lecture rapide (Opus vs MP3 128kbps) — Opus est plus efficace mais MP3 a une compatibilité navigateur légèrement plus universelle sur les très vieux appareils ; recommandation : Opus avec fallback MP3 si besoin réel constaté. **Tranché en Phase 2 : Opus**, voir `apps/worker/src/lib/audio.ts`.
 - Faut-il purger le staging Object Storage après publication une fois IA actif (le fichier original vivra alors aussi sur IA) ? Recommandation : oui, purge à J+7 pour limiter les coûts de stockage. **Non applicable tant que le mode intérimaire (§5.10) est actif** : Object Storage est alors la seule copie durable, donc jamais purgée.
+- **Nettoyage du staging après échec définitif d'un job** (constaté en Phase 2) : si `publish-recording` échoue sur les 5 tentatives (fichier invalide, etc.), le fichier `staging/{uploadId}/...` n'est jamais supprimé — seul le chemin de succès purge le staging (voir `apps/worker/src/jobs/publish-recording.ts`). Sans conséquence fonctionnelle (le job passe bien en `status = 'failed'`, voir §5.6) mais laisse des objets orphelins qui coûtent du stockage sur la durée. Pas de tâche de nettoyage périodique du préfixe `staging/` pour l'instant — à ajouter en Phase 5 (durcissement) une fois un volume réel observé.
 
 ## 5.10 Mode intérimaire — repli sur Object Storage Infomaniak (pas d'Internet Archive au démarrage)
 
@@ -122,3 +125,11 @@ Ce mode ne change **rien** au schéma de données ni à l'API : `ia_identifier`/
 **Sortie du mode intérimaire** : une fois qu'Arborisis a organiquement accumulé assez d'enregistrements publiés (viser 50+, cohérent avec le seuil constaté), relancer la démarche §5.5 (demande de collection dédiée ou, à défaut, push dans une collection générique existante type `opensource_audio`), puis activer `ARCHIVE_TO_IA=true` et lancer un job de rattrapage qui pousse vers IA l'historique déjà publié.
 
 **Stockage sous-jacent — Object Storage vs Block Storage Infomaniak** : Infomaniak Public Cloud propose deux types de stockage distincts (voir [04.1](04-infra-infomaniak.md#41-pourquoi-infomaniak)). Le choix retenu ici est l'**Object Storage** (compatible API S3, déjà provisionné par Terraform, accessible directement par l'API/le worker sans dépendre de la VM) et non un volume Block Storage attaché à la VM (qui imposerait un point de montage unique, un système de fichiers à gérer, et ne serait pas nativement accessible en HTTP pour la copie de lecture). Un volume Block Storage reste pertinent en complément, en tant que **cible de sauvegarde secondaire** (snapshots) plutôt que comme stockage primaire des fichiers audio — décision cohérente avec [04.5](04-infra-infomaniak.md#45-sauvegardes).
+
+### 5.10.1 Credentials S3-compat (EC2) et région — vérifié en conditions réelles (Phase 2)
+
+L'Object Storage Infomaniak (container `arborisis-storage`, projet OpenStack `PCP-RYAEXPT`) n'expose pas de clé S3 par défaut : elle se génère via `openstack ec2 credentials create` (voir [04.1](04-infra-infomaniak.md#41-pourquoi-infomaniak)), une fois, à conserver comme n'importe quel secret (jamais commitée — voir `.env.example` pour les noms de variables `OBJECT_STORAGE_*`).
+
+**Piège réel rencontré et corrigé** : la passerelle S3-compat d'Infomaniak (`https://s3.pub1.infomaniak.cloud` pour dc3-a) rejette toute région SigV4 différente de `"us-east-1"` avec `AuthorizationHeaderMalformed`, y compris la région OpenStack réelle (`dc3-a`) qui semblait pourtant aller de soi. La région n'a ici aucun rôle de routage — c'est `endpoint` qui détermine la région physique — donc `OBJECT_STORAGE_REGION=us-east-1` est la valeur correcte à la fois en dev (MinIO, qui l'accepte aussi sans broncher) et en prod. Documenté dans `packages/storage/src/config.ts` (commentaire sur `StorageConfig.region`).
+
+Testé bout en bout (put/head/URL pré-signée GET/delete) directement contre le container réel avec `@arborisis/storage` — voir journal dans [TASKS.md](TASKS.md).

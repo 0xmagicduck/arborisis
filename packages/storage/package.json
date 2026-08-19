@@ -1,0 +1,32 @@
+{
+  "name": "@arborisis/storage",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Client Object Storage S3-compatible (Infomaniak Swift en prod, MinIO en dev) — voir plan/05-stockage-audio-internet-archive.md.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.687.0",
+    "@aws-sdk/lib-storage": "^3.687.0",
+    "@aws-sdk/s3-request-presigner": "^3.687.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}

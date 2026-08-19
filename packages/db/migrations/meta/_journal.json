@@ -8,6 +8,13 @@
       "when": 1787162998559,
       "tag": "0000_absent_molecule_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787163100000,
+      "tag": "0001_rename_recording_storage_keys",
+      "breakpoints": true
     }
   ]
 }

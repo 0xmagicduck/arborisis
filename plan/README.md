@@ -26,6 +26,8 @@ Ces contraintes ne sont pas que techniques : elles découlent directement de l'e
 | [09-open-source-devops.md](09-open-source-devops.md) | Structure du repo, licence, CI/CD, gouvernance |
 | [10-securite-confidentialite-conformite.md](10-securite-confidentialite-conformite.md) | Menaces, minimisation des données, RGPD/nLPD, modération |
 | [11-roadmap.md](11-roadmap.md) | Phasage du développement, du bootstrap au lancement public |
+| [TASKS.md](TASKS.md) | Suivi des tâches par phase + journal de session chronologique |
+| [MEMORY.md](MEMORY.md) | Pièges déjà rencontrés, organisés par thème — à consulter avant de retoucher une zone concernée |
 
 ## Décisions structurantes (résumé)
 
