@@ -7,6 +7,7 @@ node_modules/
 dist/
 build/
 .turbo/
+*.tsbuildinfo
 
 # Env & secrets — jamais commités
 .env

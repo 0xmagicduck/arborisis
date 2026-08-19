@@ -19,8 +19,9 @@ recordings
 ├── tags: text[]
 ├── license: text                   -- CC0 | CC-BY | CC-BY-SA | CC-BY-NC
 ├── status: text                    -- draft | processing | published | failed
+├── original_url: text              -- Object Storage, copie pérenne en mode intérimaire (voir 05.10)
 ├── streaming_url: text
-├── ia_identifier: text | null
+├── ia_identifier: text | null       -- null tant qu'Internet Archive n'est pas actif (voir 05.10)
 ├── ia_item_url: text | null
 ├── waveform_peaks: jsonb
 ├── equipment: text | null

@@ -2,18 +2,27 @@
 
 Merci de l'intérêt porté à ce projet ! Arborisis est open source dès le premier commit — voir [plan/01-vision-et-principes.md](plan/01-vision-et-principes.md) pour l'esprit du projet et [plan/11-roadmap.md](plan/11-roadmap.md) / [plan/TASKS.md](plan/TASKS.md) pour l'état d'avancement.
 
-> Le projet est encore en phase de bootstrap (Phase 0 de la roadmap). L'architecture ci-dessous décrit la cible ; certaines parties ne sont pas encore scaffoldées.
+> Le projet est en Phase 1 (socle technique) de la roadmap. Les écrans produit (Explorer, Découvrir…) arrivent en Phase 3 — voir [plan/TASKS.md](plan/TASKS.md).
 
 ## Lancer le projet en local
 
-*(à compléter au fur et à mesure du scaffold — Phase 1 de la roadmap)*
+Aucun compte Internet Archive nécessaire en développement : l'intégration IA est reportée après le lancement (voir [plan/05-stockage-audio-internet-archive.md §5.10](plan/05-stockage-audio-internet-archive.md#510-mode-intérimaire--repli-sur-object-storage-infomaniak-pas-dinternet-archive-au-démarrage)), tout le stockage audio repose sur l'Object Storage Infomaniak (ou un stub local en Phase 2).
 
-Objectif visé : `docker compose up` avec des services mockés/légers pour ne pas dépendre d'un vrai compte Internet Archive en développement (voir [plan/09-open-source-devops.md §9.5](plan/09-open-source-devops.md#95-gouvernance-de-contribution)).
-
-Prérequis prévus :
+Prérequis :
 - Node.js 20 LTS
-- pnpm
-- Docker + Docker Compose
+- pnpm (`corepack enable` suffit, la version est épinglée dans `package.json`)
+- Docker + Docker Compose (pour PostgreSQL/PostGIS, Redis, Meilisearch)
+
+```bash
+cp .env.example .env
+docker compose up -d          # postgres, redis, meilisearch — voir docker-compose.yml
+pnpm install
+pnpm db:generate               # génère les migrations Drizzle si le schéma a changé
+pnpm db:migrate                # applique le schéma (packages/db)
+pnpm dev                       # web (:3000), api (:4000), worker — via Turborepo
+```
+
+`pnpm lint` / `pnpm typecheck` / `pnpm test` / `pnpm build` tournent sur tout le monorepo (voir `turbo.json`), c'est ce que la CI exécute (`.github/workflows/ci.yml`).
 
 ## Organisation du code
 

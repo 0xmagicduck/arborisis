@@ -20,7 +20,7 @@
 
 - [ ] Upload direct vers Object Storage (URL pré-signées).
 - [ ] Worker : validation ffprobe, transcodage ffmpeg, génération waveform peaks.
-- [ ] Intégration Internet Archive (push IAS3, polling de statut, gestion d'échec/retry) — voir [05](05-stockage-audio-internet-archive.md).
+- [ ] ~~Intégration Internet Archive (push IAS3, polling de statut, gestion d'échec/retry)~~ **reportée** : IA exige ≈50 items déjà publiés avant d'examiner une collection dédiée, seuil inatteignable avant lancement — voir [05.10](05-stockage-audio-internet-archive.md#510-mode-intérimaire--repli-sur-object-storage-infomaniak-pas-dinternet-archive-au-démarrage). En attendant, tout l'audio (original + proxy) reste sur Object Storage Infomaniak, derrière un flag `ARCHIVE_TO_IA=false`. À réactiver une fois le seuil atteint organiquement.
 - [ ] État `processing` visible côté utilisateur.
 
 ## Phase 3 — Écrans du MVP (frontend)
