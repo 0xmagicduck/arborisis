@@ -103,6 +103,7 @@ services:
     environment:
       DATABASE_URL: postgres://arborisis:${POSTGRES_PASSWORD}@postgres:5432/arborisis
       REDIS_URL: redis://redis:6379
+      MEILI_URL: http://meilisearch:7700
     depends_on:
       postgres:
         condition: service_healthy
