@@ -66,7 +66,19 @@
 		# web workers via blob:), polices auto-hébergées (next/font, pas de CDN),
 		# API même origine, tuiles PMTiles/audio proxy sur l'Object Storage
 		# Infomaniak.
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.pub1.infomaniak.cloud; media-src 'self' https://*.pub1.infomaniak.cloud; connect-src 'self' https://*.pub1.infomaniak.cloud; worker-src 'self' blob:; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+		#
+		# script-src 'unsafe-inline' : le Caddyfile prévoyait initialement
+		# `script-src 'self'` seul (non vérifié en conditions réelles avant la
+		# bascule Phase 6, voir la note retirée ci-dessus) — **page blanche en
+		# production** au premier test réel : Next.js App Router injecte des
+		# `<script>` inline pour le payload de streaming/hydratation RSC à
+		# chaque page, bloqués sans `'unsafe-inline'` ou un nonce par requête.
+		# Corrigé en urgence avec `'unsafe-inline'` (affaiblit la CSP contre
+		# l'injection de script, mais reste `default-src 'self'` pour tout le
+		# reste). À remplacer par une CSP à base de nonce par requête
+		# (middleware Next.js + en-tête généré dynamiquement plutôt que statique
+		# dans ce Caddyfile) — non fait ici, voir plan/MEMORY.md.
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.pub1.infomaniak.cloud; media-src 'self' https://*.pub1.infomaniak.cloud; connect-src 'self' https://*.pub1.infomaniak.cloud; worker-src 'self' blob:; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
 		-Server
 	}
 }
