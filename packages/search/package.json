@@ -1,0 +1,27 @@
+{
+  "name": "@arborisis/search",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Client Meilisearch partagé entre apps/api (recherche) et apps/worker (indexation à la publication) — voir plan/08-donnees-et-recherche.md §8.3.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "meilisearch": "^0.48.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

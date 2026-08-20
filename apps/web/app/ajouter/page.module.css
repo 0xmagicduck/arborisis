@@ -104,6 +104,48 @@
   gap: 28px;
 }
 
+.locationField {
+  position: relative;
+}
+
+/* Dropdown d'autocomplete Photon (Phase 4) — mêmes tokens que le reste du
+   formulaire (pas de couleur/ombre en dehors du système), positionné juste
+   sous le champ. */
+.locationSuggestions {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  background: var(--color-paper);
+  border: 1px solid var(--line-strong);
+  list-style: none;
+  padding: 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.locationSuggestionButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-ink);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line-hairline);
+  cursor: pointer;
+}
+.locationSuggestionButton:last-child {
+  border-bottom: none;
+}
+.locationSuggestionButton:hover,
+.locationSuggestionButton:focus-visible {
+  background: rgba(32, 30, 27, 0.04);
+}
+
 .locationHelper {
   display: flex;
   align-items: center;

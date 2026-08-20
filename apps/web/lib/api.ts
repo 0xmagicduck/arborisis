@@ -1,4 +1,10 @@
-import type { CreateRecordingInput, Recording, User } from "@arborisis/shared-types";
+import type {
+  CreateRecordingInput,
+  Recording,
+  RecordingMarker,
+  SearchFacets,
+  User,
+} from "@arborisis/shared-types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -54,6 +60,61 @@ export async function listRecordings(params: ListRecordingsParams = {}): Promise
   const qs = search.toString();
   const { recordings } = await api.get<{ recordings: Recording[] }>(`/recordings${qs ? `?${qs}` : ""}`);
   return recordings;
+}
+
+export interface ViewportBounds {
+  minLng: number;
+  minLat: number;
+  maxLng: number;
+  maxLat: number;
+}
+
+/**
+ * GET /recordings/viewport — marqueurs allégés pour la carte Explorer (Phase 4),
+ * voir apps/api/src/routes/recordings.ts et plan/08 §8.2.
+ */
+export async function fetchViewportRecordings(bounds: ViewportBounds): Promise<RecordingMarker[]> {
+  const search = new URLSearchParams({
+    minLng: String(bounds.minLng),
+    minLat: String(bounds.minLat),
+    maxLng: String(bounds.maxLng),
+    maxLat: String(bounds.maxLat),
+  });
+  const { recordings } = await api.get<{ recordings: RecordingMarker[] }>(`/recordings/viewport?${search}`);
+  return recordings;
+}
+
+export interface SearchRecordingsParams {
+  q: string;
+  tags?: string[];
+  license?: string[];
+  locationLabel?: string[];
+  minDurationSeconds?: number;
+  maxDurationSeconds?: number;
+}
+
+export interface SearchRecordingsResult {
+  recordings: Recording[];
+  facets: SearchFacets;
+}
+
+// Chaque valeur est échappée avant d'être jointe par des virgules —
+// indispensable pour `locationLabel` ("Lieu, Pays" contient déjà une
+// virgule), voir le commentaire miroir dans
+// packages/shared-types/src/recording.ts (`commaSeparatedList`).
+function encodeList(values: string[]): string {
+  return values.map(encodeURIComponent).join(",");
+}
+
+/** GET /recordings/search — recherche Meilisearch (Phase 4), voir plan/08 §8.3. */
+export async function searchRecordings(params: SearchRecordingsParams): Promise<SearchRecordingsResult> {
+  const search = new URLSearchParams({ q: params.q });
+  if (params.tags?.length) search.set("tags", encodeList(params.tags));
+  if (params.license?.length) search.set("license", encodeList(params.license));
+  if (params.locationLabel?.length) search.set("locationLabel", encodeList(params.locationLabel));
+  if (params.minDurationSeconds != null) search.set("minDurationSeconds", String(params.minDurationSeconds));
+  if (params.maxDurationSeconds != null) search.set("maxDurationSeconds", String(params.maxDurationSeconds));
+  return api.get<SearchRecordingsResult>(`/recordings/search?${search}`);
 }
 
 export async function getRecording(id: string): Promise<Recording | null> {

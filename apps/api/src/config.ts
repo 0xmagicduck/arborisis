@@ -35,6 +35,9 @@ const envSchema = z.object({
     .int()
     .positive()
     .default(500 * 1024 * 1024),
+  // Meilisearch (Phase 4) — voir @arborisis/search et plan/08 §8.3.
+  MEILI_URL: z.string().url().default("http://localhost:7700"),
+  MEILI_MASTER_KEY: z.string().min(1),
 });
 
 export type Env = z.infer<typeof envSchema>;

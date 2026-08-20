@@ -47,6 +47,35 @@ manuelle ponctuelle sans besoin de hot-reload, préférer `npx tsx
 src/index.ts` (sans `watch`) — plus stable, un seul process, pas de course
 au port.
 
+**`maplibre-gl` importé statiquement dans une page fait planter `next build`
+avec une erreur `<Html> should not be imported outside of pages/_document`
+sans rapport apparent.** La page reste `"use client"` et n'affiche pourtant
+aucune erreur de logique — le message pointe vers `next/document`, pas vers
+MapLibre. Cause réelle : Next.js fait quand même un rendu serveur (SSR) des
+pages `"use client"` pour la génération statique au build, et `maplibre-gl`
+fait des accès WebGL/`window` au chargement du module qui plantent sous Node
+— l'erreur `_document` est un message secondaire qui masque le vrai crash.
+Corrigé en isolant le composant carte du rendu serveur avec `next/dynamic`
+(`{ ssr: false }`) plutôt qu'en désactivant le SSR de toute la page — voir
+[apps/web/app/page.tsx](../apps/web/app/page.tsx). Repéré en comparant un
+`next build` avant/après stash des changements Phase 4 : la Phase 3 seule
+buildait proprement (10/10 pages statiques), la régression n'est apparue
+qu'avec l'import direct de `components/ExplorerMap.tsx`.
+
+**`height: 100%` sur un enfant statique d'un conteneur dont la hauteur vient
+d'un `flex: 1` (colonne flex) peut rester à une hauteur minuscule au lieu de
+remplir le parent**, malgré un parent mesurant correctement sa vraie hauteur
+via `getBoundingClientRect()` — l'ambiguïté vient de la résolution CSS des
+pourcentages de hauteur ("hauteur spécifiée" vs valeur `auto` propagée par
+flex-grow), qui varie selon les moteurs de rendu. Constaté sur la carte
+Explorer, confinée à ~67px de haut au lieu de toute la zone `.mapArea`
+disponible. Corrigé en remplaçant `width/height: 100%` par `position:
+absolute; inset: 0` contre un ancêtre `position: relative` — dimensions de la
+boîte de padding toujours bien définies, pas d'ambiguïté. Voir
+[apps/web/components/ExplorerMap.module.css](../apps/web/components/ExplorerMap.module.css).
+À garder en tête pour tout futur composant plein-cadre logé dans un enfant de
+conteneur flex à hauteur dynamique.
+
 ## Fastify / API
 
 **`setErrorHandler` doit être enregistré AVANT les plugins de routes.**
@@ -68,6 +97,28 @@ faut les deux : `.optional()` en plus de `.nullable()`. Rencontré sur
 champs avec `.optional()` sur le schéma d'entrée uniquement (le schéma de
 sortie `recordingSchema` reste volontairement strict : une réponse API a
 toujours la clé, jamais omise).
+
+**Ne pas nommer une décoration Fastify `search`.** Fastify déclare déjà
+`fastify.search(path, opts, handler)` comme raccourci de route pour la
+méthode HTTP `SEARCH` (au même titre que `.get`/`.post`) — décorer
+`fastify.search` avec autre chose (ex. un client Meilisearch) produit une
+collision de type à la compilation (`TS2717: Subsequent property
+declarations must have the same type`), pas une erreur au runtime : le code
+tourne mais `tsc` échoue avec un message qui ne mentionne pas Meilisearch,
+piégeant à identifier. Renommé en `fastify.meilisearch` — voir
+[apps/api/src/plugins/search.ts](../apps/api/src/plugins/search.ts).
+
+**`noUncheckedIndexedAccess` (activé dans `tsconfig.base.json`) attrape deux
+cas non-évidents avec MapLibre/GeoJSON :** (1) une `Position` GeoJSON est
+typée `number[]` générique (pas un tuple `[number, number]`, car une position
+peut porter une altitude) — déstructurer `const [lng, lat] = coords` donne
+`number | undefined` ; utiliser des valeurs par défaut (`const [lng = 0, lat
+= 0] = ...`) plutôt que de désactiver la règle. (2) assigner une classe CSS
+Modules à `element.className` (API DOM native, typée `string` strict) plutôt
+qu'à un prop JSX `className` (qui accepte `string | undefined`) échoue si les
+classes sont typées via une index signature — nécessite `?? ""`. Rencontré en
+pilotant des `maplibregl.Marker` HTML à la main dans
+[apps/web/components/ExplorerMap.tsx](../apps/web/components/ExplorerMap.tsx).
 
 ## packages/db (Drizzle + PostGIS)
 
@@ -161,6 +212,23 @@ session, vérifier `docker ps -a` pour repérer d'éventuels conteneurs d'un
 autre worktree du même repo, et prévenir l'utilisateur si une suppression
 pourrait les toucher — ne pas assumer que le scoping par projet protège
 totalement en environnement multi-worktree.
+
+**Le dépôt vit dans iCloud Drive (`~/Library/Mobile Documents/com~apple~CloudDocs/...`)
+— un reboot de la machine peut laisser `fileproviderd` saturer l'I/O pendant
+un temps long (observé : 70-150% CPU en continu plus d'une heure), rendant
+`node_modules` intermittemment illisible.** Symptôme concret rencontré :
+`npx tsx src/index.ts` plantait avec `TypeError: r.register is not a
+function` — un fichier `.cjs` de `tsx` lu vide/tronqué (fichier "stub" iCloud
+pas encore rematérialisé, pas une corruption réelle : `cat`/`wc -c` sur le
+même fichier redevenaient normaux après un délai). Pendant l'épisode, même
+`tsc --noEmit`/`eslint`/`grep -r` simples prenaient plusieurs dizaines de
+minutes au lieu de secondes — pas un bug de ce dépôt, l'I/O lui-même était le
+goulot. Passer le dossier en "toujours garder sur ce Mac" (désactiver
+l'optimisation de stockage iCloud) réduit le phénomène mais son rapatriement
+initial complet peut lui-même prendre du temps sur un gros `node_modules`
+multi-workspaces. À surveiller après tout reboot sur cette machine ; si des
+commandes triviales (`grep`, `cat`) traînent anormalement, c'est le signal —
+attendre plutôt que de conclure à un bug de code.
 
 **`Bash` refuse les commandes contenant un secret en clair sur la ligne**
 (ex. `aws ... --secret-key XXXX`), même légitimes. Passer par un fichier de

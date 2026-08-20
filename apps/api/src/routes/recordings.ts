@@ -1,8 +1,14 @@
 import type { FastifyPluginAsync } from "fastify";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { recordings, users, type Db } from "@arborisis/db";
-import { createRecordingRequestSchema } from "@arborisis/shared-types";
+import { searchRecordings } from "@arborisis/search";
+import {
+  createRecordingRequestSchema,
+  searchRecordingsQuerySchema,
+  viewportQuerySchema,
+  type RecordingMarker,
+} from "@arborisis/shared-types";
 import { headObject, presignGetUrl, type S3Client } from "@arborisis/storage";
 import { requireUserId, optionalUserId } from "../lib/auth.js";
 import { takeStagedUpload } from "../lib/upload-store.js";
@@ -158,6 +164,68 @@ const recordingsRoutes: FastifyPluginAsync = async (fastify) => {
       .limit(limit);
 
     return reply.send({ recordings: await Promise.all(rows.map((row) => serializeRecording(row, storage))) });
+  });
+
+  // Marqueurs de la carte Explorer (Phase 4) — voir plan/08-donnees-et-recherche.md
+  // §8.2 : filtre PostGIS `ST_MakeEnvelope` + `&&` sur l'index GIST
+  // (`recordings_location_gix`), ne renvoie que les champs nécessaires au
+  // marqueur (id, coordonnées, titre) — pas la waveform/URLs pré-signées,
+  // récupérées séparément via `GET /recordings/:id` au clic sur un marqueur.
+  fastify.get("/recordings/viewport", async (request, reply) => {
+    const { minLng, minLat, maxLng, maxLat, limit } = viewportQuerySchema.parse(request.query);
+
+    const bboxFilter = sql`${recordings.locationPoint} && ST_MakeEnvelope(${minLng}, ${minLat}, ${maxLng}, ${maxLat}, 4326)::geography`;
+
+    const rows = await db
+      .select({
+        id: recordings.id,
+        title: recordings.title,
+        locationLat: sql<number>`ST_Y(${recordings.locationPoint}::geometry)`,
+        locationLng: sql<number>`ST_X(${recordings.locationPoint}::geometry)`,
+      })
+      .from(recordings)
+      .where(and(eq(recordings.status, "published"), bboxFilter))
+      .limit(limit);
+
+    return reply.send({ recordings: rows satisfies RecordingMarker[] });
+  });
+
+  // Recherche Meilisearch (Phase 4) — remplace l'ILIKE naïf de `GET /recordings`
+  // pour l'écran Recherche, voir plan/08 §8.3. Meilisearch ne renvoie que des
+  // ids + facettes (voir @arborisis/search) : le contenu complet (URLs
+  // pré-signées, waveform) reste reconstitué depuis la DB, seule source de
+  // vérité pour ces champs qui expirent/évoluent — pas dupliqué dans l'index.
+  fastify.get("/recordings/search", async (request, reply) => {
+    const query = searchRecordingsQuerySchema.parse(request.query);
+
+    const { ids, facets } = await searchRecordings(fastify.meilisearch, {
+      q: query.q,
+      tags: query.tags,
+      license: query.license,
+      locationLabel: query.locationLabel,
+      minDurationSeconds: query.minDurationSeconds,
+      maxDurationSeconds: query.maxDurationSeconds,
+      limit: query.limit,
+    });
+
+    if (ids.length === 0) {
+      return reply.send({ recordings: [], facets });
+    }
+
+    // Meilisearch renvoie déjà les ids triés par pertinence — la requête DB
+    // ne préserve pas cet ordre nativement (`inArray` ne trie pas), donc on
+    // réordonne explicitement après coup plutôt que de complexifier la
+    // requête SQL avec un `ORDER BY array_position`.
+    const rows = await baseRecordingsQuery(db).where(
+      and(eq(recordings.status, "published"), inArray(recordings.id, ids))
+    );
+    const byId = new Map(rows.map((row) => [row.id, row]));
+    const ordered = ids.map((id) => byId.get(id)).filter((row): row is RecordingRow => row != null);
+
+    return reply.send({
+      recordings: await Promise.all(ordered.map((row) => serializeRecording(row, storage))),
+      facets,
+    });
   });
 
   fastify.post(

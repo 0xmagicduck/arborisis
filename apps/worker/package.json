@@ -16,6 +16,7 @@
   "dependencies": {
     "@arborisis/db": "workspace:*",
     "@arborisis/queue": "workspace:*",
+    "@arborisis/search": "workspace:*",
     "@arborisis/storage": "workspace:*",
     "bullmq": "^5.28.0",
     "drizzle-orm": "^0.36.4"

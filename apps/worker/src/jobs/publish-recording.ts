@@ -7,6 +7,7 @@ import type { Job } from "bullmq";
 import { eq } from "drizzle-orm";
 import { recordings, type Db } from "@arborisis/db";
 import type { PublishRecordingJobData } from "@arborisis/queue";
+import { indexRecording, type MeiliSearch } from "@arborisis/search";
 import {
   deleteObject,
   getObjectStream,
@@ -37,6 +38,7 @@ export interface PublishDeps {
   archiveToIA: boolean;
   ffmpegPath: string;
   ffprobePath: string;
+  search: MeiliSearch;
 }
 
 export async function processPublishRecording(
@@ -44,7 +46,7 @@ export async function processPublishRecording(
   deps: PublishDeps
 ): Promise<void> {
   const { recordingId, stagingKey, originalFilename } = job.data;
-  const { db, storage, bucket, archiveToIA, ffmpegPath, ffprobePath } = deps;
+  const { db, storage, bucket, archiveToIA, ffmpegPath, ffprobePath, search } = deps;
 
   const workDir = await mkdtemp(path.join(tmpdir(), "arborisis-publish-"));
   const extension = path.extname(originalFilename) || ".bin";
@@ -88,7 +90,7 @@ export async function processPublishRecording(
       throw new Error("ARCHIVE_TO_IA=true mais l'intégration IAS3 n'est pas encore implémentée");
     }
 
-    await db
+    const [published] = await db
       .update(recordings)
       .set({
         status: "published",
@@ -100,7 +102,36 @@ export async function processPublishRecording(
         waveformPeaks,
         updatedAt: new Date(),
       })
-      .where(eq(recordings.id, recordingId));
+      .where(eq(recordings.id, recordingId))
+      .returning({
+        title: recordings.title,
+        description: recordings.description,
+        locationLabel: recordings.locationLabel,
+        tags: recordings.tags,
+        license: recordings.license,
+        recordedAt: recordings.recordedAt,
+        createdAt: recordings.createdAt,
+      });
+
+    // 6. Indexation Meilisearch — voir plan/08-donnees-et-recherche.md §8.3.
+    // Après coup plutôt qu'avant : si l'indexation échoue, le job entier
+    // repart en retry BullMQ (§5.6) et refait le transcodage déjà fait, un
+    // peu de travail redondant mais plus simple qu'une étape "publication
+    // partielle" à gérer — acceptable vu le faible coût du transcodage d'un
+    // seul enregistrement.
+    if (published) {
+      await indexRecording(search, {
+        id: recordingId,
+        title: published.title,
+        description: published.description,
+        locationLabel: published.locationLabel,
+        tags: published.tags,
+        license: published.license,
+        durationSeconds,
+        recordedAt: Math.floor(published.recordedAt.getTime() / 1000),
+        createdAt: Math.floor(published.createdAt.getTime() / 1000),
+      });
+    }
   } finally {
     await rm(workDir, { recursive: true, force: true });
   }

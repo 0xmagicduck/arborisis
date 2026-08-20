@@ -33,12 +33,21 @@ if (!OBJECT_STORAGE_ENDPOINT || !OBJECT_STORAGE_BUCKET || !OBJECT_STORAGE_ACCESS
 const FFMPEG_PATH = process.env.FFMPEG_PATH ?? "ffmpeg";
 const FFPROBE_PATH = process.env.FFPROBE_PATH ?? "ffprobe";
 
+// Meilisearch (Phase 4) — indexation à la publication, voir @arborisis/search
+// et plan/08-donnees-et-recherche.md §8.3.
+const MEILI_URL = process.env.MEILI_URL ?? "http://localhost:7700";
+const MEILI_MASTER_KEY = process.env.MEILI_MASTER_KEY;
+if (!MEILI_MASTER_KEY) {
+  throw new Error("MEILI_MASTER_KEY manquant — voir infra/docker-compose.yml / .env");
+}
+
 export const config = {
   REDIS_URL,
   DATABASE_URL,
   ARCHIVE_TO_IA,
   FFMPEG_PATH,
   FFPROBE_PATH,
+  search: { host: MEILI_URL, apiKey: MEILI_MASTER_KEY },
   storage: {
     endpoint: OBJECT_STORAGE_ENDPOINT,
     region: OBJECT_STORAGE_REGION,
