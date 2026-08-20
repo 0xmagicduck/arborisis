@@ -9,7 +9,11 @@ Cartographie et archivage sonore ouvert — un commun numérique pour les enregi
 
 ## Statut
 
-🚧 Phase 1 (socle technique) — voir [plan/TASKS.md](plan/TASKS.md) pour le détail des tâches en cours. L'intégration Internet Archive est **reportée** après le lancement (seuil de 50 items déjà publiés exigé par IA, hors de portée avant d'avoir des utilisateurs réels) — voir [plan/05-stockage-audio-internet-archive.md §5.10](plan/05-stockage-audio-internet-archive.md#510-mode-intérimaire--repli-sur-object-storage-infomaniak-pas-dinternet-archive-au-démarrage).
+🚧 Phase 3 close (les 6 écrans du MVP frontend, responsive desktop/mobile, validés en conditions réelles) — Phase 4 (carte MapLibre, géocodage, recherche Meilisearch) à venir. Détail des tâches et journal de session : [plan/TASKS.md](plan/TASKS.md). L'intégration Internet Archive est **reportée** après le lancement (seuil de 50 items déjà publiés exigé par IA, hors de portée avant d'avoir des utilisateurs réels) — voir [plan/05-stockage-audio-internet-archive.md §5.10](plan/05-stockage-audio-internet-archive.md#510-mode-intérimaire--repli-sur-object-storage-infomaniak-pas-dinternet-archive-au-démarrage).
+
+## Pour les agents IA
+
+Avant de reprendre ce dépôt : lire [CLAUDE.md](CLAUDE.md) — sources de vérité, conventions déjà en place, et procédures de fin de session (`plan/TASKS.md`, `plan/MEMORY.md`, ce README).
 
 ## Licence
 

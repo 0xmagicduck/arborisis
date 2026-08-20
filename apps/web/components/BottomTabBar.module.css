@@ -1,0 +1,54 @@
+/* Voir design/handoff/DEV-HANDOFF.md §2.8. Caché ≥768px. */
+.bar {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-top: 1px solid var(--line-hairline);
+    padding: 12px 0 calc(22px + env(safe-area-inset-bottom, 0px)) 0;
+    background: var(--color-paper);
+  }
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+}
+
+.label {
+  font-size: 9px;
+  color: var(--color-stone);
+}
+
+.item[data-active="true"] .label {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.avatarBadge {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-circle);
+  border: 1.4px solid var(--color-stone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--color-stone);
+}
+
+.item[data-active="true"] .avatarBadge {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}

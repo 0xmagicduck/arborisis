@@ -1,0 +1,118 @@
+/* Voir design/handoff/DEV-HANDOFF.md §2.5 (RecordingRow) — layout horizontal
+   desktop, séparateur `border-top` entre items, bascule verticale mobile
+   (§3.7 MobileDiscover). */
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(150px, 230px) 1fr auto;
+  grid-template-areas: "play title wave meta";
+  align-items: center;
+  gap: 20px;
+  padding: 22px 0;
+  border-top: 1px solid var(--line-hairline);
+  text-decoration: none;
+  color: inherit;
+}
+
+.row[data-featured="true"] {
+  padding: 28px 0;
+  gap: 28px;
+  border-top: 1px solid var(--line-strong);
+}
+
+.playCol {
+  grid-area: play;
+}
+
+.titleCol {
+  grid-area: title;
+  min-width: 0;
+}
+
+.title {
+  display: block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--color-ink-strong);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title:hover {
+  text-decoration: underline;
+}
+
+.row[data-featured="true"] .title {
+  font-size: 26px;
+}
+
+.meta {
+  font-size: 11.5px;
+  color: var(--color-ink-secondary);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.waveCol {
+  grid-area: wave;
+  min-width: 0;
+}
+
+.metaCol {
+  grid-area: meta;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  text-align: right;
+}
+
+.tagsLine {
+  font-size: 11.5px;
+}
+
+.durationLine {
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .row {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "title title title"
+      "play wave duration"
+      "tags tags tags";
+    row-gap: 12px;
+    column-gap: 12px;
+    padding: 20px 0;
+  }
+
+  .row[data-featured="true"] {
+    padding: 22px 0;
+    gap: 12px;
+  }
+
+  .row[data-featured="true"] .title {
+    font-size: 20px;
+  }
+
+  .metaCol {
+    display: contents;
+  }
+
+  .tagsLine {
+    grid-area: tags;
+    text-align: left;
+  }
+
+  .durationLine {
+    grid-area: duration;
+  }
+}

@@ -1,0 +1,78 @@
+/* Voir design/handoff/DEV-HANDOFF.md §3.1 et §7 (ARIA carte — fallback
+   accessible non-visuel pour parcourir les enregistrements). Desktop
+   uniquement : la carte plein écran mobile n'a pas de place pour cette
+   bande, la BottomSheet suffit une fois un marqueur sélectionné. */
+.strip {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .strip {
+    display: flex;
+    align-items: center;
+    height: 96px;
+    border-top: 1px solid var(--line-hairline);
+    background: var(--color-paper);
+    padding: 0 40px;
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+}
+
+.label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-stone);
+  margin-right: 36px;
+  flex-shrink: 0;
+}
+
+.items {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 32px;
+  border-right: 1px solid var(--line-hairline);
+  background: none;
+  border-left: none;
+  border-top: none;
+  border-bottom: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  text-align: left;
+}
+
+.item:first-child {
+  padding-left: 0;
+}
+
+.item:last-child {
+  border-right: none;
+}
+
+.title {
+  font-size: 13.5px;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.location {
+  font-size: 11.5px;
+  color: var(--color-stone);
+  white-space: nowrap;
+}
+
+.duration {
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  white-space: nowrap;
+}

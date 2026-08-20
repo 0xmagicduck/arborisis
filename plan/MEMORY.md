@@ -9,6 +9,44 @@ Chaque entrée : le piège, pourquoi il s'est produit, la règle à appliquer.
 
 ---
 
+## Frontend / Next.js (apps/web)
+
+**En Next.js 15 App Router, la prop `params` d'une page est typée
+`Promise<...>` même pour un client component** (`"use client"`) — utiliser
+`params` directement comme un objet synchrone échoue au build avec une
+erreur de type opaque (`Type '{ params: {...} }' does not satisfy the
+constraint 'PageProps'`). Pour une page client (le cas de tous les écrans du
+MVP, voir §3 de CLAUDE.md), utiliser `useParams()` de `next/navigation`
+plutôt que la prop `params` — pas d'`await`/`use()` à gérer, et le typage
+reste stable. Rencontré sur
+[apps/web/app/enregistrements/\[id\]/page.tsx](../apps/web/app/enregistrements/[id]/page.tsx).
+
+**`useSearchParams()` exige une frontière `<Suspense>`** autour du composant
+qui l'appelle, sinon `next build` bascule silencieusement toute la page en
+rendu client-only avec un avertissement — pas une erreur bloquante, mais un
+comportement dégradé à ne pas laisser passer. Séparer le composant qui
+utilise ce hook dans un enfant enveloppé par `<Suspense fallback={...}>` (le
+fallback doit rester visuellement cohérent, pas un simple spinner générique —
+voir DEV-HANDOFF §5). Rencontré sur [apps/web/app/page.tsx](../apps/web/app/page.tsx)
+(Explorer, paramètre `?focus=<id>` pour le recentrage depuis RecordingDetail).
+
+**Sourcer le même `.env` dans le même shell pour lancer `apps/api` et
+`apps/web` en dev fait que `next dev` hérite de `PORT=4000`** (variable
+destinée à l'API) et se bind dessus au lieu de 3000, en conflit silencieux
+avec Fastify — les deux process peuvent temporairement se marcher dessus
+selon l'ordre de démarrage/redémarrage. Lancer `next dev` avec `PORT` explicitement
+absent de l'environnement (`env -u PORT ...`) ou avec `-p 3000` explicite.
+Voir §6 de CLAUDE.md pour la commande complète.
+
+**`tsx watch` (apps/api) peut entrer en boucle `EADDRINUSE`** si son
+processus redémarre pendant qu'un port qu'il tentait de libérer est
+capturé entre-temps par un autre process (observé pendant une session de
+vérification manuelle avec plusieurs redémarrages rapprochés liés à
+`pnpm install`/`pnpm build` touchant `node_modules`). Pour une vérification
+manuelle ponctuelle sans besoin de hot-reload, préférer `npx tsx
+src/index.ts` (sans `watch`) — plus stable, un seul process, pas de course
+au port.
+
 ## Fastify / API
 
 **`setErrorHandler` doit être enregistré AVANT les plugins de routes.**

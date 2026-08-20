@@ -1,3 +1,5 @@
+import type { CreateRecordingInput, Recording, User } from "@arborisis/shared-types";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -18,3 +20,104 @@ export const api = {
   post: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
 };
+
+/**
+ * Wrapper typé au-dessus de `api` pour les écrans de la Phase 3 — voir
+ * design/handoff/DEV-HANDOFF.md et plan/TASKS.md. Les types viennent de
+ * @arborisis/shared-types, la même source que le schéma validé côté API.
+ */
+
+export async function fetchMe(): Promise<User | null> {
+  try {
+    const { user } = await api.get<{ user: User }>("/auth/me");
+    return user;
+  } catch {
+    // 401 attendu quand personne n'est connecté — pas une erreur à remonter.
+    return null;
+  }
+}
+
+export async function logout(): Promise<void> {
+  await api.post("/auth/logout");
+}
+
+export interface ListRecordingsParams {
+  q?: string;
+  limit?: number;
+}
+
+/** GET /recordings — enregistrements publiés, voir apps/api/src/routes/recordings.ts. */
+export async function listRecordings(params: ListRecordingsParams = {}): Promise<Recording[]> {
+  const search = new URLSearchParams();
+  if (params.q) search.set("q", params.q);
+  if (params.limit) search.set("limit", String(params.limit));
+  const qs = search.toString();
+  const { recordings } = await api.get<{ recordings: Recording[] }>(`/recordings${qs ? `?${qs}` : ""}`);
+  return recordings;
+}
+
+export async function getRecording(id: string): Promise<Recording | null> {
+  try {
+    const { recording } = await api.get<{ recording: Recording }>(`/recordings/${id}`);
+    return recording;
+  } catch {
+    return null;
+  }
+}
+
+/** Enregistrements de l'utilisateur connecté, tous statuts — voir GET /recordings/mine. */
+export async function myRecordings(): Promise<Recording[]> {
+  const { recordings } = await api.get<{ recordings: Recording[] }>("/recordings/mine");
+  return recordings;
+}
+
+export interface PresignUploadInput {
+  filename: string;
+  contentType: string;
+  sizeBytes: number;
+}
+
+export interface PresignUploadResponse {
+  uploadId: string;
+  uploadUrl: string;
+  expiresInSeconds: number;
+}
+
+/** Étape 1 du flux Ajouter — voir plan/05-stockage-audio-internet-archive.md §5.3. */
+export async function presignUpload(input: PresignUploadInput): Promise<PresignUploadResponse> {
+  return api.post<PresignUploadResponse>("/uploads/presign", input);
+}
+
+/**
+ * Dépôt direct vers Object Storage via l'URL pré-signée — volontairement en
+ * dehors de `request()` : pas de cookie de session, pas de JSON, le corps est
+ * le fichier brut avec son Content-Type propre (voir presignPutUrl côté API).
+ */
+export async function uploadToPresignedUrl(
+  uploadUrl: string,
+  file: File,
+  onProgress?: (fraction: number) => void
+): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", uploadUrl);
+    xhr.setRequestHeader("Content-Type", file.type);
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && onProgress) onProgress(event.loaded / event.total);
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) resolve();
+      else reject(new Error(`Dépôt du fichier échoué (${xhr.status})`));
+    };
+    xhr.onerror = () => reject(new Error("Dépôt du fichier échoué (réseau)"));
+    xhr.send(file);
+  });
+}
+
+/** Étapes 2-3 du flux Ajouter — voir POST /recordings. */
+export async function createRecording(
+  input: CreateRecordingInput & { uploadId: string }
+): Promise<Recording> {
+  const { recording } = await api.post<{ recording: Recording }>("/recordings", input);
+  return recording;
+}

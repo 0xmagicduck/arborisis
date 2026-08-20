@@ -1,0 +1,72 @@
+/* Voir design/handoff/DEV-HANDOFF.md §2.5 (RecordingCard) et §3.5 (grille
+   Profil). La grille est portée par le parent (Profile.module.css) ; cette
+   feuille ne gère que la cellule. */
+.card {
+  display: block;
+  background: var(--color-paper);
+  padding: 24px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--color-ink-strong);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location {
+  font-size: 11.5px;
+  color: var(--color-ink-secondary);
+  margin-bottom: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.duration {
+  font-size: 11px;
+  color: var(--color-stone);
+  margin-top: 10px;
+}
+
+/* Mobile : gabarit Row plutôt que Card (voir §3.5) — la grille du parent
+   passe à 1 colonne, ici on retire le waveform et on aligne titre/durée en
+   ligne, cohérent avec MobileProfile.dc.html. */
+@media (max-width: 767px) {
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line-hairline);
+  }
+
+  .textCol {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .title {
+    margin-bottom: 3px;
+  }
+
+  .location,
+  .duration {
+    margin: 0;
+  }
+
+  .wave {
+    display: none;
+  }
+}
+
+.wave {
+  margin-bottom: 0;
+}
