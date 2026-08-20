@@ -273,6 +273,49 @@ web) a fonctionné immédiatement. Pas d'explication trouvée (le champ
 après coup) — si l'ACL CLI ne prend pas effet, essayer le Manager avant de
 creuser plus loin côté CLI.
 
+## Déploiement / Docker (infra, Phase 6)
+
+**`next build` inline les variables `NEXT_PUBLIC_*` dans le bundle client au
+moment de la build, pas au runtime du conteneur.** Les poser uniquement dans
+le `.env` du service `web` (`env_file:`, lu au démarrage du conteneur) n'a
+aucun effet sur le JS déjà généré — le bundle appelait encore
+`http://localhost:4000` (défaut codé dans `apps/web/lib/api.ts`) alors que le
+conteneur avait bien la bonne valeur en variable d'environnement runtime.
+Corrigé en passant `NEXT_PUBLIC_API_URL`/`NEXT_PUBLIC_PMTILES_URL` en
+**build-arg Docker** (`ARG`/`ENV` avant `RUN pnpm build` dans
+`infra/docker/Dockerfile`, `build.args` dans `infra/docker-compose.yml`) —
+règle générale pour toute variable `NEXT_PUBLIC_*` future : elle doit être
+disponible **avant** `next build`, jamais seulement au démarrage du conteneur.
+
+**Un mot de passe généré avec `openssl rand -base64 N` peut contenir `/`, `+`
+ou `=`, qui cassent le parsing d'une URL de connexion Postgres
+(`postgres://user:motdepasse@host/db`) si le mot de passe n'est pas
+URL-encodé.** `new URL(...)` (utilisé en interne par `pg`/`drizzle-orm`) lève
+une `ERR_INVALID_URL` peu explicite (`input: REDACTED, base: 'postgres://base'`)
+plutôt qu'une erreur claire. Générer les mots de passe destinés à vivre dans
+une connection string avec `openssl rand -hex N` (alphabet
+alphanumérique uniquement) plutôt que `-base64`, ou URL-encoder
+explicitement si `-base64` est requis pour une autre raison.
+
+**Chaque service d'un `docker-compose.yml` a besoin de ses propres
+overrides d'environnement — les poser sur un seul service (ex. `api`) ne se
+propage pas aux autres qui partagent pourtant le même `.env` (`env_file:`)
+et le même besoin (ex. `MEILI_URL: http://meilisearch:7700`, oublié sur
+`worker` alors que présent sur `api`, provoquant un crash-loop
+`ECONNREFUSED ::1:7700` — le défaut dev `localhost:7700` du code prenait le
+dessus).** Revérifier tous les services qui partagent une dépendance
+réseau (Postgres/Redis/Meilisearch/Object Storage), pas seulement celui
+testé en premier.
+
+**`PHOTON_URL` doit inclure le suffixe `/api`** — `apps/api/src/routes/geocode.ts`
+fait `${env.PHOTON_URL}?q=...` sans ajouter de chemin lui-même ; le défaut du
+schéma (`https://photon.komoot.io/api`) inclut déjà `/api`, ce qui masque
+facilement l'oubli quand on pointe `PHOTON_URL` vers l'instance privée
+(`http://192.168.120.209:2322` sans suffixe → `GET /geocode` répond `502
+geocoding_upstream_error`, alors qu'un `curl` direct du même conteneur vers
+`.../2322/api?q=...` fonctionne — la réachabilité réseau n'est pas en cause,
+seulement le chemin). Voir `infra/README.md`.
+
 ## Infra / environnement d'exécution local
 
 **Plusieurs worktrees du même repo qui lancent chacun leur `docker-compose.yml`
