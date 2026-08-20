@@ -1,0 +1,23 @@
+apps/web/map-style/quiet-cartography.ts
+  s_bdc373318c220c::t_d456656ae8f2c9 9-24,58,61-64,74,76,82,84-92,98-100,106,113-120,128-130,137-139,148-150,161-166,178-180
+plan/MEMORY.md
+  s_bdc373318c220c::t_c70da75088bb42 276-321
+plan/TASKS.md
+  s_bdc373318c220c::t_63dad4d91cca53 99,206-207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dbb461cc6ef7357f87d3f2f894689122f0d987ee",
+  "prompts": {},
+  "sessions": {
+    "s_bdc373318c220c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7e635de5-5681-4f99-95f6-2d848a4bda34",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
