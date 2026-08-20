@@ -1,0 +1,119 @@
+apps/api/package.json
+  s_8337ccd392a2bf::t_6c6b01fd8d7983 24,28
+apps/api/src/app.ts
+  s_8337ccd392a2bf::t_c439af1175d081 4,15,18,49-54,82-83
+apps/api/src/config.ts
+  s_8337ccd392a2bf::t_e262be85679de9 41-62
+apps/api/src/lib/admin.ts
+  s_8337ccd392a2bf::t_999b2398573c5e 1-38
+apps/api/src/routes/geocode.ts
+  s_8337ccd392a2bf::t_0802cc0794c94a 1-31
+apps/api/src/routes/reports.ts
+  s_8337ccd392a2bf::t_5b93f027c54f9b 1-108
+apps/backup/package.json
+  s_8337ccd392a2bf::t_27b009815a24c0 1-24
+apps/backup/src/backup.ts
+  s_8337ccd392a2bf::t_683752b222b26c 1-112
+apps/backup/src/config.ts
+  s_8337ccd392a2bf::t_f4406547445004 1-37
+apps/backup/src/gpg.ts
+  s_8337ccd392a2bf::t_02843846164805 1-63
+apps/backup/src/pg.ts
+  s_8337ccd392a2bf::t_f06dd7f16b6eca 1-16
+apps/backup/src/restore.ts
+  s_8337ccd392a2bf::t_6be947a10f76c3 1-111
+apps/backup/tsconfig.json
+  s_8337ccd392a2bf::t_0ef6bfd29c330b 1-10
+apps/web/app/ajouter/page.module.css
+  s_8337ccd392a2bf::t_aee88defda7839 70-72,171-173,214-218,237-239
+apps/web/app/cgu/page.tsx
+  s_8337ccd392a2bf::t_19e38e87f247d0 1-88
+apps/web/app/confidentialite/page.tsx
+  s_8337ccd392a2bf::t_28f9d3c5446ba1 1-116
+apps/web/app/enregistrements/[id]/page.module.css
+  s_8337ccd392a2bf::t_3fa210728a8e7e 10-12,48-50,138-141
+apps/web/app/enregistrements/[id]/page.tsx
+  s_8337ccd392a2bf::t_8a14ba9799634e 12,161-162
+apps/web/app/mentions-legales/page.tsx
+  s_8337ccd392a2bf::t_ffb51ab5438043 1-64
+apps/web/app/profil/page.module.css
+  s_8337ccd392a2bf::t_c3e3d29b4aefc4 33-35,58-77
+apps/web/app/profil/page.tsx
+  s_8337ccd392a2bf::t_1594d386c8a09f 104-116
+apps/web/app/recherche/page.module.css
+  s_8337ccd392a2bf::t_c94c5b8fc6fcbf 112-115
+apps/web/components/FormField.module.css
+  s_8337ccd392a2bf::t_3fda4c9329b271 11-14
+apps/web/components/Header.module.css
+  s_8337ccd392a2bf::t_1e5abb175c8f03 30-33
+apps/web/components/LegalPage.module.css
+  s_8337ccd392a2bf::t_a15e222068164e 1-72
+apps/web/components/LegalPage.tsx
+  s_8337ccd392a2bf::t_447dfd2d211415 1-25
+apps/web/components/MobileTopBar.module.css
+  s_8337ccd392a2bf::t_4159de0672e60e 63-65
+apps/web/components/RecordingSummaryCard.module.css
+  s_8337ccd392a2bf::t_ef0436ef7cf22c 23-28
+apps/web/components/ReportButton.module.css
+  s_8337ccd392a2bf::t_8ea866a75d264f 1-89
+apps/web/components/ReportButton.tsx
+  s_8337ccd392a2bf::t_0c08008821114c 1-107
+apps/web/components/SelectedStrip.module.css
+  s_8337ccd392a2bf::t_bd5ea48f0c04a8 70-74
+apps/web/lib/api.ts
+  s_8337ccd392a2bf::t_007370f538da4c 3,186-193
+apps/web/lib/geocoding.ts
+  s_8337ccd392a2bf::t_efd6d24d25f367 2-10,13,42
+apps/worker/package.json
+  s_8337ccd392a2bf::t_fef954be65d67e 22
+infra/backup/README.md
+  s_8337ccd392a2bf::t_2d90b9c8177d92 1-81
+infra/caddy/Caddyfile
+  s_8337ccd392a2bf::t_e409979a56b43b 18-22,28-50,54-75
+infra/photon/README.md
+  s_8337ccd392a2bf::t_a00a23a2b5cff5 1-134
+package.json
+  s_8337ccd392a2bf::t_5aae24c2e88e45 30-35
+packages/db/migrations/0002_flaky_black_bird.sql
+  s_8337ccd392a2bf::t_1ac38fdc5232ee 1-17
+packages/db/migrations/meta/0002_snapshot.json
+  s_8337ccd392a2bf::t_5600d592c4c692 1-594
+packages/db/migrations/meta/_journal.json
+  s_8337ccd392a2bf::t_ebbd39142d1c53 18-24
+packages/db/package.json
+  s_8337ccd392a2bf::t_6ddc4940ec8ed2 25,30
+packages/db/src/schema.ts
+  s_8337ccd392a2bf::t_249008e81d5459 10,150-206
+packages/shared-types/src/index.ts
+  s_8337ccd392a2bf::t_1e5b4a31aba4df 3
+packages/shared-types/src/report.ts
+  s_8337ccd392a2bf::t_3af9e22d8317ac 1-38
+packages/storage/src/operations.ts
+  s_8337ccd392a2bf::t_78bd6578a9676d 8,112-134
+pnpm-lock.yaml
+  s_8337ccd392a2bf::t_b347dbe0008e39 7-10,60-62,73-74,104-122,139,190-191,209-210,219-220,392-393,398-400,416-417,422-424,440-441,446-448,464-465,470-472,488-489,494-496,512-513,518-520,536-537,542-544,560-561,566-568,584-585,590-592,608-609,614-616,632-633,638-640,656-657,662-664,680-681,686-688,704-705,710-712,728-729,734-736,752-753,758-760,776-777,782-784,794-799,812-813,818-820,830-835,848-849,854-856,866-871,884-885,890-892,908-909,914-916,932-933,938-940,956-957,962-964,1030-1032,1069-1071,1075-1077,1081-1087,1091-1092,1096-1097,1101-1102,1106-1107,1111-1112,1116-1117,1121-1122,1126-1127,1131-1132,1136-1138,1142-1144,1148-1150,1154-1156,1160-1162,1166-1168,1172-1174,1178-1180,1184-1190,1193-1195,1199-1201,1205-1207,2119-2120,2123-2124,2127,2134,2140,2146,2184-2185,2196-2197,2277-2281,2608-2611,3308-3315,3890,3893,3902,3905,3914,3917,3926,3929,3938,3941,3950,3953,3962,3965,3974,3977,3986,3989,3998,4001,4010,4013,4022,4025,4034,4037,4046,4049,4058,4061,4070,4073,4082,4085,4091-4093,4100,4103,4109-4111,4118,4121,4127-4129,4136,4139,4148,4151,4160,4163,4172,4175,4251-4255,4292,4294,4297,4299,4302-4304,4307,4310,4313,4316,4319,4322,4325,4328,4331,4334-4337,4339,4342,4344,4347,4349,4352,4354,4357,4359,4362,4364,4367,4369,4372,4374,4377,4382-4387,4390,4393,5253,5257-5258,5260,5443-5471,5910-5911,6238,6243,6256,6259,6684,6690-6715
+.env.example
+  s_8337ccd392a2bf::t_1fb24525e15e11 44,47-56,59-62,67-86
+README.md
+  s_8337ccd392a2bf::t_c6d958dacfec7c 12
+plan/MEMORY.md
+  s_8337ccd392a2bf::t_cd0c50d369dd97 79-86,165-173,176-188,233-275
+plan/TASKS.md
+  s_8337ccd392a2bf::t_3b2ac16c01b8bb 6,84-89,112,116-121,174-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8b16669223ff39a42b0cda52cc45fd3a43b8b757",
+  "prompts": {},
+  "sessions": {
+    "s_8337ccd392a2bf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe93cf8d-8dd2-43d2-af53-dfceb828ae69",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
