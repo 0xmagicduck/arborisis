@@ -1,0 +1,27 @@
+.env.example
+  s_bdc373318c220c::t_e92025e4cbc37b 35-39
+apps/api/src/config.ts
+  s_bdc373318c220c::t_f4390f95d34d43 38-49
+apps/api/src/routes/uploads.ts
+  s_bdc373318c220c::t_26812eafe38c7d 29,37-43
+infra/caddy/Caddyfile
+  s_bdc373318c220c::t_92d5dec94118b3 51-66,86-92,104
+infra/docker-compose.yml
+  s_bdc373318c220c::t_223f6eb2501a5a 69-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "dee44c841db6cf19a653da3d44f55c2b77548875",
+  "prompts": {},
+  "sessions": {
+    "s_bdc373318c220c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7e635de5-5681-4f99-95f6-2d848a4bda34",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
