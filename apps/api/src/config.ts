@@ -35,6 +35,18 @@ const envSchema = z.object({
     .int()
     .positive()
     .default(500 * 1024 * 1024),
+  // Bug réel trouvé en prod (2026-08-20, voir plan/MEMORY.md) : la passerelle
+  // S3-compat Infomaniak ne répond pas correctement aux préflights CORS
+  // (OPTIONS → 405) sur les requêtes PUT pré-signées envoyées directement par
+  // le navigateur — même limitation déjà rencontrée pour le bucket de tuiles
+  // (§5 Phase 5, `PutBucketCors` en 501). Optionnel : quand définie, l'URL
+  // d'upload pré-signée renvoyée par `POST /uploads/presign` a son origine
+  // réécrite vers cette valeur (ex. `https://arborisis.com/storage-upload`,
+  // proxifiée same-origin par Caddy vers `s3.pub1.infomaniak.cloud`, voir
+  // infra/caddy/Caddyfile) — élimine le CORS au lieu d'essayer de le
+  // configurer côté Infomaniak. Non définie en dev (MinIO répond correctement
+  // aux préflights, testé en conditions réelles Phase 2/3).
+  OBJECT_STORAGE_UPLOAD_PROXY_URL: z.string().url().optional(),
   // Meilisearch (Phase 4) — voir @arborisis/search et plan/08 §8.3.
   MEILI_URL: z.string().url().default("http://localhost:7700"),
   MEILI_MASTER_KEY: z.string().min(1),

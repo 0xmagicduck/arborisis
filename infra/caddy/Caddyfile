@@ -48,6 +48,22 @@
 	# écoute sur :8080) interrogée avec une vraie requête `Range` contre le
 	# vrai bucket `arborisis-tiles` — `206 Partial Content` correct reçu.
 
+	# Proxy same-origin pour les uploads PUT pré-signés — bug réel trouvé en
+	# prod (2026-08-20, voir plan/MEMORY.md) : la passerelle S3-compat
+	# Infomaniak ne répond pas correctement aux préflights CORS (OPTIONS →
+	# 405) pour un PUT envoyé directement depuis le navigateur vers
+	# s3.pub1.infomaniak.cloud, contrairement à MinIO en dev. Même limitation
+	# déjà rencontrée pour /tiles/* en Phase 5 (CORS Infomaniak indisponible).
+	# `OBJECT_STORAGE_UPLOAD_PROXY_URL=https://{$ARBORISIS_DOMAIN}/storage-upload`
+	# (apps/api/src/config.ts) fait réécrire l'origine de l'URL pré-signée
+	# vers ce chemin — le chemin `/arborisis-storage/...` et la querystring de
+	# signature SigV4 sont préservés tels quels par `handle_path`.
+	handle_path /storage-upload/* {
+		reverse_proxy https://s3.pub1.infomaniak.cloud {
+			header_up Host s3.pub1.infomaniak.cloud
+		}
+	}
+
 	handle {
 		reverse_proxy web:3000
 	}
@@ -67,6 +83,13 @@
 		# API même origine, tuiles PMTiles/audio proxy sur l'Object Storage
 		# Infomaniak.
 		#
+		# media-src ... blob: : ajouté après un bug réel en production — le
+		# flux Ajouter prévisualise le fichier local choisi via
+		# `URL.createObjectURL` (apps/web/app/ajouter/StepDetails.tsx,
+		# local-probe.ts) avant tout upload, lu par le lecteur `<audio>`
+		# partagé. Sans `blob:` ici, la prévisualisation était bloquée par la
+		# CSP (jamais testée en navigateur réel avant la bascule Phase 6).
+		#
 		# script-src 'unsafe-inline' : le Caddyfile prévoyait initialement
 		# `script-src 'self'` seul (non vérifié en conditions réelles avant la
 		# bascule Phase 6, voir la note retirée ci-dessus) — **page blanche en
@@ -78,7 +101,7 @@
 		# reste). À remplacer par une CSP à base de nonce par requête
 		# (middleware Next.js + en-tête généré dynamiquement plutôt que statique
 		# dans ce Caddyfile) — non fait ici, voir plan/MEMORY.md.
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.pub1.infomaniak.cloud; media-src 'self' https://*.pub1.infomaniak.cloud; connect-src 'self' https://*.pub1.infomaniak.cloud; worker-src 'self' blob:; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.pub1.infomaniak.cloud; media-src 'self' blob: https://*.pub1.infomaniak.cloud; connect-src 'self' https://*.pub1.infomaniak.cloud; worker-src 'self' blob:; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
 		-Server
 	}
 }

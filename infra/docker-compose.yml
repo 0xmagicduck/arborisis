@@ -66,6 +66,11 @@ services:
       DATABASE_URL: postgres://arborisis:${POSTGRES_PASSWORD}@postgres:5432/arborisis
       REDIS_URL: redis://redis:6379
       MEILI_URL: http://meilisearch:7700
+      # Bug réel trouvé en prod (2026-08-20, voir plan/MEMORY.md) : CORS cassé
+      # côté passerelle S3-compat Infomaniak pour les PUT pré-signés envoyés
+      # directement par le navigateur — proxifiés same-origin par Caddy à la
+      # place (voir infra/caddy/Caddyfile, handle_path /storage-upload/*).
+      OBJECT_STORAGE_UPLOAD_PROXY_URL: https://${ARBORISIS_DOMAIN}/storage-upload
     depends_on:
       postgres:
         condition: service_healthy
