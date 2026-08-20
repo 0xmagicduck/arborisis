@@ -2,12 +2,17 @@ import { eq } from "drizzle-orm";
 import { Worker } from "bullmq";
 import { createDb, recordings } from "@arborisis/db";
 import { createRedisConnection, PUBLISH_RECORDING_QUEUE, type PublishRecordingJobData } from "@arborisis/queue";
+import { createSearchClient, ensureRecordingsIndex } from "@arborisis/search";
 import { createStorageClient } from "@arborisis/storage";
 import { config } from "./config.js";
 import { processPublishRecording, type PublishDeps } from "./jobs/publish-recording.js";
 
 const db = createDb(config.DATABASE_URL);
 const storage = createStorageClient(config.storage);
+const search = createSearchClient(config.search);
+// Idempotent — voir @arborisis/search. L'API l'appelle aussi à son démarrage ;
+// les deux processus peuvent démarrer dans n'importe quel ordre sans risque.
+await ensureRecordingsIndex(search);
 
 const deps: PublishDeps = {
   db,
@@ -16,6 +21,7 @@ const deps: PublishDeps = {
   archiveToIA: config.ARCHIVE_TO_IA,
   ffmpegPath: config.FFMPEG_PATH,
   ffprobePath: config.FFPROBE_PATH,
+  search,
 };
 
 const worker = new Worker<PublishRecordingJobData>(

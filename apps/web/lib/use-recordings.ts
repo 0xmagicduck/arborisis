@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Recording } from "@arborisis/shared-types";
-import { listRecordings, type ListRecordingsParams } from "./api";
+import { getRecording, listRecordings, type ListRecordingsParams } from "./api";
 
 interface UseRecordingsResult {
   recordings: Recording[];
@@ -53,4 +53,36 @@ export function useRecordings(params: ListRecordingsParams = {}, enabled = true)
   useEffect(() => load(), [load]);
 
   return { recordings, status, error, retry: () => setAttempt((a) => a + 1) };
+}
+
+/**
+ * Détail complet d'un seul enregistrement par id — utilisé par Explorer
+ * (Phase 4) pour peupler le panneau de sélection à partir d'un marqueur de
+ * carte, qui ne porte que des champs allégés (voir `RecordingMarker`,
+ * `GET /recordings/viewport`) et pas de quoi remplir `RecordingSummaryCard`
+ * (waveform, auteur, etc.) — voir plan/08 §8.2 point 4 ("requête ciblée").
+ */
+export function useRecording(id: string | null): { recording: Recording | null; status: "idle" | "loading" | "ready" } {
+  const [recording, setRecording] = useState<Recording | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "ready">("idle");
+
+  useEffect(() => {
+    if (!id) {
+      setRecording(null);
+      setStatus("idle");
+      return;
+    }
+    let cancelled = false;
+    setStatus("loading");
+    getRecording(id).then((result) => {
+      if (cancelled) return;
+      setRecording(result);
+      setStatus("ready");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  return { recording, status };
 }

@@ -1,100 +1,261 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { Recording } from "@arborisis/shared-types";
+import { useEffect, useRef, useState } from "react";
+import maplibregl, { AttributionControl } from "maplibre-gl";
+import { Protocol } from "pmtiles";
+import Supercluster from "supercluster";
+import type { RecordingMarker } from "@arborisis/shared-types";
+import { fetchViewportRecordings } from "@/lib/api";
+import { buildQuietCartographyStyle } from "../map-style/quiet-cartography";
+import "maplibre-gl/dist/maplibre-gl.css";
 import styles from "./ExplorerMap.module.css";
 
-const VIEW_W = 1440;
-const VIEW_H = 740;
-
 /**
- * Fond de carte abstrait — traitement graphique "quiet cartography" (contours
- * fins, pas de tuiles satellite), PAS une géographie réelle. Voir
- * design/handoff/DEV-HANDOFF.md §3.1 : "en production la carte est une vraie
- * carte interactive [...] seul le traitement graphique doit être reproduit".
- * L'intégration MapLibre/pmtiles réelle est Phase 4 (plan/TASKS.md) — ce
- * placeholder projette néanmoins les coordonnées réelles des enregistrements
- * (équirectangulaire) pour que les positions relatives restent honnêtes.
+ * Carte Explorer réelle — MapLibre GL JS + PMTiles + clustering client
+ * Supercluster (Phase 4, voir plan/TASKS.md et plan/08-donnees-et-recherche.md
+ * §8.2). Remplace le placeholder SVG de la Phase 3.
+ *
+ * Marqueurs rendus en `maplibregl.Marker` HTML plutôt qu'en couche native
+ * `circle`/`symbol` MapLibre : permet (1) de reproduire exactement les
+ * variantes `default`/`selected`/`cluster` du handoff (§2.4) avec nos
+ * propres tokens de couleur/typo sans dépendre d'un serveur de glyphs
+ * externe pour le nombre du cluster, et (2) une gestion clavier/ARIA
+ * cohérente avec le reste de l'app (voir styles.marker* ci-dessous).
  */
-const CONTOUR_PATHS = [
-  { d: "M-10,150 C140,60 300,25 440,85 C550,130 540,215 635,255 C745,300 730,200 865,190 C1000,180 1050,265 1015,340 C975,420 1065,460 1180,445 C1275,432 1345,478 1440,458 L1440,740 L-10,740 Z", opacity: 0.85, width: 1 },
-  { d: "M-10,225 C145,140 295,110 435,165 C548,205 540,275 632,310 C740,350 728,265 862,255 C995,246 1042,320 1010,388 C972,458 1060,492 1173,478 C1266,467 1332,498 1440,480", opacity: 0.28, width: 0.75 },
-  { d: "M-10,300 C150,225 298,198 438,248 C550,285 543,345 636,375 C742,410 730,335 865,326 C996,318 1040,382 1008,442 C972,505 1058,535 1170,522 C1262,512 1328,540 1440,524", opacity: 0.16, width: 0.75 },
-  { d: "M-10,375 C155,308 300,285 442,330 C552,363 546,415 640,440 C744,468 732,404 868,396 C998,388 1040,442 1010,494 C976,548 1058,572 1168,562 C1258,553 1324,578 1440,564", opacity: 0.1, width: 0.75 },
-];
 
-/** Équirectangulaire simple — suffisant pour un placeholder, pas une projection cartographique de production. */
-function project(lat: number, lng: number): { x: number; y: number } {
-  const x = ((lng + 180) / 360) * VIEW_W;
-  const y = ((90 - lat) / 180) * VIEW_H;
-  return { x, y };
+type MarkerProps = { id: string; title: string };
+type MarkerPoint = Supercluster.PointFeature<MarkerProps>;
+// `ClusterFeature<C>` — `C` est le type des propriétés de cluster produites
+// par `map`/`reduce` (non utilisés ici, voir `Supercluster.AnyProps` par
+// défaut) : pas la même chose que `MarkerProps` (les propriétés d'un point).
+type MarkerCluster = Supercluster.ClusterFeature<Supercluster.AnyProps>;
+
+const CLUSTER_RADIUS_PX = 50; // voir handoff §2.4 ("distance < 40px" à titre indicatif)
+const CLUSTER_MAX_ZOOM = 16;
+
+let protocolRegistered = false;
+function ensurePmtilesProtocol() {
+  if (protocolRegistered) return;
+  const protocol = new Protocol();
+  maplibregl.addProtocol("pmtiles", protocol.tile);
+  protocolRegistered = true;
+}
+
+function toPointFeature(marker: RecordingMarker): MarkerPoint {
+  return {
+    type: "Feature",
+    properties: { id: marker.id, title: marker.title },
+    geometry: { type: "Point", coordinates: [marker.locationLng, marker.locationLat] },
+  };
 }
 
 interface ExplorerMapProps {
-  recordings: Recording[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  /** Recentrage — voir apps/web/app/page.tsx (`?focus=<id>` depuis RecordingDetail). */
+  flyTo?: { id: string; lat: number; lng: number } | null;
 }
 
-export function ExplorerMap({ recordings, selectedId, onSelect }: ExplorerMapProps) {
-  const [zoom, setZoom] = useState(1);
+export function ExplorerMap({ selectedId, onSelect, flyTo }: ExplorerMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const indexRef = useRef(new Supercluster<MarkerProps>({ radius: CLUSTER_RADIUS_PX, maxZoom: CLUSTER_MAX_ZOOM }));
+  const domMarkersRef = useRef(new Map<string, maplibregl.Marker>());
+  // Refs plutôt que dépendances d'effet pour `onSelect`/`selectedId` : évite
+  // de reconstruire la carte (coûteux) à chaque changement de sélection —
+  // seul le handler `updateMarkers` a besoin de la valeur à jour.
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
+  const selectedIdRef = useRef(selectedId);
+  selectedIdRef.current = selectedId;
 
-  const markers = useMemo(
-    () => recordings.map((r) => ({ id: r.id, title: r.title, ...project(r.locationLat, r.locationLng) })),
-    [recordings]
-  );
+  const [points, setPoints] = useState<RecordingMarker[]>([]);
+
+  // --- Création de la carte (une seule fois) ---
+  useEffect(() => {
+    if (!containerRef.current) return;
+    ensurePmtilesProtocol();
+
+    const pmtilesUrl = process.env.NEXT_PUBLIC_PMTILES_URL ?? "/tiles/luxembourg.pmtiles";
+    const map = new maplibregl.Map({
+      container: containerRef.current,
+      style: buildQuietCartographyStyle(pmtilesUrl),
+      // Centre par défaut arbitraire (Europe de l'Ouest) — aucune emprise de
+      // production tranchée pour l'instant (plan/07 §7.7), sert seulement à
+      // afficher directement le fichier de tuiles de démo (Luxembourg) sans
+      // interaction. Les marqueurs d'enregistrements, eux, s'affichent
+      // n'importe où dans le monde indépendamment de la couverture du fond
+      // de carte (le fond reste simplement `--color-paper` hors couverture).
+      center: [6.13, 49.61],
+      zoom: 8,
+      attributionControl: false,
+      // §2.4 : "pas de comportement custom à inventer" au-delà du standard —
+      // on garde les contrôles MapLibre par défaut pour pan/scroll/pinch,
+      // seuls les boutons +/- visuels sont custom (voir styles.zoomControls).
+    });
+    map.addControl(new AttributionControl({ compact: false }), "bottom-right");
+    mapRef.current = map;
+
+    function loadViewport() {
+      const b = map.getBounds();
+      fetchViewportRecordings({
+        minLng: b.getWest(),
+        minLat: b.getSouth(),
+        maxLng: b.getEast(),
+        maxLat: b.getNorth(),
+      })
+        .then(setPoints)
+        .catch(() => {
+          // Échec silencieux ici : la carte reste utilisable sans marqueurs
+          // plutôt que de bloquer tout l'écran sur une erreur réseau
+          // ponctuelle — l'utilisateur peut re-déplacer la carte pour
+          // redéclencher un essai (voir plan/08 §8.2, pas d'état d'erreur
+          // dédié spécifié pour ce cas).
+        });
+    }
+
+    map.on("load", loadViewport);
+    map.on("moveend", loadViewport);
+
+    // Copié dans une variable locale pour le nettoyage : `domMarkersRef` est
+    // un `Map` stable pour toute la durée de vie du composant (jamais
+    // réassigné), donc `.current` ne peut pas "changer" entre le montage et
+    // le démontage au sens où le lint le redoute — copie purement pour
+    // satisfaire la règle sans `eslint-disable`.
+    const domMarkers = domMarkersRef.current;
+    return () => {
+      domMarkers.forEach((marker) => marker.remove());
+      domMarkers.clear();
+      map.remove();
+      mapRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // --- Recharge l'index Supercluster quand les points du viewport changent ---
+  useEffect(() => {
+    indexRef.current.load(points.map(toPointFeature));
+    updateMarkers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [points]);
+
+  // --- Reclustering pendant le zoom/pan (avant qu'un nouveau `moveend` ne
+  // recharge les points depuis l'API) — voir plan/08 §8.2 point 3. ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.on("render", updateMarkers);
+    return () => {
+      map.off("render", updateMarkers);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // --- Recentrage depuis RecordingDetail (`?focus=<id>`) ---
+  useEffect(() => {
+    if (!flyTo || !mapRef.current) return;
+    mapRef.current.flyTo({ center: [flyTo.lng, flyTo.lat], zoom: Math.max(mapRef.current.getZoom(), 12) });
+  }, [flyTo]);
+
+  // --- Ré-applique juste la variante visuelle (default/selected) sans tout
+  // recalculer quand seule la sélection change (clic venant du panneau/de la
+  // bande "Selected", pas du déplacement de la carte). ---
+  useEffect(() => {
+    updateMarkers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
+
+  function updateMarkers() {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const bounds = map.getBounds();
+    const bbox: [number, number, number, number] = [
+      bounds.getWest(),
+      bounds.getSouth(),
+      bounds.getEast(),
+      bounds.getNorth(),
+    ];
+    const zoom = Math.round(map.getZoom());
+    const features = indexRef.current.getClusters(bbox, zoom);
+
+    const seenKeys = new Set<string>();
+
+    for (const feature of features) {
+      // `Position` (type GeoJSON) est un `number[]` générique, pas un tuple
+      // fixe (une position peut porter une altitude en 3ᵉ élément) — sous
+      // `noUncheckedIndexedAccess`, la déstructuration donne donc
+      // `number | undefined`. Les valeurs par défaut lèvent l'ambiguïté sans
+      // changer de comportement réel : Supercluster ne produit ici que des
+      // points 2D (voir `toPointFeature` ci-dessus).
+      const [lng = 0, lat = 0] = feature.geometry.coordinates;
+      const isCluster = "cluster" in feature.properties && feature.properties.cluster === true;
+      const key = isCluster
+        ? `cluster-${(feature as MarkerCluster).properties.cluster_id}`
+        : (feature as MarkerPoint).properties.id;
+      seenKeys.add(key);
+
+      let marker = domMarkersRef.current.get(key);
+      if (!marker) {
+        const el = document.createElement("button");
+        el.type = "button";
+        marker = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([lng, lat]).addTo(map);
+        domMarkersRef.current.set(key, marker);
+      } else {
+        marker.setLngLat([lng, lat]);
+      }
+
+      const el = marker.getElement();
+      if (isCluster) {
+        const clusterFeature = feature as MarkerCluster;
+        const count = clusterFeature.properties.point_count;
+        // `?? ""` : les classes CSS Modules sont typées `string | undefined`
+        // sous `noUncheckedIndexedAccess` (index signature générée par
+        // Next.js) — `el.className` (API DOM native) exige un `string` strict,
+        // contrairement à `className` en JSX qui accepte `undefined`. La clé
+        // existe réellement dans ExplorerMap.module.css, ce filet ne joue
+        // donc aucun rôle en pratique.
+        el.className = styles.clusterMarker ?? "";
+        el.setAttribute("aria-label", `${count} enregistrements`);
+        el.textContent = String(clusterFeature.properties.point_count_abbreviated ?? count);
+        el.onclick = () => {
+          const expansionZoom = Math.min(
+            indexRef.current.getClusterExpansionZoom(clusterFeature.properties.cluster_id),
+            CLUSTER_MAX_ZOOM + 1
+          );
+          map.easeTo({ center: [lng, lat], zoom: expansionZoom });
+        };
+      } else {
+        const pointFeature = feature as MarkerPoint;
+        const id = pointFeature.properties.id;
+        const title = pointFeature.properties.title;
+        const selected = id === selectedIdRef.current;
+        el.className = (selected ? styles.pointMarkerSelected : styles.pointMarker) ?? "";
+        el.setAttribute("aria-label", title);
+        el.setAttribute("aria-pressed", String(selected));
+        el.textContent = "";
+        el.onclick = () => onSelectRef.current(id);
+      }
+    }
+
+    for (const [key, marker] of domMarkersRef.current) {
+      if (!seenKeys.has(key)) {
+        marker.remove();
+        domMarkersRef.current.delete(key);
+      }
+    }
+  }
 
   return (
     <div className={styles.wrap}>
-      <svg
-        className={styles.svg}
-        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        preserveAspectRatio="xMidYMid slice"
-        role="img"
-        aria-label="Carte des enregistrements"
-      >
-        <g className={styles.zoomGroup} style={{ transform: `scale(${zoom})` }}>
-          <rect x="0" y="0" width={VIEW_W} height={VIEW_H} fill="var(--color-paper)" />
-          {CONTOUR_PATHS.map((path, i) => (
-            <path key={i} d={path.d} fill="none" stroke="var(--color-ink)" strokeWidth={path.width} opacity={path.opacity} />
-          ))}
-          {markers.map((marker) => {
-            const selected = marker.id === selectedId;
-            return (
-              <g
-                key={marker.id}
-                className={styles.marker}
-                onClick={() => onSelect(marker.id)}
-                role="button"
-                tabIndex={0}
-                aria-label={marker.title}
-                aria-pressed={selected}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") onSelect(marker.id);
-                }}
-              >
-                {/* Zone cliquable élargie (§2.4 — cible tactile mobile 32×32px minimum). */}
-                <circle className={styles.markerHit} cx={marker.x} cy={marker.y} r={16} />
-                {selected ? (
-                  <>
-                    <circle cx={marker.x} cy={marker.y} r={10} fill="none" stroke="var(--color-accent)" strokeWidth={1} />
-                    <circle cx={marker.x} cy={marker.y} r={3.2} fill="var(--color-accent)" />
-                  </>
-                ) : (
-                  <circle cx={marker.x} cy={marker.y} r={2.6} fill="var(--color-ink)" />
-                )}
-              </g>
-            );
-          })}
-        </g>
-      </svg>
+      <div ref={containerRef} className={styles.mapCanvas} role="img" aria-label="Carte des enregistrements" />
 
       <div className={styles.zoomControls}>
         <button
           type="button"
           className={styles.zoomButton}
           aria-label="Zoomer"
-          onClick={() => setZoom((z) => Math.min(4, z + 0.5))}
+          onClick={() => mapRef.current?.zoomIn()}
         >
           +
         </button>
@@ -102,7 +263,7 @@ export function ExplorerMap({ recordings, selectedId, onSelect }: ExplorerMapPro
           type="button"
           className={styles.zoomButton}
           aria-label="Dézoomer"
-          onClick={() => setZoom((z) => Math.max(1, z - 0.5))}
+          onClick={() => mapRef.current?.zoomOut()}
         >
           –
         </button>

@@ -8,6 +8,7 @@ import dbPlugin from "./plugins/db.js";
 import envPlugin from "./plugins/env.js";
 import queuePlugin from "./plugins/queue.js";
 import redisPlugin from "./plugins/redis.js";
+import searchPlugin from "./plugins/search.js";
 import storagePlugin from "./plugins/storage.js";
 import authRoutes from "./routes/auth.js";
 import healthRoutes from "./routes/health.js";
@@ -36,6 +37,7 @@ export async function buildApp(env: Env) {
     },
   });
   await app.register(queuePlugin, { redisUrl: env.REDIS_URL });
+  await app.register(searchPlugin, { host: env.MEILI_URL, apiKey: env.MEILI_MASTER_KEY });
 
   await app.register(cors, {
     origin: env.WEBAUTHN_ORIGIN,

@@ -6,8 +6,11 @@ import { Button } from "@/components/Button";
 import { PlayButton } from "@/components/PlayButton";
 import { useAudioPlayer } from "@/lib/audio-player";
 import { formatDuration } from "@/lib/format";
+import { searchPlaces, type PlaceSuggestion } from "@/lib/geocoding";
 import { formatFileSize } from "./local-probe";
 import styles from "./page.module.css";
+
+const GEOCODE_DEBOUNCE_MS = 280; // même valeur que Recherche, voir DEV-HANDOFF §3.6
 
 export interface DetailsValues {
   title: string;
@@ -28,17 +31,21 @@ interface StepDetailsProps {
 
 /**
  * Étape 2 — voir design/handoff/DEV-HANDOFF.md §3.4 et
- * design/system/Upload2.dc.html. Pas d'autocomplete géographique ici : le
- * géocodage (Photon) est Phase 4 (plan/TASKS.md) — les coordonnées sont
- * captées via la géolocalisation navigateur le temps que l'utilisateur·ice
- * décrit le lieu en texte libre, voir bouton "Use my current location"
- * ci-dessous (décision documentée dans le journal de session).
+ * design/system/Upload2.dc.html. Autocomplete géographique (Photon, voir
+ * plan/07-carte-open-source.md §7.5) depuis la Phase 4 : chaque suggestion
+ * choisie renseigne à la fois le libellé "Lieu, Pays" et les coordonnées en
+ * un seul geste. Le bouton "Use my current location" (géolocalisation
+ * navigateur) reste disponible en complément — utile quand le lieu ne
+ * correspond à aucun résultat Photon pertinent (repli hors sentiers,
+ * toponyme absent d'OSM) plutôt qu'un blocage complet du flux.
  */
 export function StepDetails({ file, durationSeconds, values, onBack, onContinue }: StepDetailsProps) {
   const [form, setForm] = useState(values);
   const [geoStatus, setGeoStatus] = useState<"idle" | "locating" | "done" | "error">(
     values.locationLat != null ? "done" : "idle"
   );
+  const [suggestions, setSuggestions] = useState<PlaceSuggestion[]>([]);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const { toggle, isPlaying } = useAudioPlayer();
 
   // Mémoïsé + révoqué au démontage plutôt que recréé à chaque rendu (fuite
@@ -46,6 +53,39 @@ export function StepDetails({ file, durationSeconds, values, onBack, onContinue 
   const previewUrl = useMemo(() => URL.createObjectURL(file), [file]);
   useEffect(() => () => URL.revokeObjectURL(previewUrl), [previewUrl]);
   const playing = isPlaying("local-preview");
+
+  // Debounce (même valeur que Recherche, DEV-HANDOFF §3.6) + `AbortController`
+  // pour ignorer une réponse Photon devenue obsolète si l'utilisateur·ice
+  // retape entre-temps (évite qu'une réponse lente écrase une saisie plus
+  // récente, cf. pattern déjà établi dans lib/use-recordings.ts avec `cancelled`).
+  useEffect(() => {
+    const query = form.locationLabel;
+    if (query.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      searchPlaces(query, controller.signal)
+        .then(setSuggestions)
+        .catch(() => {
+          // Erreur réseau ponctuelle sur l'autocomplete : pas d'état d'erreur
+          // dédié, l'utilisateur·ice peut toujours taper le lieu en texte
+          // libre et utiliser "Use my current location" pour les coordonnées.
+        });
+    }, GEOCODE_DEBOUNCE_MS);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [form.locationLabel]);
+
+  function selectSuggestion(suggestion: PlaceSuggestion) {
+    setForm((f) => ({ ...f, locationLabel: suggestion.label, locationLat: suggestion.lat, locationLng: suggestion.lng }));
+    setGeoStatus("done");
+    setSuggestions([]);
+    setSuggestionsOpen(false);
+  }
 
   function requestLocation() {
     setGeoStatus("locating");
@@ -88,15 +128,41 @@ export function StepDetails({ file, durationSeconds, values, onBack, onContinue 
           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
           required
         />
-        <div>
+        <div className={styles.locationField}>
           <TextField
             id="location"
             label="Location"
             placeholder="e.g. Sonian Forest, Belgium"
             value={form.locationLabel}
-            onChange={(e) => setForm((f) => ({ ...f, locationLabel: e.target.value }))}
+            onChange={(e) => {
+              setForm((f) => ({ ...f, locationLabel: e.target.value }));
+              setSuggestionsOpen(true);
+            }}
+            onFocus={() => setSuggestionsOpen(true)}
+            // Délai avant fermeture : laisse le `onClick` d'une suggestion se
+            // déclencher avant que le blur ne démonte la liste (pattern
+            // standard pour un combobox non natif sans librairie dédiée).
+            onBlur={() => setTimeout(() => setSuggestionsOpen(false), 150)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setSuggestionsOpen(false);
+            }}
+            autoComplete="off"
+            role="combobox"
+            aria-expanded={suggestionsOpen && suggestions.length > 0}
+            aria-controls="location-suggestions"
             required
           />
+          {suggestionsOpen && suggestions.length > 0 && (
+            <ul id="location-suggestions" role="listbox" className={styles.locationSuggestions}>
+              {suggestions.map((suggestion) => (
+                <li key={`${suggestion.label}-${suggestion.lat}-${suggestion.lng}`} role="option" aria-selected={false}>
+                  <button type="button" className={styles.locationSuggestionButton} onClick={() => selectSuggestion(suggestion)}>
+                    {suggestion.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
           <div className={styles.locationHelper}>
             {geoStatus !== "done" && (
               <button type="button" className={styles.locationHelperLink} onClick={requestLocation}>

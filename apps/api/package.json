@@ -16,6 +16,7 @@
   "dependencies": {
     "@arborisis/db": "workspace:*",
     "@arborisis/queue": "workspace:*",
+    "@arborisis/search": "workspace:*",
     "@arborisis/shared-types": "workspace:*",
     "@arborisis/storage": "workspace:*",
     "@fastify/cookie": "^11.0.1",

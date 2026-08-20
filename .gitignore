@@ -31,3 +31,8 @@ build/
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Tuiles cartographiques générées (Planetiler) — artefact, pas du code source,
+# voir infra/tiles/README.md. En production ce fichier va sur l'Object
+# Storage, jamais dans le dépôt (plusieurs dizaines de Mo à plusieurs Go).
+apps/web/public/tiles/

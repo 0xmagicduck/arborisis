@@ -129,3 +129,85 @@ export const createRecordingRequestSchema = createRecordingInputSchema.extend({
   uploadId: z.string().uuid(),
 });
 export type CreateRecordingRequest = z.infer<typeof createRecordingRequestSchema>;
+
+/**
+ * GET /recordings/viewport — marqueur allégé pour la carte Explorer (Phase 4,
+ * voir plan/08-donnees-et-recherche.md §8.2) : uniquement les champs
+ * nécessaires au rendu d'un marqueur, pas la waveform/description/etc. Le
+ * détail complet est récupéré via `GET /recordings/:id` au clic (déjà
+ * existant, voir `recordingSchema`).
+ */
+export const recordingMarkerSchema = recordingSchema.pick({
+  id: true,
+  title: true,
+  locationLat: true,
+  locationLng: true,
+});
+export type RecordingMarker = z.infer<typeof recordingMarkerSchema>;
+
+export const viewportQuerySchema = z.object({
+  // Bounding box du viewport carte courant — voir ST_MakeEnvelope côté API.
+  minLng: z.coerce.number().min(-180).max(180),
+  minLat: z.coerce.number().min(-90).max(90),
+  maxLng: z.coerce.number().min(-180).max(180),
+  maxLat: z.coerce.number().min(-90).max(90),
+  // Plafond de raison — voir plan/08 §8.5 ("à trancher" selon le volume réel).
+  limit: z.coerce.number().int().positive().max(500).default(500),
+});
+export type ViewportQuery = z.infer<typeof viewportQuerySchema>;
+
+/**
+ * GET /recordings/search — recherche Meilisearch (Phase 4, voir plan/08 §8.3).
+ * Remplace l'ILIKE naïf de `GET /recordings` utilisé jusqu'ici par `/recherche`.
+ */
+// `tags`/`license`/`locationLabel` arrivent en query string HTTP comme une
+// chaîne unique séparée par des virgules (`?tags=forest,birds`) plutôt qu'en
+// paramètre répété (`?tags=forest&tags=birds`) : évite de dépendre du parser
+// de querystring de Fastify (un seul `?a=1&a=2` n'est pas toujours normalisé
+// en tableau selon la configuration), plus simple à construire côté client.
+//
+// Chaque valeur est `encodeURIComponent`-échappée avant d'être jointe (voir
+// `apps/web/lib/api.ts`) — indispensable pour `locationLabel`, qui contient
+// lui-même une virgule ("Lieu, Pays", voir packages/db/src/schema.ts) : sans
+// cet échappement, un split naïf sur "," couperait la valeur au mauvais
+// endroit. `decodeURIComponent` échoue silencieusement (valeur ignorée)
+// plutôt que de faire planter la requête sur un paramètre malformé.
+const commaSeparatedList = z.preprocess((value) => {
+  if (typeof value !== "string" || value.trim() === "") return [];
+  return value
+    .split(",")
+    .map((v) => {
+      try {
+        return decodeURIComponent(v.trim());
+      } catch {
+        return "";
+      }
+    })
+    .filter(Boolean);
+}, z.array(z.string()));
+
+export const searchRecordingsQuerySchema = z.object({
+  q: z.string().trim().max(140).default(""),
+  // Facettes — voir plan/08 §8.3 ("tags, location_label, duration_seconds,
+  // license") et l'écran Recherche (design/system/Search.dc.html, filtres
+  // "location / tag / duration"). `locationLabel` en filtre exact (valeur de
+  // facette complète, ex. "Sonian Forest, Belgium") plutôt qu'un texte libre
+  // séparé — le champ de recherche principal (`q`) couvre déjà la recherche
+  // floue sur le lieu.
+  // `.default([])` inutile ici : `commaSeparatedList` (preprocess) renvoie
+  // toujours un tableau, jamais `undefined`, même pour une clé absente.
+  tags: commaSeparatedList,
+  license: commaSeparatedList.pipe(z.array(licenseSchema)),
+  locationLabel: commaSeparatedList,
+  minDurationSeconds: z.coerce.number().int().nonnegative().optional(),
+  maxDurationSeconds: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().positive().max(100).default(60),
+});
+export type SearchRecordingsQuery = z.infer<typeof searchRecordingsQuerySchema>;
+
+export const searchFacetsSchema = z.object({
+  tags: z.record(z.string(), z.number().int().nonnegative()),
+  license: z.record(z.string(), z.number().int().nonnegative()),
+  locationLabel: z.record(z.string(), z.number().int().nonnegative()),
+});
+export type SearchFacets = z.infer<typeof searchFacetsSchema>;
