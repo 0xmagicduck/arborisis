@@ -1,0 +1,43 @@
+.dockerignore
+  s_2ac8dcbd7f754c::t_ce9dde6a86398f 1-14
+README.md
+  s_2ac8dcbd7f754c::t_8d29ffdca5ca8f 12
+apps/web/app/globals.css
+  s_2ac8dcbd7f754c::t_2bfdce4f2e41d2 14
+apps/web/app/login/page.tsx
+  s_2ac8dcbd7f754c::t_731418b0a7c609 5,7-10,12,19,32,41-52,58,61-66,68
+apps/web/app/register/page.tsx
+  s_2ac8dcbd7f754c::t_483426642c571d 4-5,7-10,12,25-26,43,54-58,60-64,69-74,79-90,98,101-106,108
+apps/web/components/AuthPage.module.css
+  s_2ac8dcbd7f754c::t_f9c38a18e7d545 1-98
+apps/web/components/AuthPage.tsx
+  s_2ac8dcbd7f754c::t_6d873260db362d 1-37
+infra/README.md
+  s_2ac8dcbd7f754c::t_0cbedb04ce4cf9 1-103
+infra/caddy/Caddyfile
+  s_2ac8dcbd7f754c::t_1d73d2903e6dd8 25-32
+infra/docker-compose.yml
+  s_2ac8dcbd7f754c::t_5aeef7fb87d1d0 1-10,27-136,140-142
+infra/docker/Dockerfile
+  s_2ac8dcbd7f754c::t_55fa6747a06b27 1-74
+plan/TASKS.md
+  s_2ac8dcbd7f754c::t_f1d40334f87752 6,51,59,191
+infra/backup/README.md
+  s_2ac8dcbd7f754c::t_f3573c51c01ba1 19,21-25,36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1abc83d7903484b5ac0f0d83cbef16bc46b27c20",
+  "prompts": {},
+  "sessions": {
+    "s_2ac8dcbd7f754c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bb3fef28-e087-499e-a5b3-3cbae454da74",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
