@@ -1,0 +1,83 @@
+apps/api/src/plugins/search.ts
+  s_e967cee55bafa8::t_cd9c5880660e51 1-35
+apps/web/lib/geocoding.ts
+  s_e967cee55bafa8::t_00492dcf340ab5 1-52
+apps/web/map-style/quiet-cartography.ts
+  s_e967cee55bafa8::t_a5611ca14503af 1-160
+infra/tiles/README.md
+  s_e967cee55bafa8::t_55253963befccd 1-89
+infra/tiles/generate.sh
+  s_e967cee55bafa8::t_3cf921c9976828 1-64
+packages/search/package.json
+  s_e967cee55bafa8::t_c2946b3bd68b94 1-27
+packages/search/src/index.ts
+  s_e967cee55bafa8::t_0b5a07b97e7506 1-146
+packages/search/tsconfig.json
+  s_e967cee55bafa8::t_1f36f0a1ad69ec 1-10
+.env.example
+  s_e967cee55bafa8::t_6c193d9cb30853 44-56
+.gitignore
+  s_e967cee55bafa8::t_d3418bd63202b9 34-38
+README.md
+  s_e967cee55bafa8::t_bcedd858a55c5b 12
+apps/api/package.json
+  s_e967cee55bafa8::t_f86a60721bfd48 19
+apps/api/src/app.ts
+  s_e967cee55bafa8::t_4a64b8be8b48b9 11,40
+apps/api/src/config.ts
+  s_e967cee55bafa8::t_5825dea2c87186 38-40
+apps/api/src/routes/recordings.ts
+  s_e967cee55bafa8::t_972d3c649e672f 2,5-11,169-230
+apps/web/app/ajouter/StepDetails.tsx
+  s_e967cee55bafa8::t_69564f432eca46 9,13-14,34-40,47-48,57-89,131,137-152,155-165
+apps/web/app/ajouter/page.module.css
+  s_e967cee55bafa8::t_1c993d0afaf01e 107-148
+apps/web/app/page.tsx
+  s_e967cee55bafa8::t_eb847b4155fa34 3-4,10,13-25,28-30,43-46,59-73,78,81
+apps/web/app/recherche/page.module.css
+  s_e967cee55bafa8::t_dd497b17eadf04 36-41,43-104,107
+apps/web/app/recherche/page.tsx
+  s_e967cee55bafa8::t_a8b654e4be8d99 3-4,9,14-30,33-37,42-45,52-104,120-155,158-160,170-172,180,190-244
+apps/web/components/ExplorerMap.module.css
+  s_e967cee55bafa8::t_1a65a8802db54a 2-12,17,22-32,34-35,37-42,44-54,58-112
+apps/web/components/ExplorerMap.tsx
+  s_e967cee55bafa8::t_cb36bb7090a605 3-10,14-23,25-49,55-56,59-70,72-247,251,258,266
+apps/web/lib/api.ts
+  s_e967cee55bafa8::t_79f2f547f3afa5 1-7,65-119
+apps/web/lib/use-recordings.ts
+  s_e967cee55bafa8::t_83854ebda101d4 5,57-88
+apps/web/package.json
+  s_e967cee55bafa8::t_010fde4d9e0661 19,21,23-24,30
+apps/worker/package.json
+  s_e967cee55bafa8::t_641588998659ad 19
+apps/worker/src/config.ts
+  s_e967cee55bafa8::t_31bb9037063915 36-43,50
+apps/worker/src/index.ts
+  s_e967cee55bafa8::t_7ad5f0bc6b21e8 5,12-15,24
+apps/worker/src/jobs/publish-recording.ts
+  s_e967cee55bafa8::t_f55cc7f9201f05 10,41,49,93,105-134
+packages/shared-types/src/recording.ts
+  s_e967cee55bafa8::t_a0897e1f1f763d 132-213
+plan/MEMORY.md
+  s_e967cee55bafa8::t_0b0ba8024d01fc 50-78,101-122,216-232
+plan/TASKS.md
+  s_e967cee55bafa8::t_a64e3d7e53ce50 6,51,59,65-78,115-122,124,158-170
+pnpm-lock.yaml
+  s_e967cee55bafa8::t_d62b2cf4035745 41-43,108-110,114-116,123-125,136-138,154-156,217-226,1168-1195,1535-1540,1547-1555,1559-1561,1576-1578,2163-2165,2432-2434,2481-2483,2492-2495,2503-2505,2514-2517,2582-2585,2711-2714,2745-2747,2756-2758,2762-2765,2801-2804,2809-2811,2843-2845,2980-2983,3043-3045,3074-3076,3095-3097,3118-3123,3174-3176,3201-3203,3376-3378,3405-3407,3557-3559,3587-3591,4324-4352,4625-4630,4635-4646,4651-4652,4670-4673,5195-5196,5706-5707,5759-5760,5779-5780,5791-5792,5801-5806,5855-5856,5997-5998,6028-6029,6041-6042,6047-6048,6084-6112,6115-6116,6156-6157,6293-6297,6375-6379,6404-6405,6420-6421,6439-6442,6497-6500,6552-6553,6782-6785,6807-6808,7003-7008,7061-7064
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "06215be30354689cde0fa162adce3bdbe1b63e49",
+  "prompts": {},
+  "sessions": {
+    "s_e967cee55bafa8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b7da9b16-0cea-4f69-a870-615c89256d41",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
