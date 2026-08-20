@@ -1,0 +1,23 @@
+README.md
+  s_bdc373318c220c::t_1a854ee150fe46 12
+plan/MEMORY.md
+  s_bdc373318c220c::t_b371823db4edd8 336-376
+plan/TASKS.md
+  s_bdc373318c220c::t_12808612ea5499 6,98-99,118-128,206-207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5a00fe7698a2bea42a32d954b4437cda2c3ce5f6",
+  "prompts": {},
+  "sessions": {
+    "s_bdc373318c220c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7e635de5-5681-4f99-95f6-2d848a4bda34",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
