@@ -1,0 +1,202 @@
+.container {
+  max-width: var(--content-width-recording-detail-inner);
+  margin: 0 auto;
+  padding: 48px 40px 100px 40px;
+  width: 100%;
+}
+
+.backLink {
+  font-size: 12px;
+  color: var(--color-stone);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 28px;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 36px;
+  color: var(--color-ink-strong);
+  margin: 0 0 10px 0;
+  /* Retour à la ligne naturel autorisé, jamais tronqué — voir DEV-HANDOFF §3.3. */
+}
+
+.meta {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+.metaLocation {
+  font-size: 14px;
+  color: var(--color-ink-secondary);
+}
+
+.metaDot {
+  font-size: 12px;
+  color: var(--color-ink-faint);
+}
+
+.metaAuthorDate {
+  font-size: 13px;
+  color: var(--color-stone);
+}
+
+.playRow {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 44px;
+}
+
+/* Le PlayButton change de variante (outline→filled) et de taille au
+   breakpoint mobile (voir RecordingDetail.dc.html vs
+   MobileRecordingDetail.dc.html) — deux instances, une seule visible à la
+   fois, même logique que Header/MobileTopBar. */
+.playButtonDesktop {
+  display: block;
+}
+
+.playButtonMobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .playButtonDesktop {
+    display: none;
+  }
+  .playButtonMobile {
+    display: block;
+  }
+}
+
+.timeLabel {
+  font-size: 12px;
+  color: var(--color-stone);
+  flex-shrink: 0;
+}
+
+.columns {
+  display: flex;
+  gap: 64px;
+  padding-top: 36px;
+  border-top: 1px solid var(--line-hairline);
+}
+
+.mainCol {
+  flex: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+}
+
+.quote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--color-ink-quote);
+  margin: 0;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-stone);
+  margin-bottom: 10px;
+}
+
+.technical {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.technicalRow {
+  display: flex;
+  gap: 10px;
+  font-size: 12.5px;
+}
+
+.technicalKey {
+  color: var(--color-stone);
+  min-width: 110px;
+}
+
+.archiveLink {
+  font-size: 12px;
+  color: var(--color-stone);
+  text-decoration: underline;
+  align-self: flex-start;
+}
+
+.locationCol {
+  flex: 1;
+  max-width: 260px;
+}
+
+.locationBox {
+  border: 1px solid var(--line-strong);
+  height: 200px;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+}
+
+.locationLabel {
+  font-size: 12px;
+  color: var(--color-ink-secondary);
+  margin-top: 10px;
+}
+
+/* Mobile — colonne unique, PlayButton centré en priorité (DEV-HANDOFF §3.7). */
+@media (max-width: 767px) {
+  .container {
+    padding: 24px 20px 100px 20px;
+  }
+
+  .title {
+    font-size: 26px;
+    color: var(--color-ink-strong);
+  }
+
+  .meta {
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 32px;
+  }
+
+  .metaDot {
+    display: none;
+  }
+
+  .playRow {
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+
+  .timeLabel {
+    align-self: flex-start;
+  }
+
+  .columns {
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 20px;
+  }
+
+  .locationCol {
+    max-width: none;
+  }
+
+  .locationBox {
+    height: 110px;
+  }
+}

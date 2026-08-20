@@ -1,0 +1,72 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-paper);
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.zoomGroup {
+  transition: transform 200ms ease-out;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zoomGroup {
+    transition: none;
+  }
+}
+
+.marker {
+  cursor: pointer;
+}
+
+.markerHit {
+  fill: transparent;
+}
+
+.zoomControls {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line-strong);
+  background: var(--color-paper);
+}
+
+.zoomButton {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--color-ink-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.zoomButton:first-child {
+  border-bottom: 1px solid var(--line-strong);
+}
+
+@media (max-width: 767px) {
+  .zoomControls {
+    right: 16px;
+    bottom: 280px;
+  }
+  .zoomButton {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+  }
+}

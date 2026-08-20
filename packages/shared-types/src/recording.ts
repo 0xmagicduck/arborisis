@@ -19,6 +19,10 @@ export type RecordingStatus = z.infer<typeof recordingStatusSchema>;
 export const recordingSchema = z.object({
   id: z.string().uuid(),
   authorId: z.string().uuid(),
+  /** Pseudo public de l'auteur — dénormalisé ici via jointure côté API pour éviter un aller-retour
+   *  supplémentaire depuis chaque écran qui affiche "Recorded by {handle}" (Explorer, Découvrir). */
+  authorHandle: z.string(),
+  authorDisplayName: z.string().nullable(),
   title: z.string().min(1).max(140),
   description: z.string().max(2000).nullable(),
   locationLabel: z.string().max(140),

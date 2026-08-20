@@ -1,0 +1,22 @@
+/* Squelette de chargement discret — voir design/handoff/DEV-HANDOFF.md §5
+   ("rectangles background var(--line-hairline), opacity pulsant doucement"). */
+.skeleton {
+  background: var(--line-hairline);
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton {
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}

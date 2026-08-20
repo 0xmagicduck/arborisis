@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { recordings, type Db } from "@arborisis/db";
+import { recordings, users, type Db } from "@arborisis/db";
 import { createRecordingRequestSchema } from "@arborisis/shared-types";
 import { headObject, presignGetUrl, type S3Client } from "@arborisis/storage";
 import { requireUserId, optionalUserId } from "../lib/auth.js";
@@ -23,6 +23,11 @@ const GET_URL_TTL_SECONDS = 60 * 60;
 const recordingSelection = {
   id: recordings.id,
   authorId: recordings.authorId,
+  // Dénormalisé via jointure sur `users` — voir recordingSchema dans
+  // @arborisis/shared-types pour le pourquoi (évite un aller-retour par écran
+  // pour afficher "Recorded by {handle}").
+  authorHandle: users.handle,
+  authorDisplayName: users.displayName,
   title: recordings.title,
   description: recordings.description,
   locationLabel: recordings.locationLabel,
@@ -48,6 +53,8 @@ const recordingSelection = {
 interface RecordingRow {
   id: string;
   authorId: string;
+  authorHandle: string;
+  authorDisplayName: string | null;
   title: string;
   description: string | null;
   locationLabel: string;
@@ -79,6 +86,8 @@ async function serializeRecording(row: RecordingRow, storage: { client: S3Client
   return {
     id: row.id,
     authorId: row.authorId,
+    authorHandle: row.authorHandle,
+    authorDisplayName: row.authorDisplayName,
     title: row.title,
     description: row.description,
     locationLabel: row.locationLabel,
@@ -102,15 +111,54 @@ async function serializeRecording(row: RecordingRow, storage: { client: S3Client
   };
 }
 
+function baseRecordingsQuery(db: Db) {
+  // `innerJoin` : `recordings.author_id` est NOT NULL avec FK `ON DELETE CASCADE`
+  // vers `users` (voir packages/db/src/schema.ts), un enregistrement existant a
+  // donc toujours un auteur — pas besoin d'un left join défensif ici.
+  return db.select(recordingSelection).from(recordings).innerJoin(users, eq(users.id, recordings.authorId));
+}
+
 async function findRecordingById(db: Db, id: string): Promise<RecordingRow | undefined> {
-  const [row] = await db.select(recordingSelection).from(recordings).where(eq(recordings.id, id));
+  const [row] = await baseRecordingsQuery(db).where(eq(recordings.id, id));
   return row;
 }
 
 const recordingIdParamsSchema = z.object({ id: z.string().uuid() });
 
+// Liste publique (Explorer, Découvrir, Recherche, Profil) — voir plan/TASKS.md
+// Phase 3. `q` fait une recherche texte naïve ILIKE sur titre/lieu/tags : un
+// pis-aller volontaire en attendant l'indexation Meilisearch de la Phase 4
+// (plan/08-donnees-et-recherche.md), pas une tentative de pertinence avancée.
+const listRecordingsQuerySchema = z.object({
+  q: z.string().trim().min(1).max(140).optional(),
+  limit: z.coerce.number().int().positive().max(200).default(60),
+});
+
 const recordingsRoutes: FastifyPluginAsync = async (fastify) => {
   const { db, redis, storage, publishQueue } = fastify;
+
+  // Doit rester déclarée avant `/recordings/:id` : Fastify matche par
+  // spécificité de route, pas par ordre d'enregistrement, donc pas de
+  // conflit réel ici — mais gardé en premier pour la lisibilité (liste avant
+  // détail).
+  fastify.get("/recordings", async (request, reply) => {
+    const { q, limit } = listRecordingsQuerySchema.parse(request.query);
+
+    const textFilter = q
+      ? sql`(
+          ${recordings.title} ILIKE ${`%${q}%`}
+          OR ${recordings.locationLabel} ILIKE ${`%${q}%`}
+          OR EXISTS (SELECT 1 FROM unnest(${recordings.tags}) AS tag WHERE tag ILIKE ${`%${q}%`})
+        )`
+      : undefined;
+
+    const rows = await baseRecordingsQuery(db)
+      .where(textFilter ? and(eq(recordings.status, "published"), textFilter) : eq(recordings.status, "published"))
+      .orderBy(desc(recordings.recordedAt))
+      .limit(limit);
+
+    return reply.send({ recordings: await Promise.all(rows.map((row) => serializeRecording(row, storage))) });
+  });
 
   fastify.post(
     "/recordings",
@@ -190,9 +238,7 @@ const recordingsRoutes: FastifyPluginAsync = async (fastify) => {
     const userId = await requireUserId(request, reply, redis);
     if (!userId) return;
 
-    const rows = await db
-      .select(recordingSelection)
-      .from(recordings)
+    const rows = await baseRecordingsQuery(db)
       .where(eq(recordings.authorId, userId))
       .orderBy(desc(recordings.createdAt));
 

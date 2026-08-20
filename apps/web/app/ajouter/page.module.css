@@ -1,0 +1,247 @@
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 40px 40px 40px;
+  width: 100%;
+}
+
+.column {
+  width: 100%;
+  max-width: 560px;
+}
+
+.heading {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.subheading {
+  font-size: 13px;
+  color: var(--color-ink-secondary);
+  margin-bottom: 40px;
+}
+
+.dropzone {
+  border: 1px solid var(--line-strong);
+  padding: 64px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+  position: relative;
+  font-family: var(--font-sans);
+}
+
+.dropzone[data-drag-over="true"] {
+  border-color: var(--color-accent);
+  background: rgba(51, 81, 62, 0.03);
+}
+
+.dropzoneTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.dropzoneHint {
+  font-size: 12px;
+  color: var(--color-stone);
+}
+
+.progressBar {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width 150ms ease;
+}
+
+.privacyNote {
+  font-size: 11.5px;
+  color: var(--color-stone);
+  margin-top: 20px;
+  text-align: center;
+}
+
+.uploadError {
+  font-size: 12px;
+  color: #b3452f;
+  margin-top: 14px;
+  text-align: center;
+}
+
+.fileRecap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line-hairline);
+}
+
+.fileRecapName {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.fileRecapMeta {
+  font-size: 11px;
+  color: var(--color-stone);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.locationHelper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -4px;
+}
+
+.locationHelperLink {
+  font-size: 11.5px;
+  color: var(--color-accent);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.locationHelperStatus {
+  font-size: 11.5px;
+  color: var(--color-stone);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 48px;
+}
+
+.backLink {
+  font-size: 12px;
+  color: var(--color-stone);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.reviewCard {
+  border: 1px solid var(--line-strong);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.reviewTitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 19px;
+  margin-bottom: 4px;
+}
+
+.reviewLocation {
+  font-size: 12.5px;
+  color: var(--color-ink-secondary);
+  margin-bottom: 16px;
+}
+
+.reviewMeta {
+  font-size: 11px;
+  color: var(--color-stone);
+  margin-top: 10px;
+}
+
+.licenseGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.licenseOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font-family: var(--font-sans);
+}
+
+.radioOuter {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--color-ink-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.radioOuter[data-checked="true"] {
+  border-color: var(--color-accent);
+}
+
+.radioInner {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.licenseLabel {
+  font-size: 13px;
+  color: var(--color-ink);
+}
+
+.licenseOption:not([data-checked="true"]) .licenseLabel {
+  color: var(--color-stone);
+}
+
+.submitError {
+  font-size: 12px;
+  color: #b3452f;
+  margin-top: 16px;
+}
+
+@media (max-width: 767px) {
+  .container {
+    padding: 28px 22px 0 22px;
+  }
+
+  .dropzone {
+    padding: 44px 20px;
+  }
+
+  .footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--color-paper);
+    border-top: 1px solid var(--line-hairline);
+    padding: 18px 0 calc(28px + env(safe-area-inset-bottom, 0px)) 0;
+    margin: 28px -22px 0 -22px;
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+}

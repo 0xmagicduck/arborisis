@@ -1,0 +1,36 @@
+/* Voir design/handoff/DEV-HANDOFF.md §2.9 — une seule action primary par écran,
+   jamais l'accent vert comme fond de bouton plein. */
+.button {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 10px 22px;
+  border: 1px solid var(--color-ink);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  border-radius: var(--radius-none);
+  transition: opacity 150ms ease;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+.primary {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 11px 24px;
+}
+
+.secondary {
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.button:not(:disabled):hover {
+  opacity: 0.82;
+}

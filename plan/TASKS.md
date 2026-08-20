@@ -3,7 +3,7 @@
 Fichier de suivi vivant, à cocher au fur et à mesure. Reflète le phasage de [11-roadmap.md](11-roadmap.md).
 Légende statut : `☐` à faire · `▶` en cours · `☑` fait · `⛔` bloqué (raison en note)
 
-Dernière mise à jour : 2026-08-19 (Phase 2 close : pipeline d'upload/transcodage/publication validé en conditions réelles, y compris contre l'Object Storage Infomaniak réel)
+Dernière mise à jour : 2026-08-20 (Phase 3 close : les 6 écrans du MVP implémentés, responsive fluide desktop/mobile, validés en conditions réelles contre l'API/DB/Object Storage réels y compris un cycle d'upload complet exécuté de bout en bout dans le navigateur)
 
 ---
 
@@ -41,13 +41,20 @@ Dernière mise à jour : 2026-08-19 (Phase 2 close : pipeline d'upload/transcoda
 
 | Tâche | Statut | Note |
 |---|---|---|
-| Explorer | ☐ | Fidèle à `design/system/Explorer.dc.html` |
-| Découvrir | ☐ | `design/system/Discover.dc.html` |
-| Recording Detail | ☐ | `design/system/RecordingDetail.dc.html` |
-| Ajouter (3 étapes) | ☐ | `design/system/Upload1-3.dc.html` |
-| Profil | ☐ | `design/system/Profile.dc.html` |
-| Recherche | ☐ | `design/system/Search.dc.html` |
-| Déclinaisons mobile de chaque écran | ☐ | `design/system/Mobile*.dc.html` |
+| Explorer | ☑ | `app/page.tsx` — fidèle à `design/system/Explorer.dc.html`. Carte = placeholder SVG topographique (voir `components/ExplorerMap.tsx`) : projection équirectangulaire réelle des coordonnées, mais **pas** la vraie carte interactive (MapLibre/pmtiles/clustering = Phase 4, explicitement documenté dans le composant). Panneau de sélection + bande "Selected" (fallback accessible) vérifiés en conditions réelles |
+| Découvrir | ☑ | `app/decouvrir/page.tsx` — `design/system/Discover.dc.html`. Pas de champ `featured` en base : l'entrée mise en avant est la plus récente plutôt qu'un algorithme inventé (voir note plus bas) |
+| Recording Detail | ☑ | `app/enregistrements/[id]/page.tsx` — `design/system/RecordingDetail.dc.html`. Mini-carte cliquable → Explorer recentré (`/?focus=<id>`, vérifié) |
+| Ajouter (3 étapes) | ☑ | `app/ajouter/{page,StepSound,StepDetails,StepPublish}.tsx` — `design/system/Upload1-3.dc.html`. **Cycle complet exécuté réellement dans le navigateur** : presign → upload MinIO → création d'enregistrement → job enqueue → redirection vers la fiche publiée |
+| Profil | ☑ | `app/profil/page.tsx` — `design/system/Profile.dc.html`. Le sien uniquement (pas de profil public d'autrui, hors brief MVP). Affiche l'état `processing`/`failed` des enregistrements de l'auteur (« Archiving… ») |
+| Recherche | ☑ | `app/recherche/page.tsx` — `design/system/Search.dc.html`. `q` tape dans un `ILIKE` naïf sur titre/lieu/tags côté `GET /recordings` (voir note plus bas) : pis-aller assumé avant Meilisearch (Phase 4). Filtres "location/tag/duration" du mockup affichés en texte inerte (pas de contrepartie serveur pour l'instant) plutôt qu'en liens qui ne feraient rien |
+| Déclinaisons mobile de chaque écran | ☑ | Pas de composants "Mobile*" séparés : un même composant par écran, responsive fluide en CSS (media queries, breakpoint 768px) — cohérent avec DEV-HANDOFF §3.7/§4 ("doivent être fluides, pas figées à cette largeur"). Vérifié visuellement à 390px et desktop pour les 6 écrans |
+
+**Décisions prises pendant cette phase (à connaître avant de retoucher ces écrans) :**
+- **`GET /recordings` (liste publique)** créée — n'existait pas avant cette phase. Jointure sur `users` ajoutée à toutes les requêtes de lecture (`authorHandle`/`authorDisplayName` dans `recordingSchema`) pour afficher "Recorded by {auteur}" sans aller-retour supplémentaire. Voir `apps/api/src/routes/recordings.ts`.
+- **Géocodage non disponible en Phase 3** (Photon = Phase 4, voir plan/07-carte-open-source.md §7.5) : l'étape 2 du flux Ajouter capture les coordonnées via la géolocalisation navigateur (`navigator.geolocation`, bouton "Use my current location") pendant que l'utilisateur·ice décrit le lieu en texte libre, plutôt que de bloquer tout le flux d'upload en attendant l'intégration Photon. À remplacer par un vrai autocomplete géographique en Phase 4 — voir `apps/web/app/ajouter/StepDetails.tsx`.
+- **`BottomTabBar` : toujours les 4 mêmes items (Explorer/Découvrir/Ajouter/Recherche), jamais un 5ᵉ pour Profil** — suit la règle explicite du handoff (§2.8) plutôt que `MobileProfile.dc.html`, qui dessine à la place un badge avatar en 4ᵉ position (incohérence entre ce mockup précis et le composant tel que documenté en prose ailleurs). Profil, comme RecordingDetail et Ajouter, a un header mobile "back" et pas de barre d'onglets — voir `components/BottomTabBar.tsx`.
+- **Pas de date de prise de son dans le flux Ajouter** (`recordedAt` requis par le schéma mais aucun champ dans les mockups Upload2/3) : défaut à la date d'upload (`new Date()`), documenté comme simplification assumée plutôt qu'un champ de formulaire inventé hors design.
+- Recherche/Profil-d'autrui/pagination avancée : non couverts (pas dans le brief MVP à 6 écrans, voir `design/README.md`).
 
 ## Phase 4 — Carte et recherche
 
@@ -94,7 +101,13 @@ Dernière mise à jour : 2026-08-19 (Phase 2 close : pipeline d'upload/transcoda
 
 ## Prochaine session
 
-Phase 2 close et validée en conditions réelles (y compris contre l'Object Storage Infomaniak réel, pas seulement MinIO) — passer à la Phase 3 (écrans du MVP frontend, fidèles à `design/system/`). Le backend expose déjà tout ce dont ces écrans ont besoin : `POST /uploads/presign`, `POST /recordings`, `GET /recordings/:id`, `GET /recordings/mine`. Le flux Ajouter (3 étapes, `design/system/Upload1-3.dc.html`) peut donc s'implémenter directement contre l'API existante sans travail backend supplémentaire.
+Phase 3 close et validée en conditions réelles — passer à la Phase 4 (carte et recherche). Priorités dans l'ordre suggéré par `11-roadmap.md` :
+1. **MapLibre + premier `.pmtiles`** pour remplacer le placeholder SVG de `components/ExplorerMap.tsx` (le composant documente déjà explicitement ce qu'il faudra reproduire du traitement graphique "quiet cartography" et ce qui reste artificiel — projection équirectangulaire, pas de vraie carte).
+2. **Clustering** (Supercluster côté client + requêtes viewport PostGIS) — `ExplorerMap` n'a volontairement aucune logique de clustering pour l'instant (marqueurs individuels seulement, seuil non défini).
+3. **Géocodage Photon** pour remplacer la géolocalisation navigateur de l'étape 2 du flux Ajouter (`apps/web/app/ajouter/StepDetails.tsx`) par un vrai autocomplete de lieu — voir la décision documentée en Phase 3 ci-dessus.
+4. **Meilisearch** pour remplacer l'`ILIKE` naïf de `GET /recordings` (`apps/api/src/routes/recordings.ts`) et activer les filtres "location/tag/duration" actuellement inertes sur `/recherche`.
+
+Aucun changement de schéma de données prévu pour ces quatre points (coordonnées déjà stockées, `tags`/`locationLabel` déjà en base) — Phase 4 est surtout de l'intégration de services, pas de nouvelles migrations.
 
 ## Journal de session
 
@@ -112,3 +125,19 @@ Phase 2 close et validée en conditions réelles (y compris contre l'Object Stor
   - **Décision** : ffmpeg/ffprobe résolus via le PATH système (`apps/worker/src/config.ts`, `FFMPEG_PATH`/`FFPROBE_PATH`) plutôt que les paquets npm `ffmpeg-static`/`ffprobe-static` (~80 Mo de binaires téléchargés au postinstall) — CI mise à jour pour installer ffmpeg via apt avant les tests (`.github/workflows/ci.yml`).
   - **Effet de bord constaté** : `docker compose rm -f postgres redis meilisearch` dans ce worktree a fait disparaître les conteneurs `phase-1-project-continue-ce683f-*` d'un autre worktree (Postgres/Redis/Meilisearch, actifs depuis 35 min) — scoping de projet Docker Compose attendu par nom de dossier mais constaté défaillant ici (cause exacte non investiguée : concurrence avec une autre session, ou confusion de projet). Perte de données de dev locales dans cet autre worktree (aucune donnée de production concernée). À surveiller si plusieurs worktrees du même repo tournent `docker compose` en parallèle — signalé à l'utilisateur en session.
   - MinIO ajouté à `docker-compose.yml` (dev local, remplace l'Object Storage Infomaniak, même rôle que Postgres/Redis/Meilisearch déjà en place pour le dev sans dépendance externe). Flux testé de bout en bout via curl contre l'API réelle (Postgres/Redis/MinIO réels, ffmpeg système réel, session injectée directement en Redis faute de cérémonie WebAuthn automatisable en curl) : presign → upload → création → publication → lecture, plus le chemin d'échec (fichier invalide → 5 tentatives → `status = 'failed'`), plus les contrôles d'accès (401 sans session, 404 pour un non-auteur sur un enregistrement non publié). `pnpm build/typecheck/lint/test` verts sur les 9 packages après ces correctifs. **Phase 2 considérée close.**
+- 2026-08-20 : Phase 3 (écrans du MVP) implémentée et validée en conditions réelles. Lu intégralement le handoff design (`design/handoff/DEV-HANDOFF.md`) et les 14 mockups `.dc.html` avant tout code, pour porter les valeurs exactes (couleurs, tailles, espacements) plutôt que de les réinventer.
+
+  **Backend — extension minimale nécessaire au frontend** (voir décisions Phase 3 ci-dessus pour le détail) : `GET /recordings` (liste publique, `ILIKE` naïf sur `q`) + jointure `users` sur toutes les routes de lecture (`authorHandle`/`authorDisplayName`), voir `apps/api/src/routes/recordings.ts` et `packages/shared-types/src/recording.ts`.
+
+  **Frontend** : composants partagés (`apps/web/components/`) suivant §2 du handoff — `Header`/`MobileTopBar`/`BottomTabBar` (bascule desktop/mobile 100% CSS, les deux gabarits sont toujours rendus pour éviter tout décalage d'hydratation SSR/CSR), `PlayButton` (cross-fade play/pause, `prefers-reduced-motion` respecté), `Waveform` (barres flex responsives, squelette si `waveformPeaks` est `null`), `RecordingRow`/`RecordingCard` (bascule de layout desktop→mobile via `grid-template-areas` + `display:contents`, pas de composants dupliqués), `ExplorerMap` (placeholder SVG documenté comme tel, voir Phase 4 ci-dessus), `ExplorerSelection`/`RecordingSummaryCard` (panneau flottant desktop + BottomSheet mobile, contenu partagé). Lecteur audio global à instance unique (`apps/web/lib/audio-player.tsx`, un seul `<audio>` pour toute l'app). Polices Public Sans/Source Serif 4 auto-hébergées via `next/font/google` (pas de requête runtime vers Google Fonts).
+
+  **Bugs réels trouvés et corrigés en vérifiant** (voir `plan/MEMORY.md` § Frontend/Next.js pour le détail) :
+  - `next build` échouait sur `app/enregistrements/[id]/page.tsx` : en Next 15 App Router, `params` est typé `Promise` même pour un client component — corrigé avec `useParams()` plutôt que la prop `params`.
+  - `useSearchParams()` (Explorer, paramètre `?focus=<id>`) sans frontière `<Suspense>` faisait basculer silencieusement toute la page en client-only au build — corrigé.
+  - Deux `<button>` imbriqués (composant `IconWithCurrentColor` initial dans `BottomTabBar`, qui clonait des éléments React à la main) : simplifié en passant directement `stroke="currentColor"` dans chaque icône plutôt qu'un clonage fragile.
+
+  **Vérification en conditions réelles** (pas seulement build/typecheck/lint verts, voir §5 de CLAUDE.md) : `docker compose up -d` (Postgres/Redis/MinIO/Meilisearch, isolé par worktree), migration appliquée, base seedée directement en SQL (2 utilisateurs, 6 enregistrements dont un `processing`) pour ne pas dépendre d'une cérémonie WebAuthn non automatisable dans le navigateur de vérification — session injectée directement dans Redis (`session:<id>` → `userId`, cookie `document.cookie` non-`httpOnly` posé côté client puis lu normalement côté serveur, le flag `httpOnly` n'empêchant que la lecture JS, pas l'envoi). `apps/api` et `apps/web` lancés en dev réel, les 6 écrans comparés visuellement aux mockups à 390px (mobile) et desktop dans le navigateur : Explorer (sélection de marqueur → panneau/BottomSheet, bande "Selected", lecture audio togglée), Découvrir (entrée featured 26px vs lignes 16px confirmé via `getComputedStyle`), RecordingDetail (lien mini-carte → Explorer recentré, vérifié bout en bout avec un vrai retry sur erreur réseau transitoire), Recherche (requête debouncée → résultat réel matché sur titre+tag), Profil (grille 3 colonnes desktop confirmée via `getBoundingClientRect`, gabarit Row mobile). **Flux Ajouter exécuté intégralement dans le navigateur** avec un vrai fichier (input `File`/`DataTransfer` simulé en JS, géolocalisation moquée pour contourner l'absence de permission navigateur en environnement headless) : presign réel → upload PUT réel vers MinIO → `POST /recordings` réel → redirection vers la fiche du nouvel enregistrement, retrouvé ensuite dans `/profil` avec le statut "Archiving…" (worker non lancé pendant ce test, comportement attendu).
+
+  **Piège d'environnement rencontré et contourné** (voir `plan/MEMORY.md`) : sourcer le même `.env` pour lancer `apps/api` et `apps/web` fait hériter `next dev` de `PORT=4000`, en conflit avec Fastify ; `tsx watch` est ensuite entré en boucle `EADDRINUSE` sous la charge des redémarrages — contourné en lançant `next dev -p 3000` avec `PORT` explicitement absent de l'environnement, et `apps/api` sans mode `watch` (`npx tsx src/index.ts`) pour la durée de la vérification.
+
+  `pnpm build/typecheck/lint/test` verts sur les 9 packages. **Phase 3 considérée close.**

@@ -1,0 +1,66 @@
+/* Voir design/handoff/DEV-HANDOFF.md §2.1. Ne jamais compresser en menu
+   hamburger sous 768px — remplacé par MobileTopBar (§4). */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 40px;
+  border-bottom: 1px solid var(--line-hairline);
+}
+
+.wordmark {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--color-ink);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navItem {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  text-decoration: none;
+  color: var(--color-stone);
+  transition: color 150ms ease;
+}
+
+.navItem[data-active="true"] {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.navItem:hover {
+  color: var(--color-ink);
+}
+
+.trailing {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--color-stone);
+  white-space: nowrap;
+}
+
+.avatarLink {
+  display: block;
+  line-height: 0;
+}
+
+@media (max-width: 767px) {
+  .header {
+    display: none;
+  }
+}
