@@ -1,0 +1,19 @@
+infra/caddy/Caddyfile
+  s_2ac8dcbd7f754c::t_0d357869c28507 69-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e8f54bac142874c3b0662e443ff366d7501e7d49",
+  "prompts": {},
+  "sessions": {
+    "s_2ac8dcbd7f754c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bb3fef28-e087-499e-a5b3-3cbae454da74",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
