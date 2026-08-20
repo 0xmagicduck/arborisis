@@ -48,7 +48,7 @@ notes ci-dessous donnent l'équivalent prod) :
 | `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` | credentials EC2 réelles du bucket | **à générer** (`openstack ec2 credentials create`, voir plan/04 §4.1) — pas encore fait pour cette VM au moment de la rédaction |
 | `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` | fixe |
 | `MAX_UPLOAD_BYTES` | `524288000` | fixe |
-| `PHOTON_URL` | `http://192.168.120.209:2322` | instance auto-hébergée Phase 5, réseau privé — voir `infra/photon/README.md` |
+| `PHOTON_URL` | `http://192.168.120.209:2322/api` | instance auto-hébergée Phase 5, réseau privé — voir `infra/photon/README.md`. **Le suffixe `/api` est requis** (`apps/api/src/routes/geocode.ts` ne l'ajoute pas lui-même, contrairement au défaut `PHOTON_URL` du code qui l'inclut déjà) — oublié au premier déploiement réel, `GET /geocode` répondait 502 |
 | `ADMIN_HANDLES` | handle(s) réel(s) séparés par des virgules | à choisir |
 | `BACKUP_GPG_PASSPHRASE` | passphrase existante | générée en Phase 5, voir `infra/backup/README.md` — **ne pas en générer une nouvelle**, elle rendrait les sauvegardes déjà déposées irrécupérables |
 
