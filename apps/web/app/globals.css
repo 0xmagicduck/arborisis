@@ -11,6 +11,7 @@
   --content-width-recording-detail-inner: 820px;
   --content-width-search: 820px;
   --content-width-profile: 920px;
+  --content-width-auth: 420px;
 }
 
 * {

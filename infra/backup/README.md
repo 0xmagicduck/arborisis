@@ -16,21 +16,13 @@ serveur cible (16.x) émet des directives que le serveur ne reconnaît pas
 (`unrecognized configuration parameter "transaction_timeout"`), corrigé en
 utilisant `postgresql@16` (voir `plan/MEMORY.md`).
 
-## Pas encore actif en production
+## Câblé dans `infra/docker-compose.yml` depuis la Phase 6
 
-Ce script n'est **pas encore câblé dans `infra/docker-compose.yml`** : ce
-fichier ne contient encore que Caddy (voir sa propre note en tête de
-fichier), l'application n'a jamais été déployée sur `arborisis-app-1` — le
-déploiement complet (web/api/worker/postgres/redis/meilisearch) est prévu à
-la bascule Phase 6 (`plan/11-roadmap.md`). Le brancher maintenant référencerait
-un service `postgres` qui n'existe pas encore dans ce compose file.
-
-## À l'activation (Phase 6 ou avant si la base de prod existe déjà)
-
-Ajouter à `infra/docker-compose.yml` un service `backup` construit depuis
-`apps/backup` (image partagée avec `api`/`worker`, mêmes principes de build),
-puis un timer systemd sur l'hôte (pas un cron dans le conteneur — plus simple
-à superviser/journaliser via `journalctl`) :
+Service `backup` (profil `tools`, ne tourne pas en continu — voir la note
+dans `infra/docker-compose.yml`) construit depuis `apps/backup` via
+`infra/docker/Dockerfile` (cible `backup`, mêmes principes de build que
+`api`/`worker`). Reste à poser côté hôte : un timer systemd (pas un cron dans
+le conteneur — plus simple à superviser/journaliser via `journalctl`) :
 
 ```ini
 # /etc/systemd/system/arborisis-backup.service
@@ -41,7 +33,7 @@ Description=Sauvegarde nocturne PostgreSQL Arborisis
 Type=oneshot
 WorkingDirectory=/opt/arborisis
 EnvironmentFile=/opt/arborisis/.env
-ExecStart=/usr/bin/docker compose run --rm backup pnpm --filter @arborisis/backup backup
+ExecStart=/usr/bin/docker compose --profile tools run --rm backup
 ```
 
 ```ini

@@ -1,7 +1,13 @@
-# Phase 0 : seul Caddy tourne, pour valider domaine → DNS → VM → TLS.
-# Les services web/api/worker/postgres/redis/meilisearch seront ajoutés en
-# Phase 1-2 (voir plan/03-stack-technique.md §3.2 et plan/TASKS.md), une fois
-# le monorepo scaffoldé.
+# Phase 6 : services applicatifs (web/api/worker/postgres/redis/meilisearch)
+# ajoutés à côté de Caddy — voir plan/TASKS.md et plan/11-roadmap.md.
+# Caddy sert toujours le hello-world de la Phase 0 tant que le bloc
+# production n'est pas activé dans infra/caddy/Caddyfile (bascule volontaire,
+# outward-facing, décidée explicitement plutôt qu'automatique).
+#
+# Build : contexte = racine du repo (le Dockerfile copie tout le monorepo
+# pnpm/Turborepo, voir infra/docker/Dockerfile). Ce fichier vit dans
+# infra/docker-compose.yml mais est lancé depuis /opt/arborisis sur le
+# serveur, où le dépôt entier est cloné à la racine (voir infra/README).
 
 services:
   caddy:
@@ -18,6 +24,119 @@ services:
       - caddy_data:/data
       - caddy_config:/config
 
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arborisis
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: arborisis
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arborisis"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.10
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      MEILI_ENV: production
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meili_data:/meili_data
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://arborisis:${POSTGRES_PASSWORD}@postgres:5432/arborisis
+      REDIS_URL: redis://redis:6379
+      MEILI_URL: http://meilisearch:7700
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      meilisearch:
+        condition: service_started
+
+  # Exécution ponctuelle des migrations Drizzle — mêmes image/env que `api`
+  # (a accès à DATABASE_URL et à packages/db), mais pas démarré par `up` par
+  # défaut (profile dédié) : `docker compose --profile tools run --rm migrate`.
+  migrate:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: api
+    profiles: ["tools"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://arborisis:${POSTGRES_PASSWORD}@postgres:5432/arborisis
+    working_dir: /repo
+    entrypoint: []
+    command: ["pnpm", "--filter", "@arborisis/db", "migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: worker
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://arborisis:${POSTGRES_PASSWORD}@postgres:5432/arborisis
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: web
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - api
+
+  # Pas démarré par `up` (profile dédié) : déclenché par le timer systemd
+  # documenté dans infra/backup/README.md (`docker compose run --rm backup`),
+  # pas un service qui tourne en continu. `apps/backup/src/pg.ts` dérive les
+  # variables PG* attendues par `pg_dump`/`pg_restore` directement de
+  # DATABASE_URL — inutile de les poser séparément ici.
+  backup:
+    build:
+      context: ..
+      dockerfile: infra/docker/Dockerfile
+      target: backup
+    profiles: ["tools"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://arborisis:${POSTGRES_PASSWORD}@postgres:5432/arborisis
+
 volumes:
   caddy_data:
   caddy_config:
+  postgres_data:
+  redis_data:
+  meili_data:
