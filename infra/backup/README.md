@@ -31,8 +31,10 @@ Description=Sauvegarde nocturne PostgreSQL Arborisis
 
 [Service]
 Type=oneshot
-WorkingDirectory=/opt/arborisis
-EnvironmentFile=/opt/arborisis/.env
+# infra/ (pas la racine du clone) : c'est là que vivent docker-compose.yml
+# et .env en production, voir infra/README.md.
+WorkingDirectory=/opt/arborisis/infra
+EnvironmentFile=/opt/arborisis/infra/.env
 ExecStart=/usr/bin/docker compose --profile tools run --rm backup
 ```
 

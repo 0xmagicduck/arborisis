@@ -307,6 +307,23 @@ dessus).** Revérifier tous les services qui partagent une dépendance
 réseau (Postgres/Redis/Meilisearch/Object Storage), pas seulement celui
 testé en premier.
 
+**La CSP `script-src 'self'` (sans `'unsafe-inline'` ni nonce) casse toute
+page Next.js App Router : page blanche.** Next.js injecte un `<script>`
+inline par page pour le payload de streaming/hydratation RSC (pas un fichier
+externe) — bloqué par une CSP stricte, la console affiche `Executing inline
+script violates ... script-src 'self'` mais **rien à l'écran**, aucune
+erreur réseau visible (le HTML initial est bien servi, seule l'hydratation
+React échoue). La CSP du Caddyfile prod avait été écrite et sa *syntaxe*
+validée (`caddy validate`) en Phase 5, mais jamais vérifiée en conditions
+réelles (l'app n'avait jamais tourné derrière Caddy avant la bascule Phase 6)
+— exactement le type de vérification que ce dépôt exige (§5 CLAUDE.md) et qui
+aurait attrapé ça avant la mise en ligne. Corrigé avec `script-src 'self'
+'unsafe-inline'` (affaiblit la protection contre l'injection de script — une
+CSP à base de nonce par requête, générée par un middleware Next.js plutôt
+qu'un en-tête statique Caddy, serait la correction propre, non faite ici).
+**Règle générale : toute CSP `script-src` doit être testée contre un vrai
+rendu de page de l'app, pas seulement validée syntaxiquement.**
+
 **`PHOTON_URL` doit inclure le suffixe `/api`** — `apps/api/src/routes/geocode.ts`
 fait `${env.PHOTON_URL}?q=...` sans ajouter de chemin lui-même ; le défaut du
 schéma (`https://photon.komoot.io/api`) inclut déjà `/api`, ce qui masque
