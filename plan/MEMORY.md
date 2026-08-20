@@ -273,6 +273,52 @@ web) a fonctionné immédiatement. Pas d'explication trouvée (le champ
 après coup) — si l'ACL CLI ne prend pas effet, essayer le Manager avant de
 creuser plus loin côté CLI.
 
+**Un volume Cinder Infomaniak (`CEPH_1_perf1`) plafonne à ~500 IOPS en
+lecture aléatoire 4 Ko, quelle que soit la RAM/CPU de la VM attachée.**
+Rencontré en tentant de générer un `.pmtiles` Europe avec Planetiler sur
+`arborisis-photon-1` (32 Go RAM, 8 vCPU) : la passe `osm_pass2` (relit de
+façon aléatoire l'index des positions de nœuds construit en pass1, mmap sur
+le volume de données) n'a traité que 1% des données en 2h25 — `iostat -x`
+confirmait `%util` à 100% en continu sur `/dev/sdb`, `~500 r/s` stables,
+`iowait` 60-75%, alors que le CPU était quasi inactif (`cpus: 0.1`). Ce n'est
+pas un problème temporaire ni réglable par plus de RAM/CPU : c'est une
+caractéristique du stockage réseau (Ceph) pour ce pattern d'accès. **Règle
+générale : tout traitement fortement dépendant d'I/O aléatoires (Planetiler
+sur une grande emprise, un index de recherche construit sur disque, etc.)
+doit soit tenir en RAM, soit s'exécuter sur un disque local, jamais sur un
+volume Cinder réseau de ce type.** Contourné en évitant complètement le
+traitement local : voir l'entrée `pmtiles extract` ci-dessous.
+
+**`pmtiles extract` (CLI `go-pmtiles`) permet d'obtenir un extrait régional
+d'un `.pmtiles` sans aucun traitement local ni téléchargement du fichier
+complet** — juste des requêtes HTTP Range contre la source distante, donc
+uniquement limité par la bande passante réseau, pas par les IOPS d'un
+disque local. Le projet Protomaps publie un build planète entier
+gratuitement (`https://data.source.coop/protomaps/openstreetmap/v4.pmtiles`,
+~135 Go, licence ODbL, CORS ouvert, mise à jour régulière — voir
+docs.protomaps.com/basemaps/downloads ; l'URL `build.protomaps.com` de la
+documentation redirige vers une SPA, l'URL de téléchargement direct utilisable
+en CLI/`curl` est en réalité sur `data.source.coop`, trouvée en listant le
+bucket S3 sous-jacent). Toujours faire un `--dry-run` d'abord : l'extrait
+Europe (bbox `-25,34,45,72`, maxzoom 14) pèse 24 Go, largement plus que
+l'espace disque disponible sur une machine de dev typique — exécuter sur une
+machine/VM avec assez d'espace plutôt que de découvrir l'erreur en cours de
+transfert. **Piège rencontré** : le schéma de tuiles produit par les builds
+Protomaps (`protomaps/basemaps` : couches `landcover`/`landuse`/`water`/
+`buildings`/`roads`/`boundaries`) est **incompatible** avec le schéma
+OpenMapTiles ciblé par Planetiler (voir `infra/tiles/README.md`) — tout style
+MapLibre écrit pour l'un ne fonctionne pas avec l'autre, migration de schéma
+= réécriture complète du style (voir `apps/web/map-style/quiet-cartography.ts`
+pour la table de correspondance de couches utilisée).
+
+**`pmtiles extract` contre un CDN distant peut échouer en cours de route**
+(`stream error: ... INTERNAL_ERROR; received from peer`, rencontré à 94% de
+progression contre `data.source.coop`) — pas de reprise partielle possible
+(l'outil ne supporte pas le resume), il faut relancer depuis le début.
+Réduire `--download-threads` (8 → 4) au retry pour limiter le risque de
+resollicitation excessive du CDN — non confirmé comme cause certaine, mais
+prudent en l'absence de meilleure piste.
+
 ## Déploiement / Docker (infra, Phase 6)
 
 **`next build` inline les variables `NEXT_PUBLIC_*` dans le bundle client au

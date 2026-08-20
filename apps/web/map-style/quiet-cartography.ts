@@ -6,11 +6,22 @@ import type { StyleSpecification } from "maplibre-gl";
  * fins, absence de tuiles satellite saturées, marqueurs discrets"
  * (design/handoff/DEV-HANDOFF.md §3.1).
  *
- * Cible le **schéma OpenMapTiles** (couches `water`, `landcover`, `building`,
- * `transportation`, etc. — voir openmaptiles.org/schema), pas le schéma
- * propriétaire de Protomaps : c'est le schéma produit par le jar Planetiler
- * officiel (`onthegomap/planetiler`) utilisé par infra/tiles/generate.sh,
- * voir infra/tiles/README.md pour le pourquoi de ce choix.
+ * Cible le **schéma Protomaps Basemap v4** (couches `water`, `landcover`,
+ * `landuse`, `buildings`, `roads`, `boundaries` — voir
+ * docs.protomaps.com/basemaps/layers), **pas** le schéma OpenMapTiles ciblé
+ * jusqu'ici (voir infra/tiles/README.md pour l'historique du choix initial).
+ *
+ * Changement de schéma décidé en session (2026-08-20, voir plan/TASKS.md) :
+ * la génération OpenMapTiles via Planetiler pour l'emprise Europe s'est
+ * révélée irréaliste sur `arborisis-photon-1` (volume Cinder réseau plafonné
+ * à ~500 IOPS aléatoires, ~1% de progression en 2h25 sur la passe qui relit
+ * l'index des nœuds — projection à plusieurs jours). Basculé sur une
+ * extraction (`pmtiles extract`, pas de génération locale, juste des
+ * requêtes HTTP Range) depuis le build planète gratuit de Protomaps
+ * (`https://data.source.coop/protomaps/openstreetmap/v4.pmtiles`, licence
+ * ODbL comme toute donnée OSM) — élimine le goulot d'I/O par construction,
+ * mais impose ce schéma de couches différent. Toutes les couches
+ * ci-dessous ont été retraduites depuis leurs équivalents OpenMapTiles.
  *
  * Une fonction plutôt qu'un `.json` statique : l'URL du fichier `.pmtiles`
  * dépend de l'environnement (bootstrap dev same-origin vs Object Storage/CDN
@@ -44,10 +55,13 @@ export function buildQuietCartographyStyle(pmtilesUrl: string): StyleSpecificati
     // Pas de `glyphs` : aucune couche `symbol`/texte dans ce style, voir
     // commentaire en tête de fichier.
     sources: {
-      openmaptiles: {
+      protomaps: {
         type: "vector",
         url: `pmtiles://${pmtilesUrl}`,
-        attribution: "© OpenMapTiles © OpenStreetMap contributors",
+        // Attribution ODbL requise pour toute donnée OpenStreetMap — voir
+        // plan/07 §7.6. Protomaps lui-même (code + schéma) est BSD-3, aucune
+        // attribution supplémentaire requise pour cette partie.
+        attribution: "© OpenStreetMap contributors",
       },
     },
     layers: [
@@ -57,38 +71,53 @@ export function buildQuietCartographyStyle(pmtilesUrl: string): StyleSpecificati
       {
         id: "landcover-wood",
         type: "fill",
-        source: "openmaptiles",
+        source: "protomaps",
         "source-layer": "landcover",
-        filter: ["==", ["get", "class"], "wood"],
+        filter: ["==", ["get", "kind"], "forest"],
         paint: { "fill-color": `rgba(${INK}, 0.045)` },
       },
       {
         id: "landcover-grass",
         type: "fill",
-        source: "openmaptiles",
+        source: "protomaps",
         "source-layer": "landcover",
-        filter: ["in", ["get", "class"], ["literal", ["grass", "wetland"]]],
+        filter: ["in", ["get", "kind"], ["literal", ["grassland", "scrub"]]],
+        paint: { "fill-color": `rgba(${INK}, 0.03)` },
+      },
+      {
+        id: "landuse-wetland",
+        type: "fill",
+        source: "protomaps",
+        "source-layer": "landuse",
+        filter: ["==", ["get", "kind"], "wetland"],
         paint: { "fill-color": `rgba(${INK}, 0.03)` },
       },
       {
         id: "park",
         type: "fill",
-        source: "openmaptiles",
-        "source-layer": "park",
+        source: "protomaps",
+        "source-layer": "landuse",
+        filter: ["==", ["get", "kind"], "park"],
         paint: { "fill-color": `rgba(${INK}, 0.04)` },
       },
       {
         id: "water",
         type: "fill",
-        source: "openmaptiles",
+        source: "protomaps",
         "source-layer": "water",
         paint: { "fill-color": `rgba(${INK}, 0.08)` },
       },
       {
         id: "waterway",
         type: "line",
-        source: "openmaptiles",
-        "source-layer": "waterway",
+        source: "protomaps",
+        // Rivières/ruisseaux vivent dans la même source-layer "water" que
+        // les polygones (distingués par géométrie LineString, pas une
+        // source-layer séparée comme "waterway" en OpenMapTiles) — un layer
+        // MapLibre `type: "line"` ne rend de toute façon que les géométries
+        // LineString de la source-layer, filtre par `kind`/`kind_detail`
+        // inutile pour obtenir le même résultat que l'ancien style OMT.
+        "source-layer": "water",
         paint: { "line-color": `rgba(${INK}, 0.12)`, "line-width": 0.6 },
       },
 
@@ -96,16 +125,18 @@ export function buildQuietCartographyStyle(pmtilesUrl: string): StyleSpecificati
       {
         id: "building-fill",
         type: "fill",
-        source: "openmaptiles",
-        "source-layer": "building",
+        source: "protomaps",
+        "source-layer": "buildings",
+        filter: ["==", ["get", "kind"], "building"],
         minzoom: 15,
         paint: { "fill-color": `rgba(${INK}, 0.03)` },
       },
       {
         id: "building-outline",
         type: "line",
-        source: "openmaptiles",
-        "source-layer": "building",
+        source: "protomaps",
+        "source-layer": "buildings",
+        filter: ["==", ["get", "kind"], "building"],
         minzoom: 15,
         paint: { "line-color": `rgba(${INK}, 0.12)`, "line-width": 0.5 },
       },
@@ -114,9 +145,9 @@ export function buildQuietCartographyStyle(pmtilesUrl: string): StyleSpecificati
       {
         id: "transportation-minor",
         type: "line",
-        source: "openmaptiles",
-        "source-layer": "transportation",
-        filter: ["in", ["get", "class"], ["literal", ["minor", "service", "track", "path"]]],
+        source: "protomaps",
+        "source-layer": "roads",
+        filter: ["in", ["get", "kind"], ["literal", ["minor_road", "path"]]],
         minzoom: 12,
         layout: { "line-cap": "round", "line-join": "round" },
         paint: {
@@ -127,13 +158,12 @@ export function buildQuietCartographyStyle(pmtilesUrl: string): StyleSpecificati
       {
         id: "transportation-major",
         type: "line",
-        source: "openmaptiles",
-        "source-layer": "transportation",
-        filter: [
-          "in",
-          ["get", "class"],
-          ["literal", ["motorway", "trunk", "primary", "secondary", "tertiary"]],
-        ],
+        source: "protomaps",
+        "source-layer": "roads",
+        // "highway" = motorway/trunk, "major_road" = primary/secondary/tertiary
+        // dans le schéma Protomaps — regroupement différent d'OpenMapTiles
+        // mais même intention visuelle (voies principales uniquement).
+        filter: ["in", ["get", "kind"], ["literal", ["highway", "major_road"]]],
         layout: { "line-cap": "round", "line-join": "round" },
         paint: {
           "line-color": `rgba(${INK}, 0.18)`,
@@ -145,9 +175,9 @@ export function buildQuietCartographyStyle(pmtilesUrl: string): StyleSpecificati
       {
         id: "boundary",
         type: "line",
-        source: "openmaptiles",
-        "source-layer": "boundary",
-        filter: ["all", ["<=", ["get", "admin_level"], 4], ["!=", ["get", "maritime"], 1]],
+        source: "protomaps",
+        "source-layer": "boundaries",
+        filter: ["in", ["get", "kind"], ["literal", ["country", "region"]]],
         layout: { "line-join": "round" },
         paint: {
           "line-color": `rgba(${INK}, 0.18)`,
