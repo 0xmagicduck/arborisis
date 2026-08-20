@@ -26,7 +26,7 @@ const uploadsRoutes: FastifyPluginAsync = async (fastify) => {
       const uploadId = randomUUID();
       const key = stagingKey(uploadId, input.filename);
 
-      const uploadUrl = await presignPutUrl(
+      const signedUrl = await presignPutUrl(
         storage.client,
         storage.bucket,
         key,
@@ -34,6 +34,13 @@ const uploadsRoutes: FastifyPluginAsync = async (fastify) => {
         input.sizeBytes,
         UPLOAD_URL_TTL_SECONDS
       );
+      // Réécriture de l'origine seulement (scheme+host), le chemin et la
+      // querystring de signature SigV4 restent inchangés — voir
+      // OBJECT_STORAGE_UPLOAD_PROXY_URL dans apps/api/src/config.ts pour le
+      // pourquoi (CORS cassé côté Infomaniak sur les PUT pré-signés).
+      const uploadUrl = env.OBJECT_STORAGE_UPLOAD_PROXY_URL
+        ? signedUrl.replace(new URL(signedUrl).origin, env.OBJECT_STORAGE_UPLOAD_PROXY_URL)
+        : signedUrl;
 
       await putStagedUpload(redis, uploadId, {
         key,
