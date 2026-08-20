@@ -25,6 +25,18 @@ FROM base AS build
 WORKDIR /repo
 COPY . .
 RUN pnpm install --frozen-lockfile
+# NEXT_PUBLIC_* sont inlinées par `next build` dans le bundle client au
+# moment de la build, PAS lues au runtime du conteneur — les poser seulement
+# dans le `.env` du service `web` (env_file, runtime) n'a aucun effet sur le
+# JS déjà généré. D'où ces ARG/ENV ici plutôt que dans le stage `web`
+# ci-dessous (bug réel rencontré au premier déploiement Phase 6 : le bundle
+# appelait encore http://localhost:4000, valeur par défaut du code, voir
+# apps/web/lib/api.ts). Défauts = mêmes valeurs que .env.example, pour ne pas
+# casser un `docker build` sans --build-arg (dev/CI).
+ARG NEXT_PUBLIC_API_URL=http://localhost:4000
+ARG NEXT_PUBLIC_PMTILES_URL=/tiles/luxembourg.pmtiles
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_PMTILES_URL=${NEXT_PUBLIC_PMTILES_URL}
 RUN pnpm build
 
 # --- apps/api ---
