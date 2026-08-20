@@ -22,8 +22,14 @@
 # celui-ci.
 #
 # {$ARBORISIS_DOMAIN} {
-#     handle /api/* {
-#         reverse_proxy api:3000
+#     # handle_path (pas handle) : retire le préfixe /api avant de transmettre
+#     # à l'API — ses routes (/auth/..., /recordings/...) n'ont elles-mêmes
+#     # aucun préfixe /api, voir apps/api/src/app.ts. NEXT_PUBLIC_API_URL=/api
+#     # côté web (voir infra/docker-compose.yml .env prod) pour rester
+#     # same-origin — pas de CORS nécessaire, cookie de session utilisable
+#     # sans configuration cross-site.
+#     handle_path /api/* {
+#         reverse_proxy api:4000
 #     }
 #
 #     # Tuiles PMTiles servies same-origin plutôt qu'en pointant directement

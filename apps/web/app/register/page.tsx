@@ -1,8 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { startRegistration } from "@simplewebauthn/browser";
+import { AuthPage } from "@/components/AuthPage";
+import { TextField } from "@/components/FormField";
+import { Button } from "@/components/Button";
+import { useSession } from "@/lib/session";
 import { api } from "@/lib/api";
+import styles from "@/components/AuthPage.module.css";
 
 // Type dérivé du paramètre attendu par startRegistration plutôt qu'importé
 // sous un nom précis (évite une dépendance à un export de type qui peut
@@ -15,6 +22,8 @@ type RegistrationOptionsJSON = Parameters<typeof startRegistration>[0]["optionsJ
  * affichés une seule fois immédiatement après.
  */
 export default function RegisterPage() {
+  const router = useRouter();
+  const { refresh } = useSession();
   const [handle, setHandle] = useState("");
   const [status, setStatus] = useState<"idle" | "pending" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +40,7 @@ export default function RegisterPage() {
         handle,
         response,
       });
+      await refresh();
       setRecoveryCodes(result.recoveryCodes);
       setStatus("idle");
     } catch (err) {
@@ -41,30 +51,43 @@ export default function RegisterPage() {
 
   if (recoveryCodes) {
     return (
-      <main style={{ padding: "var(--space-8)", maxWidth: 480 }}>
-        <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic" }}>
-          Compte créé — sauvegardez vos codes
-        </h1>
-        <p style={{ color: "var(--color-ink-secondary)" }}>
-          Ces 10 codes ne seront plus jamais affichés. Sans eux ni un second authentificateur,
-          la perte de cet appareil peut signifier une perte d&apos;accès définitive au compte
-          (voir plan/06 §6.6).
+      <AuthPage title="Compte créé — sauvegardez vos codes">
+        <p className={styles.subtitle}>
+          Ces 10 codes ne seront plus jamais affichés. Sans eux ni un second authentificateur, la
+          perte de cet appareil peut signifier une perte d&apos;accès définitive au compte (voir
+          plan/06 §6.6).
         </p>
-        <ul style={{ fontFamily: "monospace" }}>
+        {/* Espacement des caractères plutôt qu'une police monospace dédiée :
+            aucun token --font-mono n'existe dans le design system fermé
+            (packages/design-tokens/src/tokens.css ne définit que sans/serif),
+            voir DEV-HANDOFF §1.4. */}
+        <ul className={styles.recoveryList}>
           {recoveryCodes.map((code) => (
             <li key={code}>{code}</li>
           ))}
         </ul>
-      </main>
+        <div className={styles.submitRow}>
+          <Button variant="primary" onClick={() => router.push("/")}>
+            J&apos;ai sauvegardé mes codes
+          </Button>
+        </div>
+      </AuthPage>
     );
   }
 
   return (
-    <main style={{ padding: "var(--space-8)", maxWidth: 480 }}>
-      <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic" }}>S&apos;inscrire</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="handle">Pseudo</label>
-        <input
+    <AuthPage
+      title="S'inscrire"
+      subtitle="Un pseudo, puis un passkey créé par votre navigateur ou gestionnaire de mots de passe — aucun mot de passe à retenir."
+      footer={
+        <>
+          Déjà un compte ? <Link href="/login">Se connecter</Link>
+        </>
+      }
+    >
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <TextField
+          label="Pseudo"
           id="handle"
           name="handle"
           value={handle}
@@ -72,13 +95,16 @@ export default function RegisterPage() {
           autoComplete="username webauthn"
           minLength={3}
           maxLength={24}
+          autoFocus
           required
         />
-        <button type="submit" disabled={status === "pending"}>
-          {status === "pending" ? "…" : "Créer un passkey"}
-        </button>
+        <div className={styles.submitRow}>
+          <Button type="submit" variant="primary" disabled={status === "pending"}>
+            {status === "pending" ? "…" : "Créer un passkey"}
+          </Button>
+        </div>
+        {error && <p className={styles.formError}>{error}</p>}
       </form>
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-    </main>
+    </AuthPage>
   );
 }

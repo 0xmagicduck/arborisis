@@ -1,0 +1,14 @@
+# Voir infra/docker/Dockerfile — la build copie tout le monorepo et
+# réinstalle les dépendances dans le conteneur (binaires natifs Linux, pas
+# ceux installés localement sur la machine de dev, potentiellement macOS/ARM).
+node_modules
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/coverage
+.git
+.env
+.env.*
+!.env.example
+apps/web/public/tiles/*.pmtiles
