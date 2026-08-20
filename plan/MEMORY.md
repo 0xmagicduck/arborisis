@@ -273,6 +273,52 @@ web) a fonctionné immédiatement. Pas d'explication trouvée (le champ
 après coup) — si l'ACL CLI ne prend pas effet, essayer le Manager avant de
 creuser plus loin côté CLI.
 
+**Un volume Cinder Infomaniak (`CEPH_1_perf1`) plafonne à ~500 IOPS en
+lecture aléatoire 4 Ko, quelle que soit la RAM/CPU de la VM attachée.**
+Rencontré en tentant de générer un `.pmtiles` Europe avec Planetiler sur
+`arborisis-photon-1` (32 Go RAM, 8 vCPU) : la passe `osm_pass2` (relit de
+façon aléatoire l'index des positions de nœuds construit en pass1, mmap sur
+le volume de données) n'a traité que 1% des données en 2h25 — `iostat -x`
+confirmait `%util` à 100% en continu sur `/dev/sdb`, `~500 r/s` stables,
+`iowait` 60-75%, alors que le CPU était quasi inactif (`cpus: 0.1`). Ce n'est
+pas un problème temporaire ni réglable par plus de RAM/CPU : c'est une
+caractéristique du stockage réseau (Ceph) pour ce pattern d'accès. **Règle
+générale : tout traitement fortement dépendant d'I/O aléatoires (Planetiler
+sur une grande emprise, un index de recherche construit sur disque, etc.)
+doit soit tenir en RAM, soit s'exécuter sur un disque local, jamais sur un
+volume Cinder réseau de ce type.** Contourné en évitant complètement le
+traitement local : voir l'entrée `pmtiles extract` ci-dessous.
+
+**`pmtiles extract` (CLI `go-pmtiles`) permet d'obtenir un extrait régional
+d'un `.pmtiles` sans aucun traitement local ni téléchargement du fichier
+complet** — juste des requêtes HTTP Range contre la source distante, donc
+uniquement limité par la bande passante réseau, pas par les IOPS d'un
+disque local. Le projet Protomaps publie un build planète entier
+gratuitement (`https://data.source.coop/protomaps/openstreetmap/v4.pmtiles`,
+~135 Go, licence ODbL, CORS ouvert, mise à jour régulière — voir
+docs.protomaps.com/basemaps/downloads ; l'URL `build.protomaps.com` de la
+documentation redirige vers une SPA, l'URL de téléchargement direct utilisable
+en CLI/`curl` est en réalité sur `data.source.coop`, trouvée en listant le
+bucket S3 sous-jacent). Toujours faire un `--dry-run` d'abord : l'extrait
+Europe (bbox `-25,34,45,72`, maxzoom 14) pèse 24 Go, largement plus que
+l'espace disque disponible sur une machine de dev typique — exécuter sur une
+machine/VM avec assez d'espace plutôt que de découvrir l'erreur en cours de
+transfert. **Piège rencontré** : le schéma de tuiles produit par les builds
+Protomaps (`protomaps/basemaps` : couches `landcover`/`landuse`/`water`/
+`buildings`/`roads`/`boundaries`) est **incompatible** avec le schéma
+OpenMapTiles ciblé par Planetiler (voir `infra/tiles/README.md`) — tout style
+MapLibre écrit pour l'un ne fonctionne pas avec l'autre, migration de schéma
+= réécriture complète du style (voir `apps/web/map-style/quiet-cartography.ts`
+pour la table de correspondance de couches utilisée).
+
+**`pmtiles extract` contre un CDN distant peut échouer en cours de route**
+(`stream error: ... INTERNAL_ERROR; received from peer`, rencontré à 94% de
+progression contre `data.source.coop`) — pas de reprise partielle possible
+(l'outil ne supporte pas le resume), il faut relancer depuis le début.
+Réduire `--download-threads` (8 → 4) au retry pour limiter le risque de
+resollicitation excessive du CDN — non confirmé comme cause certaine, mais
+prudent en l'absence de meilleure piste.
+
 ## Déploiement / Docker (infra, Phase 6)
 
 **`next build` inline les variables `NEXT_PUBLIC_*` dans le bundle client au
@@ -332,6 +378,47 @@ facilement l'oubli quand on pointe `PHOTON_URL` vers l'instance privée
 geocoding_upstream_error`, alors qu'un `curl` direct du même conteneur vers
 `.../2322/api?q=...` fonctionne — la réachabilité réseau n'est pas en cause,
 seulement le chemin). Voir `infra/README.md`.
+
+**Un bind mount Docker `./fichier:/chemin:ro` pointe sur l'inode au moment de
+la création du conteneur, pas sur le chemin.** `docker compose exec caddy
+caddy reload --config /etc/caddy/Caddyfile` après un `git pull` qui a modifié
+`infra/caddy/Caddyfile` sur l'hôte a rechargé... l'**ancien** contenu (log
+Caddy : `"msg":"config is unchanged"`) — `git pull`/`checkout` remplace le
+fichier par un rename atomique (nouvel inode), que le bind mount déjà établi
+ne suit pas. `docker compose exec caddy grep ... /etc/caddy/Caddyfile` dans
+le conteneur confirmait l'ancien contenu alors que `grep` sur l'hôte montrait
+le nouveau. Corrigé avec `docker compose up -d --force-recreate caddy`
+(recrée le conteneur, ré-établit le bind mount) plutôt qu'un simple
+`caddy reload` — **règle générale : après tout changement du Caddyfile sur
+l'hôte via git, recréer le conteneur `caddy`, ne pas se fier à `reload` seul.**
+Bug réel trouvé et corrigé en prod le 2026-08-20 (voir plan/TASKS.md, fix CORS
+upload + CSP `media-src blob:`).
+
+**CSP `media-src` doit inclure `blob:` dès qu'un écran prévisualise un
+fichier local via `URL.createObjectURL` avant upload.** Le flux Ajouter
+(`apps/web/app/ajouter/StepDetails.tsx`, `local-probe.ts`) génère une URL
+`blob:` locale lue par le `<audio>` partagé pour prévisualiser le son choisi
+avant tout envoi au serveur — jamais testé en navigateur réel contre la CSP
+de prod avant cette session (même catégorie d'oubli que `script-src`
+ci-dessus : CSP validée syntaxiquement, jamais contre un vrai parcours
+utilisateur). Erreur silencieuse côté navigateur : `Refused to load blob:...
+because it does not appear in the media-src directive`, pas d'erreur serveur.
+
+**La passerelle S3-compat Infomaniak ne répond pas correctement aux
+préflights CORS (`OPTIONS` → `405`) sur un `PUT` pré-signé envoyé
+directement par le navigateur depuis une origine différente.** Casse tout
+upload en prod (fonctionnait en dev contre MinIO, qui répond correctement
+aux préflights) — la même limitation CORS d'Infomaniak avait déjà été
+rencontrée en Phase 5 pour le bucket de tuiles en lecture (`PutBucketCors`
+en `501`), mais pas encore pour un upload direct navigateur. Pas de
+contournement Infomaniak trouvé côté configuration du bucket ; corrigé en
+appliquant la même stratégie que pour `/tiles/*` : proxy Caddy same-origin
+(`handle_path /storage-upload/*` → `s3.pub1.infomaniak.cloud` avec
+`header_up Host` réécrit pour matcher la signature SigV4), activé via
+`OBJECT_STORAGE_UPLOAD_PROXY_URL` (voir `apps/api/src/routes/uploads.ts`) —
+**règle générale : ne pas retenter la config CORS native Infomaniak pour un
+nouveau usage, aller directement au proxy same-origin Caddy, seule
+approche qui a fonctionné jusqu'ici sur cet hébergeur.**
 
 ## Infra / environnement d'exécution local
 
