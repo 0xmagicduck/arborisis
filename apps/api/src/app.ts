@@ -6,9 +6,13 @@ import { ZodError } from "zod";
 import type { Env } from "./config.js";
 import dbPlugin from "./plugins/db.js";
 import envPlugin from "./plugins/env.js";
+import queuePlugin from "./plugins/queue.js";
 import redisPlugin from "./plugins/redis.js";
+import storagePlugin from "./plugins/storage.js";
 import authRoutes from "./routes/auth.js";
 import healthRoutes from "./routes/health.js";
+import recordingsRoutes from "./routes/recordings.js";
+import uploadsRoutes from "./routes/uploads.js";
 
 export async function buildApp(env: Env) {
   const app = Fastify({
@@ -21,6 +25,17 @@ export async function buildApp(env: Env) {
   await app.register(envPlugin, { env });
   await app.register(dbPlugin, { connectionString: env.DATABASE_URL });
   await app.register(redisPlugin, { url: env.REDIS_URL });
+  await app.register(storagePlugin, {
+    config: {
+      endpoint: env.OBJECT_STORAGE_ENDPOINT,
+      region: env.OBJECT_STORAGE_REGION,
+      bucket: env.OBJECT_STORAGE_BUCKET,
+      accessKeyId: env.OBJECT_STORAGE_ACCESS_KEY_ID,
+      secretAccessKey: env.OBJECT_STORAGE_SECRET_ACCESS_KEY,
+      forcePathStyle: env.OBJECT_STORAGE_FORCE_PATH_STYLE,
+    },
+  });
+  await app.register(queuePlugin, { redisUrl: env.REDIS_URL });
 
   await app.register(cors, {
     origin: env.WEBAUTHN_ORIGIN,
@@ -51,6 +66,8 @@ export async function buildApp(env: Env) {
 
   await app.register(healthRoutes);
   await app.register(authRoutes);
+  await app.register(uploadsRoutes);
+  await app.register(recordingsRoutes);
 
   return app;
 }

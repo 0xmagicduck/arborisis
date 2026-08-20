@@ -1,0 +1,28 @@
+{
+  "name": "@arborisis/queue",
+  "version": "0.0.0",
+  "private": true,
+  "description": "File BullMQ \"publish-recording\" partagée entre apps/api (producteur) et apps/worker (consommateur) — voir plan/05-stockage-audio-internet-archive.md §5.3.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "bullmq": "^5.28.0",
+    "ioredis": "^5.4.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

@@ -112,11 +112,15 @@ export const recordings = pgTable(
     tags: text("tags").array().notNull().default(sql`'{}'::text[]`),
     license: recordingLicenseEnum("license").notNull(),
     status: recordingStatusEnum("status").notNull().default("draft"),
-    // Object Storage, préfixe originals/ — copie pérenne en mode intérimaire
-    // tant qu'Internet Archive n'est pas actif, voir plan/05 §5.10.
-    originalUrl: text("original_url"),
-    // Object Storage, préfixe proxy/ — copie de lecture rapide.
-    streamingUrl: text("streaming_url"),
+    // Clés Object Storage (pas des URLs) : le container est privé (Terraform,
+    // `container_read = ""`), donc l'API recalcule une URL de lecture
+    // pré-signée à chaque réponse plutôt que de stocker une URL stable — voir
+    // @arborisis/storage `presignGetUrl` et apps/api/src/routes/recordings.ts.
+    // originalKey, préfixe originals/ — copie pérenne en mode intérimaire tant
+    // qu'Internet Archive n'est pas actif, voir plan/05 §5.10.
+    originalKey: text("original_key"),
+    // proxyKey, préfixe proxy/ — copie de lecture rapide transcodée (Opus).
+    proxyKey: text("proxy_key"),
     // Restent `null` tant qu'ARCHIVE_TO_IA=false (mode intérimaire, plan/05 §5.10).
     iaIdentifier: text("ia_identifier"),
     iaItemUrl: text("ia_item_url"),

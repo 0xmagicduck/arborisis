@@ -60,6 +60,13 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # apps/worker exerce le vrai binaire ffmpeg/ffprobe dans ses tests (voir
+      # apps/worker/src/__tests__/audio.test.ts) plutôt que de le mocker —
+      # c'est justement cette intégration que le pipeline "publish-recording"
+      # (plan/05 §5.3) doit valider.
+      - name: Installer ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Lint
         run: pnpm lint
 
