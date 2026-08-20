@@ -115,6 +115,14 @@ services:
       context: ..
       dockerfile: infra/docker/Dockerfile
       target: web
+      # Inlinées par `next build` dans le bundle client — voir la note dans
+      # infra/docker/Dockerfile. Doivent matcher les valeurs du `.env` runtime
+      # ci-dessous pour rester cohérentes (même variables, deux lectures
+      # différentes : build-time ici, aucun effet runtime pour le service web
+      # lui-même mais gardées dans env_file pour rester visibles/documentées).
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_PMTILES_URL: ${NEXT_PUBLIC_PMTILES_URL}
     restart: unless-stopped
     env_file: .env
     depends_on:
