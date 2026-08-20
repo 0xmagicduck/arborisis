@@ -1,0 +1,21 @@
+infra/docker-compose.yml
+  s_2ac8dcbd7f754c::t_a9fab08e214a21 118-125
+infra/docker/Dockerfile
+  s_2ac8dcbd7f754c::t_4873e6c6ff4ced 28-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "38f565f673628ed1dc0918cd731fe87281ed8c6b",
+  "prompts": {},
+  "sessions": {
+    "s_2ac8dcbd7f754c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bb3fef28-e087-499e-a5b3-3cbae454da74",
+        "model": "unknown"
+      },
+      "human_author": "Bastien Javaux <0xmagicduck@proton.me>"
+    }
+  }
+}
