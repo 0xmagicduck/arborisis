@@ -7,6 +7,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
@@ -143,6 +144,63 @@ export const recordings = pgTable(
 export const recordingsRelations = relations(recordings, ({ one }) => ({
   author: one(users, {
     fields: [recordings.authorId],
+    references: [users.id],
+  }),
+}));
+
+// --- reports -----------------------------------------------------------------
+// Signalement minimal (plan/10-securite-confidentialite-conformite.md §10.3).
+// Pas de rôle "admin" en base : la revue se fait via les routes API
+// restreintes aux handles listés dans la variable d'environnement
+// ADMIN_HANDLES (voir apps/api/src/lib/admin.ts) plutôt qu'un système de
+// rôles complet, hors scope du MVP — pas d'écran d'administration dédié non
+// plus (aucun mockup design/system pour ça), documenté comme simplification
+// assumée dans plan/TASKS.md.
+
+export const reportReasonEnum = pgEnum("report_reason", [
+  "illegal_content",
+  "off_topic",
+  "spam",
+  "other",
+]);
+
+export const reportStatusEnum = pgEnum("report_status", ["open", "resolved", "dismissed"]);
+
+export const reports = pgTable(
+  "reports",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    recordingId: uuid("recording_id")
+      .notNull()
+      .references(() => recordings.id, { onDelete: "cascade" }),
+    reporterId: uuid("reporter_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    reason: reportReasonEnum("reason").notNull(),
+    details: text("details"),
+    status: reportStatusEnum("status").notNull().default("open"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  },
+  (table) => ({
+    // Un même compte ne peut signaler deux fois le même enregistrement — un
+    // second appel sur la même paire est traité comme idempotent côté API
+    // plutôt que de créer un doublon (voir POST /recordings/:id/reports).
+    recordingReporterUnique: uniqueIndex("reports_recording_reporter_unique_idx").on(
+      table.recordingId,
+      table.reporterId
+    ),
+    statusIdx: index("reports_status_idx").on(table.status),
+  })
+);
+
+export const reportsRelations = relations(reports, ({ one }) => ({
+  recording: one(recordings, {
+    fields: [reports.recordingId],
+    references: [recordings.id],
+  }),
+  reporter: one(users, {
+    fields: [reports.reporterId],
     references: [users.id],
   }),
 }));

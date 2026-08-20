@@ -109,7 +109,10 @@
 
 .resultCount {
   font-size: 12px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : retour d'état dynamique important ("N
+     recordings found"), voir §7 audit accessibilité Phase 5. `.filterLabel`
+     reste en stone (préfixe redondant avec les liens de filtre déjà en ink). */
+  color: var(--color-ink-secondary);
   margin-bottom: 8px;
 }
 

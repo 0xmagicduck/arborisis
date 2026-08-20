@@ -19,7 +19,7 @@
     "@arborisis/search": "workspace:*",
     "@arborisis/storage": "workspace:*",
     "bullmq": "^5.28.0",
-    "drizzle-orm": "^0.36.4"
+    "drizzle-orm": "^0.45.2"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",

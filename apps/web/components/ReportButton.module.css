@@ -1,0 +1,89 @@
+/* Pas de mockup design/system pour cet écran (voir plan/TASKS.md, Phase 5 —
+   même situation que Login/Register en Phase 3) : composé à partir des
+   tokens et des primitives existantes (Button, FormField) plutôt que d'un
+   rendu de référence dédié. */
+
+.trigger {
+  font-size: 11px;
+  /* ink-secondary, pas stone : lien fonctionnel, pas un micro-label — voir
+     §7 audit accessibilité Phase 5 (DEV-HANDOFF §7, contraste AA). */
+  color: var(--color-ink-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  /* Cible tactile 44×44px minimum (DEV-HANDOFF §7) malgré une apparence
+     visuelle compacte : padding généreux plutôt qu'un texte agrandi. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+}
+
+.trigger:hover {
+  color: var(--color-ink);
+}
+
+.panel {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-none);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 360px;
+}
+
+.reasonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reasonOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 0;
+  min-height: 44px; /* cible tactile — voir DEV-HANDOFF §7 */
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-ink);
+  text-align: left;
+}
+
+.radioOuter {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.radioInner {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-ink);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.feedback {
+  font-size: 12.5px;
+  /* ink-secondary, pas stone : confirmation/erreur de soumission, retour
+     d'état important — voir §7 audit accessibilité Phase 5. */
+  color: var(--color-ink-secondary);
+}

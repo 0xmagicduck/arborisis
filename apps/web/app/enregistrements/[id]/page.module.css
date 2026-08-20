@@ -7,7 +7,9 @@
 
 .backLink {
   font-size: 12px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : contrôle de navigation actionnable — voir §7
+     audit accessibilité Phase 5. */
+  color: var(--color-ink-secondary);
   text-decoration: none;
   display: inline-block;
   margin-bottom: 28px;
@@ -43,7 +45,9 @@
 
 .metaAuthorDate {
   font-size: 13px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : qui/quand, information unique — voir §7 audit
+     accessibilité Phase 5. */
+  color: var(--color-ink-secondary);
 }
 
 .playRow {
@@ -131,7 +135,10 @@
 
 .archiveLink {
   font-size: 12px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : lien actionnable, pas un micro-label — voir §7
+     audit accessibilité Phase 5. `.technicalKey` reste en stone (label
+     directement accolé à sa valeur en ink, redondant). */
+  color: var(--color-ink-secondary);
   text-decoration: underline;
   align-self: flex-start;
 }

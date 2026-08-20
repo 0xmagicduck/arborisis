@@ -101,6 +101,19 @@ export default function ProfilePage() {
             Se déconnecter
           </Button>
         </div>
+
+        {/* Pas de footer global (voir plan/TASKS.md Phase 5) : AppShell est
+            partagé par tous les écrans, dont Explorer dont la carte plein
+            cadre dépend d'un calcul de hauteur flex fragile (voir
+            plan/MEMORY.md § Frontend/Next.js) — ajouter un footer commun
+            aurait risqué de le casser pour un gain mineur. Profil, déjà la
+            page "compte", est l'endroit le plus sûr et le plus logique pour
+            ces liens. */}
+        <div className={styles.legalLinks}>
+          <a href="/mentions-legales">Mentions légales</a>
+          <a href="/confidentialite">Confidentialité</a>
+          <a href="/cgu">CGU</a>
+        </div>
       </div>
     </AppShell>
   );

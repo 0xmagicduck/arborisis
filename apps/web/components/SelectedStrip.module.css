@@ -67,7 +67,11 @@
 
 .location {
   font-size: 11.5px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : cette bande est le fallback accessible non-
+     visuel documenté en DEV-HANDOFF §7 ("ARIA carte") — un contraste
+     insuffisant ici sape directement l'exigence qu'elle est censée
+     satisfaire. Voir §7 audit accessibilité Phase 5, plan/TASKS.md. */
+  color: var(--color-ink-secondary);
   white-space: nowrap;
 }
 

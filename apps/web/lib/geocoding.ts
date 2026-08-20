@@ -1,14 +1,16 @@
 /**
- * Géocodage — Phase 4, voir plan/07-carte-open-source.md §7.5. Appelé
- * directement depuis le navigateur (pas via l'API Arborisis) : l'instance
- * publique de démonstration Photon (komoot) envoie `Access-Control-Allow-Origin: *`
- * (vérifié en conditions réelles), donc pas besoin de proxy backend en
- * bootstrap. À remplacer par une instance auto-hébergée avant le lancement
- * public — un seul changement d'URL (`NEXT_PUBLIC_PHOTON_URL`), même logique
- * que le fond de carte (§7.4).
+ * Géocodage — Phase 4 bootstrap → Phase 5 auto-hébergé, voir
+ * plan/07-carte-open-source.md §7.5. Jusqu'en Phase 4, le navigateur
+ * appelait directement l'instance publique de démonstration Photon (CORS
+ * ouvert, vérifié en conditions réelles). Depuis l'auto-hébergement
+ * (Phase 5), l'instance de production vit sur un réseau privé sans IP
+ * publique (voir infra/photon/README.md) : le navigateur ne peut plus
+ * l'atteindre directement, d'où le passage par un proxy `GET /geocode` côté
+ * API (voir apps/api/src/routes/geocode.ts). Comportement identique côté
+ * appelant — seule la destination réseau change.
  */
 
-const PHOTON_URL = process.env.NEXT_PUBLIC_PHOTON_URL ?? "https://photon.komoot.io/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 export interface PlaceSuggestion {
   /** "Lieu, Pays" — voir packages/db/src/schema.ts `locationLabel`. */
@@ -37,7 +39,7 @@ export async function searchPlaces(query: string, signal?: AbortSignal): Promise
   const trimmed = query.trim();
   if (trimmed.length < 2) return [];
 
-  const url = `${PHOTON_URL}?q=${encodeURIComponent(trimmed)}&limit=5`;
+  const url = `${API_URL}/geocode?q=${encodeURIComponent(trimmed)}`;
   const res = await fetch(url, { signal });
   if (!res.ok) throw new Error(`Géocodage échoué (${res.status})`);
 

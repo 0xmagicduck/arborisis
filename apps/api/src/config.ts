@@ -38,6 +38,28 @@ const envSchema = z.object({
   // Meilisearch (Phase 4) — voir @arborisis/search et plan/08 §8.3.
   MEILI_URL: z.string().url().default("http://localhost:7700"),
   MEILI_MASTER_KEY: z.string().min(1),
+  // Géocodage (Phase 4 bootstrap → Phase 5 auto-hébergé, voir plan/07 §7.5).
+  // Server-side (pas NEXT_PUBLIC_*) : depuis Phase 5, le navigateur n'appelle
+  // plus Photon directement — l'instance auto-hébergée de production vit sur
+  // un réseau privé sans IP publique (voir infra/photon/README.md), donc
+  // seule l'API peut l'atteindre. GET /geocode proxifie la requête. Défaut =
+  // même instance publique de démonstration qu'avant, pour ne rien changer
+  // en dev tant que PHOTON_URL n'est pas explicitement pointé vers l'instance
+  // privée.
+  PHOTON_URL: z.string().url().default("https://photon.komoot.io/api"),
+  // Revue des signalements (Phase 5, plan/10 §10.3) : pas de rôle admin en
+  // base, volontairement — liste de handles séparés par des virgules
+  // autorisés à lister/résoudre les signalements. Simplification assumée en
+  // l'absence d'écran d'administration dédié, voir apps/api/src/lib/admin.ts.
+  ADMIN_HANDLES: z
+    .string()
+    .default("")
+    .transform((v) =>
+      v
+        .split(",")
+        .map((h) => h.trim())
+        .filter(Boolean)
+    ),
 });
 
 export type Env = z.infer<typeof envSchema>;

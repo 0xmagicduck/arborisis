@@ -30,7 +30,9 @@
 
 .countLine {
   font-size: 12px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : information unique (nombre d'enregistrements),
+     voir §7 audit accessibilité Phase 5. */
+  color: var(--color-ink-secondary);
 }
 
 .eyebrow {
@@ -51,6 +53,26 @@
 
 .logoutRow {
   margin-top: 40px;
+}
+
+.legalLinks {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line-hairline);
+}
+
+.legalLinks a {
+  font-size: 11px;
+  /* ink-secondary, pas stone : liens actionnables — voir §7 audit
+     accessibilité Phase 5 (même règle que ReportButton/Header/backLink). */
+  color: var(--color-ink-secondary);
+  text-decoration: none;
+}
+
+.legalLinks a:hover {
+  color: var(--color-ink);
 }
 
 @media (max-width: 1023px) {

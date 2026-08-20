@@ -76,6 +76,14 @@ boîte de padding toujours bien définies, pas d'ambiguïté. Voir
 À garder en tête pour tout futur composant plein-cadre logé dans un enfant de
 conteneur flex à hauteur dynamique.
 
+**Éditer plusieurs fichiers CSS Modules coup sur coup pendant que `next dev`
+tourne peut faire dériver le cache HMR** (`Cannot find module './NNN.js'`,
+`__webpack_modules__[moduleId] is not a function`) — pas un bug de code,
+symptôme observé deux fois en Phase 5 après une salve d'édits sur des
+composants déjà montés. Corrigé à chaque fois par un restart propre
+(`rm -rf .next` puis relance) plutôt qu'en cherchant la cause dans le code
+modifié.
+
 ## Fastify / API
 
 **`setErrorHandler` doit être enregistré AVANT les plugins de routes.**
@@ -154,7 +162,29 @@ décodage en lecture. Pour toute requête qui a besoin de lat/lng, utiliser
 `ST_Y(...)` explicites plutôt que le query builder relationnel. Voir
 `recordingSelection` dans [apps/api/src/routes/recordings.ts](../apps/api/src/routes/recordings.ts).
 
+**`drizzle-orm` < 0.45.2 a une vulnérabilité SQLi réelle** (identifiants SQL
+mal échappés, GHSA-gpj5-g38j-94v9) — trouvée par `pnpm audit --prod` en
+Phase 5, pas seulement transitive : ce dépôt l'utilisait directement en
+0.36.4. Bump vers 0.45.2 (+ `drizzle-kit` vers 0.31.10) sans régression
+constatée — `pnpm db:generate` ne détecte aucun changement de schéma
+inattendu, et les requêtes `sql\`ST_X/ST_Y\`` sur `location_point` (la zone
+la plus susceptible de casser avec un bump majeur de l'ORM, voir plus haut)
+continuent de fonctionner contre un Postgres réel.
+
 ## Object Storage (S3-compatible)
+
+**`pg_dump`/`pg_restore` doivent être de version majeure ≤ celle du serveur
+cible, pas seulement "compatibles".** Homebrew (`brew install libpq`)
+installe par défaut la dernière version majeure (18.x à l'écriture) — dumper
+depuis un serveur PostgreSQL 16 avec un client 18 produit un dump qui contient
+`SET transaction_timeout = 0` (directive introduite en PG17), que le serveur
+16 ne reconnaît pas à la restauration (`pg_restore: error: could not execute
+query: ERROR: unrecognized configuration parameter "transaction_timeout"`).
+Corrigé en installant la version exacte du serveur en parallèle
+(`brew install postgresql@16`, binaires sous
+`/opt/homebrew/opt/postgresql@16/bin`) plutôt que le `libpq` générique.
+Rencontré en Phase 5 en testant `apps/backup` contre le Postgres 16.4 du
+`docker-compose.yml` de dev.
 
 **La passerelle S3-compat d'Infomaniak exige la région SigV4 `"us-east-1"`,
 pas la région OpenStack réelle** (`dc3-a`/`dc4-a`) — toute autre valeur est
@@ -199,6 +229,49 @@ n'est jamais nettoyé** — seul le chemin de succès purge `staging/`. Sans
 conséquence fonctionnelle (`status` passe bien à `failed`) mais laisse des
 objets orphelins. Pas de tâche de nettoyage périodique pour l'instant, voir
 [plan/05 §5.9](05-stockage-audio-internet-archive.md#59-à-trancher).
+
+## Infra / Infomaniak Public Cloud (Object Storage, réseau)
+
+**Aucun gabarit de VM Infomaniak n'offre de grand disque racine** (max 80 Go
+en catalogue, voir `openstack flavor list`) — pour un besoin de stockage
+important (ex. index Photon planète, 90 Go), attacher un **volume Cinder
+séparé** (`openstack volume create` + `openstack server add volume`) plutôt
+que de chercher un gabarit avec plus de disque. Le device apparaît côté VM
+sous un nom différent de celui annoncé par `openstack volume show` (`/dev/sdc`
+annoncé, vu comme `/dev/sdb` dans la VM) — vérifier avec `lsblk` plutôt que de
+supposer le nom de device. Rencontré en Phase 5, voir `infra/photon/README.md`.
+
+**Deux couches de pare-feu indépendantes sur une VM Infomaniak provisionnée
+via `cloud-init.yaml` de ce dépôt : le security group Neutron (niveau réseau
+OpenStack) ET `ufw` (niveau hôte, activé par le cloud-init lui-même, qui
+n'ouvre que 22/80/443 par défaut).** Configurer le security group pour
+autoriser un port ne suffit pas si ce port n'est pas aussi ouvert dans `ufw`
+— la connexion timeout silencieusement (pas de "connection refused" net, un
+vrai timeout, ce qui pointe plutôt vers un problème réseau/routage qu'un
+firewall applicatif, piégeant à diagnostiquer). Vérifier les deux couches
+systématiquement pour tout nouveau port sur une VM basée sur ce cloud-init.
+Rencontré en Phase 5 en ouvrant le port 2322 (Photon) au réseau privé — voir
+`infra/photon/README.md`.
+
+**Le container Object Storage Infomaniak ne semble pas honorer le CORS Swift
+natif (`X-Container-Meta-Access-Control-Allow-Origin`, posé via
+`openstack container set --property`) et son API S3-compatible ne supporte
+pas `PutBucketCors` (`501 NotImplemented`)** — testé et confirmé par les deux
+voies en Phase 5 (voir `infra/photon/README.md` et `infra/caddy/Caddyfile`).
+Un fichier destiné à être fetché en cross-origin par le navigateur (ex.
+`.pmtiles` pour MapLibre) ne peut donc pas être pointé directement vers l'URL
+du bucket — le contourner avec un proxy same-origin (Caddy `reverse_proxy`,
+avec `Range` requests transmises nativement) plutôt que de chercher plus loin
+un réglage CORS côté Infomaniak.
+
+**L'ACL de lecture publique d'un container (`X-Container-Read`) posée via
+`openstack container set --property` sur ce compte n'a eu aucun effet
+observable** (toujours `401 Unauthorized` en HTTP anonyme après plusieurs
+minutes d'attente) — l'activation via le **Manager Infomaniak** (interface
+web) a fonctionné immédiatement. Pas d'explication trouvée (le champ
+`read_acl` remonte pourtant correctement dans `openstack container show`
+après coup) — si l'ACL CLI ne prend pas effet, essayer le Manager avant de
+creuser plus loin côté CLI.
 
 ## Infra / environnement d'exécution local
 

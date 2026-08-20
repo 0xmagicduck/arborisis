@@ -20,7 +20,12 @@
 
 .author {
   font-size: 12px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : information unique (qui a enregistré), pas
+     redondante — voir §7 audit accessibilité Phase 5. `.duration` reste en
+     stone volontairement (voir --color-ink-faint dans tokens.css : la durée
+     est le seul champ explicitement conçu comme "texte le plus discret"
+     dans le design system, décision produit existante, pas un oubli). */
+  color: var(--color-ink-secondary);
 }
 
 .playRow {
