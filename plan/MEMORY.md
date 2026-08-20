@@ -333,6 +333,47 @@ geocoding_upstream_error`, alors qu'un `curl` direct du même conteneur vers
 `.../2322/api?q=...` fonctionne — la réachabilité réseau n'est pas en cause,
 seulement le chemin). Voir `infra/README.md`.
 
+**Un bind mount Docker `./fichier:/chemin:ro` pointe sur l'inode au moment de
+la création du conteneur, pas sur le chemin.** `docker compose exec caddy
+caddy reload --config /etc/caddy/Caddyfile` après un `git pull` qui a modifié
+`infra/caddy/Caddyfile` sur l'hôte a rechargé... l'**ancien** contenu (log
+Caddy : `"msg":"config is unchanged"`) — `git pull`/`checkout` remplace le
+fichier par un rename atomique (nouvel inode), que le bind mount déjà établi
+ne suit pas. `docker compose exec caddy grep ... /etc/caddy/Caddyfile` dans
+le conteneur confirmait l'ancien contenu alors que `grep` sur l'hôte montrait
+le nouveau. Corrigé avec `docker compose up -d --force-recreate caddy`
+(recrée le conteneur, ré-établit le bind mount) plutôt qu'un simple
+`caddy reload` — **règle générale : après tout changement du Caddyfile sur
+l'hôte via git, recréer le conteneur `caddy`, ne pas se fier à `reload` seul.**
+Bug réel trouvé et corrigé en prod le 2026-08-20 (voir plan/TASKS.md, fix CORS
+upload + CSP `media-src blob:`).
+
+**CSP `media-src` doit inclure `blob:` dès qu'un écran prévisualise un
+fichier local via `URL.createObjectURL` avant upload.** Le flux Ajouter
+(`apps/web/app/ajouter/StepDetails.tsx`, `local-probe.ts`) génère une URL
+`blob:` locale lue par le `<audio>` partagé pour prévisualiser le son choisi
+avant tout envoi au serveur — jamais testé en navigateur réel contre la CSP
+de prod avant cette session (même catégorie d'oubli que `script-src`
+ci-dessus : CSP validée syntaxiquement, jamais contre un vrai parcours
+utilisateur). Erreur silencieuse côté navigateur : `Refused to load blob:...
+because it does not appear in the media-src directive`, pas d'erreur serveur.
+
+**La passerelle S3-compat Infomaniak ne répond pas correctement aux
+préflights CORS (`OPTIONS` → `405`) sur un `PUT` pré-signé envoyé
+directement par le navigateur depuis une origine différente.** Casse tout
+upload en prod (fonctionnait en dev contre MinIO, qui répond correctement
+aux préflights) — la même limitation CORS d'Infomaniak avait déjà été
+rencontrée en Phase 5 pour le bucket de tuiles en lecture (`PutBucketCors`
+en `501`), mais pas encore pour un upload direct navigateur. Pas de
+contournement Infomaniak trouvé côté configuration du bucket ; corrigé en
+appliquant la même stratégie que pour `/tiles/*` : proxy Caddy same-origin
+(`handle_path /storage-upload/*` → `s3.pub1.infomaniak.cloud` avec
+`header_up Host` réécrit pour matcher la signature SigV4), activé via
+`OBJECT_STORAGE_UPLOAD_PROXY_URL` (voir `apps/api/src/routes/uploads.ts`) —
+**règle générale : ne pas retenter la config CORS native Infomaniak pour un
+nouveau usage, aller directement au proxy same-origin Caddy, seule
+approche qui a fonctionné jusqu'ici sur cet hébergeur.**
+
 ## Infra / environnement d'exécution local
 
 **Plusieurs worktrees du même repo qui lancent chacun leur `docker-compose.yml`
