@@ -9,6 +9,7 @@ import { PlayButton } from "@/components/PlayButton";
 import { Waveform } from "@/components/Waveform";
 import { LocationPreview } from "@/components/LocationPreview";
 import { ErrorState } from "@/components/StateMessage";
+import { ReportButton } from "@/components/ReportButton";
 import { Skeleton } from "@/components/Skeleton";
 import { useAudioPlayer } from "@/lib/audio-player";
 import { formatDateLong, formatDuration } from "@/lib/format";
@@ -157,6 +158,8 @@ function RecordingDetailBody({ recording }: { recording: Recording }) {
               Original archived externally
             </a>
           )}
+
+          <ReportButton recordingId={recording.id} />
         </div>
 
         <div className={styles.locationCol}>

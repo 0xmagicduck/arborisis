@@ -15,6 +15,13 @@
       "when": 1787163100000,
       "tag": "0001_rename_recording_storage_keys",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787215597552,
+      "tag": "0002_flaky_black_bird",
+      "breakpoints": true
     }
   ]
 }

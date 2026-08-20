@@ -67,7 +67,9 @@
 
 .privacyNote {
   font-size: 11.5px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : disclosure de confidentialité, doit rester
+     lisible — voir §7 audit accessibilité Phase 5. */
+  color: var(--color-ink-secondary);
   margin-top: 20px;
   text-align: center;
 }
@@ -166,7 +168,9 @@
 
 .locationHelperStatus {
   font-size: 11.5px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : retour d'état dynamique (géolocalisation en
+     cours/trouvée/erreur) — voir §7 audit accessibilité Phase 5. */
+  color: var(--color-ink-secondary);
 }
 
 .footer {
@@ -207,7 +211,11 @@
 
 .reviewMeta {
   font-size: 11px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : combine la durée (de-emphase volontaire, voir
+     RecordingSummaryCard.module.css) et les tags (information unique) — le
+     second l'emporte ici puisqu'ils partagent la même ligne. Voir §7 audit
+     accessibilité Phase 5. */
+  color: var(--color-ink-secondary);
   margin-top: 10px;
 }
 
@@ -226,6 +234,9 @@
   background: none;
   border: none;
   padding: 0;
+  /* Cible tactile 44px minimum (DEV-HANDOFF §7) — voir §7 audit
+     accessibilité Phase 5, même correctif que ReportButton.module.css. */
+  min-height: 44px;
   text-align: left;
   font-family: var(--font-sans);
 }

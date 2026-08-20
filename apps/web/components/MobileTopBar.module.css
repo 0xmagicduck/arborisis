@@ -60,7 +60,9 @@
 
 .backLink {
   font-size: 13px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : contrôle de navigation actionnable, pas un
+     micro-label décoratif — voir §7 audit accessibilité Phase 5. */
+  color: var(--color-ink-secondary);
   text-decoration: none;
   min-width: 44px;
   min-height: 44px;

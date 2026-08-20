@@ -1,5 +1,6 @@
 import type {
   CreateRecordingInput,
+  CreateReportInput,
   Recording,
   RecordingMarker,
   SearchFacets,
@@ -181,4 +182,12 @@ export async function createRecording(
 ): Promise<Recording> {
   const { recording } = await api.post<{ recording: Recording }>("/recordings", input);
   return recording;
+}
+
+/**
+ * Signalement (Phase 5, plan/10 §10.3) — voir POST /recordings/:id/reports.
+ * Exige une session (401 sinon, propagé tel quel par `request()`).
+ */
+export async function reportRecording(recordingId: string, input: CreateReportInput): Promise<void> {
+  await api.post(`/recordings/${recordingId}/reports`, input);
 }

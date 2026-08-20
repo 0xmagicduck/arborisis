@@ -27,7 +27,10 @@
   font-family: var(--font-sans);
   font-size: 12px;
   text-decoration: none;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : navigation principale du site (texte seul,
+     pas d'icône associée contrairement à BottomTabBar) — voir §7 audit
+     accessibilité Phase 5, plan/TASKS.md. */
+  color: var(--color-ink-secondary);
   transition: color 150ms ease;
 }
 

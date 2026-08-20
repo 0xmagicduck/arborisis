@@ -15,14 +15,62 @@
 	}
 }
 
-# Une fois l'application prête (Phase 3), remplacer le bloc ci-dessus par un
-# reverse_proxy vers le service `web` (Next.js) et `api` (Fastify) :
+# Config de production prête pour la bascule Phase 6 (plan/11-roadmap.md —
+# "Bascule DNS finale sur arborisis.com" : jusque-là arborisis.com sert
+# volontairement le hello-world ci-dessus, le bloc suivant n'est pas actif).
+# Pour l'activer : commenter le bloc hello-world ci-dessus et décommenter
+# celui-ci.
 #
 # {$ARBORISIS_DOMAIN} {
 #     handle /api/* {
 #         reverse_proxy api:3000
 #     }
+#
+#     # Tuiles PMTiles servies same-origin plutôt qu'en pointant directement
+#     # le navigateur vers l'URL de l'Object Storage — voir infra/photon et
+#     # plan/07 §7.4 ("https://tiles.arborisis.com/..." impliquait déjà un
+#     # sous-domaine/proxy, pas une exposition brute du bucket). Raison
+#     # concrète découverte en Phase 5 : le container Object Storage
+#     # Infomaniak public n'envoie aucun en-tête CORS exploitable par
+#     # MapLibre (testé en conditions réelles — ni l'ACL de lecture publique
+#     # Swift ni `PutBucketCors` côté API S3-compatible, qui répond
+#     # `501 NotImplemented`, ne suffisent). Le proxy Caddy rend la question
+#     # sans objet (same-origin, pas de CORS nécessaire), tout en supportant
+#     # nativement les requêtes `Range` (nécessaires à PMTiles).
+#     handle_path /tiles/* {
+#         rewrite * /object/v1/AUTH_d1267b24f6994ea8abf2cc88b96c5c06/arborisis-tiles{uri}
+#         reverse_proxy https://s3.pub1.infomaniak.cloud {
+#             header_up Host s3.pub1.infomaniak.cloud
+#         }
+#     }
+#     # Vérifié en conditions réelles (2026-08-20, voir plan/TASKS.md) : `caddy
+#     # validate` sur ce bloc + une instance Caddy locale réelle (Docker,
+#     # écoute sur :8080) interrogée avec une vraie requête `Range` contre le
+#     # vrai bucket `arborisis-tiles` — `206 Partial Content` correct reçu.
+#
 #     handle {
 #         reverse_proxy web:3000
+#     }
+#
+#     # En-têtes de sécurité (Phase 5 durcissement, voir
+#     # plan/10-securite-confidentialite-conformite.md). HSTS géré par Caddy
+#     # via son support natif (activé automatiquement avec TLS auto) — inutile
+#     # de le redéclarer ici, Caddy l'envoie déjà par défaut sur les domaines
+#     # avec certificat géré.
+#     header {
+#         X-Content-Type-Options "nosniff"
+#         X-Frame-Options "DENY"
+#         Referrer-Policy "strict-origin-when-cross-origin"
+#         Permissions-Policy "camera=(), microphone=(), geolocation=(self), payment=()"
+#         # CSP écrite pour les besoins connus de la stack : MapLibre GL (WebGL +
+#         # web workers via blob:), polices auto-hébergées (next/font, pas de CDN),
+#         # API même origine, tuiles PMTiles/audio proxy sur l'Object Storage
+#         # Infomaniak (domaine à substituer une fois le sous-domaine de service
+#         # choisi). À revérifier concrètement contre le build de prod réel
+#         # avant la bascule Phase 6 — non testée en conditions réelles cette
+#         # session, l'app n'ayant jamais encore été déployée derrière Caddy
+#         # (voir plan/TASKS.md, journal Phase 5).
+#         Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.pub1.infomaniak.cloud; media-src 'self' https://*.pub1.infomaniak.cloud; connect-src 'self' https://*.pub1.infomaniak.cloud; worker-src 'self' blob:; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+#         -Server
 #     }
 # }

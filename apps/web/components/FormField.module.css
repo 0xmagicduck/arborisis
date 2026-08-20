@@ -8,7 +8,10 @@
 
 .label {
   font-size: 11px;
-  color: var(--color-stone);
+  /* ink-secondary, pas stone : un label de champ porte une information
+     unique (§7 audit accessibilité Phase 5 — stone ≈3.3:1 échoue AA sous
+     18px, ink-secondary ≈6.6:1 passe), voir DEV-HANDOFF §7 et plan/TASKS.md. */
+  color: var(--color-ink-secondary);
   font-family: var(--font-sans);
 }
 

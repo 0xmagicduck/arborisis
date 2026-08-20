@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
+import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import { ZodError } from "zod";
 import type { Env } from "./config.js";
@@ -11,8 +12,10 @@ import redisPlugin from "./plugins/redis.js";
 import searchPlugin from "./plugins/search.js";
 import storagePlugin from "./plugins/storage.js";
 import authRoutes from "./routes/auth.js";
+import geocodeRoutes from "./routes/geocode.js";
 import healthRoutes from "./routes/health.js";
 import recordingsRoutes from "./routes/recordings.js";
+import reportsRoutes from "./routes/reports.js";
 import uploadsRoutes from "./routes/uploads.js";
 
 export async function buildApp(env: Env) {
@@ -43,6 +46,12 @@ export async function buildApp(env: Env) {
     origin: env.WEBAUTHN_ORIGIN,
     credentials: true,
   });
+  // En-têtes de sécurité de base (X-Content-Type-Options, X-Frame-Options,
+  // Referrer-Policy, HSTS...). API pure JSON : pas de CSP applicable ici,
+  // désactivée pour éviter un en-tête sans effet réel (voir infra/caddy/Caddyfile
+  // pour la CSP côté web, qui sert du HTML). Phase 5 durcissement, voir
+  // plan/10-securite-confidentialite-conformite.md.
+  await app.register(helmet, { contentSecurityPolicy: false });
   await app.register(cookie);
   await app.register(rateLimit, {
     global: false, // activé route par route (voir routes/auth.ts) — §6.5
@@ -70,6 +79,8 @@ export async function buildApp(env: Env) {
   await app.register(authRoutes);
   await app.register(uploadsRoutes);
   await app.register(recordingsRoutes);
+  await app.register(reportsRoutes);
+  await app.register(geocodeRoutes);
 
   return app;
 }

@@ -5,6 +5,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   type S3Client,
 } from "@aws-sdk/client-s3";
@@ -106,6 +107,29 @@ export async function copyObject(
 
 export async function deleteObject(client: S3Client, bucket: string, key: string): Promise<void> {
   await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+}
+
+/**
+ * Liste paginée sous un préfixe — utilisé par le script de sauvegarde (voir
+ * apps/backup) pour appliquer la politique de rétention (plan/04 §4.5).
+ */
+export async function listObjects(
+  client: S3Client,
+  bucket: string,
+  prefix: string
+): Promise<{ key: string; lastModified?: Date }[]> {
+  const results: { key: string; lastModified?: Date }[] = [];
+  let continuationToken: string | undefined;
+  do {
+    const res = await client.send(
+      new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix, ContinuationToken: continuationToken })
+    );
+    for (const obj of res.Contents ?? []) {
+      if (obj.Key) results.push({ key: obj.Key, lastModified: obj.LastModified });
+    }
+    continuationToken = res.IsTruncated ? res.NextContinuationToken : undefined;
+  } while (continuationToken);
+  return results;
 }
 
 function isNotFound(err: unknown): boolean {
